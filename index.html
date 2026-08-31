@@ -184,12 +184,6 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
   .helper-grid{grid-template-columns:1fr}.step{grid-template-columns:37px 1fr 29px}
   .num{width:34px;height:34px}
 }
-.farm-item{border-top:1px solid #eee8e1;padding:12px 0}
-.farm-item:first-child{border-top:0}
-.farm-title{font-weight:850;font-size:14px;line-height:1.45}
-.farm-body{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:4px;white-space:pre-wrap}
-.farm-actions{display:flex;gap:6px;margin-top:7px}
-.edit-btn{border:0;background:#e1e9e2;color:#5d7565;border-radius:9px;padding:6px 9px;font-size:11px;font-weight:750}
 </style>
 </head>
 <body>
@@ -286,22 +280,19 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
       <div class="panel"><div id="questionList2"></div></div>
     </section>
 
-    <section id="farmPanel" class="panel">
-    <div class="section-title">🥬 農作物／蔬果</div>
-    <div class="card">
-      <h3>產業重點提醒</h3>
-      <p>可以依公司實際流程自行新增、修改或刪除。</p>
-      <form id="farmForm" class="form">
-        <input id="farmTitle" autocomplete="off" placeholder="提醒標題，例如：進貨單據核對">
-        <textarea id="farmBody" placeholder="提醒內容，例如：確認日期、供應商、品項、數量、單價與金額。"></textarea>
-        <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
-          <button class="primary" id="farmSaveBtn" type="submit">＋ 新增提醒</button>
-          <button class="delete" id="farmCancelBtn" type="button" style="display:none;min-height:43px">取消修改</button>
-        </div>
-      </form>
-    </div>
-    <div class="card"><div id="farmList"></div></div>
-  </section>
+    <section id="view-farm" class="view">
+      <div class="section-head"><h2>🥬 農作物／蔬果批發</h2><span>工作提醒</span></div>
+      <div class="card"><h3>進貨與銷貨</h3><ul>
+        <li>確認日期、廠商／客戶、品項、數量、單價與金額。</li>
+        <li>生鮮蔬果常有退貨、折讓或短少，相關單據要留存。</li>
+        <li>出貨資料 KEY IN 後，再核對數量與金額。</li>
+      </ul></div>
+      <div class="card"><h3>憑證與發票</h3><ul>
+        <li>確認發票號碼、日期、買受人及金額。</li>
+        <li>單據與發票要能互相對應，避免月底才發現缺件。</li>
+        <li>不確定的特殊處理先記在「待確認事項」。</li>
+      </ul></div>
+    </section>
 
     <section id="view-tools" class="view">
       <div class="section-head"><h2>％ 稅務與計算</h2><span>台灣營業稅 5%</span></div>
@@ -397,14 +388,7 @@ function save(key,value){try{localStorage.setItem(key,JSON.stringify(value))}cat
 let steps=load(KEY_STEPS,defaults);
 let notes=load(KEY_NOTES,[]);
 let questions=load(KEY_QUESTIONS,[]);
-let daily=load("accounting_daily_v1",[]);\
-let farm=load("accounting_farm_v1",[
-  {title:"進貨單據核對",body:"確認日期、供應商、品項、數量、單價與金額。"},
-  {title:"銷貨／出貨",body:"確認客戶、品項、數量與金額。"},
-  {title:"退貨／折讓",body:"確認原因、數量、金額與相關憑證。"},
-  {title:"生鮮蔬果提醒",body:"可能有損耗、退貨或折讓，遇到不確定情況先確認公司規則。"}
-]);
- daily=Array.isArray(daily)?daily:[];
+let daily=load("accounting_daily_v1",[]);
 let filter="all";
 let currentView="workflow";
 let editingDailyIndex=-1;
@@ -479,41 +463,6 @@ function renderDaily(){
   });
 }
 
-function renderFarm(){
-  const list=$("farmList"); list.innerHTML="";
-  if(!farm.length){list.innerHTML='<div class="empty">目前沒有產業提醒，請新增第一項。</div>';return}
-  farm.forEach((item,i)=>{
-    const el=document.createElement("div");el.className="farm-item";
-    el.innerHTML='<div class="farm-title"></div><div class="farm-body"></div><div class="farm-actions"><button type="button" class="edit-btn">修改</button><button type="button" class="delete">刪除</button></div>';
-    el.querySelector(".farm-title").textContent=item.title;
-    el.querySelector(".farm-body").textContent=item.body||"";
-    el.querySelector(".edit-btn").onclick=()=>{
-      $("farmTitle").value=item.title;$("farmBody").value=item.body||"";
-      $("farmSaveBtn").textContent="儲存修改";$("farmCancelBtn").style.display="block";
-      $("farmForm").dataset.editIndex=i;$("farmTitle").focus();
-    };
-    el.querySelector(".delete").onclick=()=>{
-      farm.splice(i,1);save("accounting_farm_v1",farm);cancelFarmEdit();renderFarm();toast("產業提醒已刪除");
-    };
-    list.appendChild(el);
-  });
-}
-function cancelFarmEdit(){
-  $("farmTitle").value="";$("farmBody").value="";
-  $("farmSaveBtn").textContent="＋ 新增提醒";$("farmCancelBtn").style.display="none";
-  delete $("farmForm").dataset.editIndex;
-}
-$("farmForm").onsubmit=e=>{
-  e.preventDefault();
-  const title=$("farmTitle").value.trim(),body=$("farmBody").value.trim();
-  if(!title){$("farmTitle").focus();toast("請先輸入提醒標題");return}
-  const i=$("farmForm").dataset.editIndex;
-  if(i!==undefined){farm[Number(i)]={title,body};toast("產業提醒已修改")}
-  else{farm.push({title,body});toast("已新增產業提醒")}
-  save("accounting_farm_v1",farm);cancelFarmEdit();renderFarm();
-};
-$("farmCancelBtn").onclick=cancelFarmEdit;
-
 function renderNotes(){
   const list=$("noteList");list.innerHTML="";
   if(!notes.length){list.innerHTML='<div class="empty">還沒有工作筆記，新增第一筆吧。</div>';return}
@@ -547,7 +496,7 @@ function showView(view){
   document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===view));
   window.scrollTo({top:0,behavior:"smooth"});
 }
-function renderAll(){updateProgress();renderWorkflow();renderDaily();renderFarm();renderNotes();renderQuestions()}
+function renderAll(){updateProgress();renderWorkflow();renderDaily();renderNotes();renderQuestions()}
 
 document.querySelectorAll("[data-filter]").forEach(btn=>btn.addEventListener("click",()=>{
   filter=btn.dataset.filter;
@@ -710,17 +659,6 @@ const now=new Date(),hour=now.getHours();
 $("greeting").textContent=(hour<11?"早安":hour<18?"Hi，今天也辛苦了！":"辛苦了，今天也完成不少了！")+" 🌱";
 renderAll();
 showView("workflow");
-})();
-</script>
-<script>
-(function(){
-  "use strict";
-  // Home Screen / GitHub Pages compatibility
-  if ("serviceWorker" in navigator && location.protocol === "https:") {
-    window.addEventListener("load", function(){
-      navigator.serviceWorker.register("./sw.js").catch(function(){});
-    });
-  }
 })();
 </script>
 </body>
