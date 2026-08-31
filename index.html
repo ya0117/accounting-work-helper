@@ -123,6 +123,75 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
 .calc-back{background:#ece9e4;color:#6f6962}
 .calc-equal{background:var(--sage-deep);color:#fff;border-color:var(--sage-deep)}
 @media(max-width:520px){.calc-btn{min-height:50px}}
+/* --- v2 refinements --- */
+
+/* --- v3 app refinements --- */
+.app{max-width:820px}
+button,input,textarea,select{appearance:none;-webkit-appearance:none}
+button{transition:transform .12s ease,box-shadow .12s ease,background .12s ease}
+button:active{transform:scale(.975)}
+.top{position:sticky;top:0;z-index:20;padding:10px 0 12px;background:rgba(238,234,228,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.hero{position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-55px;top:-55px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.2);pointer-events:none}
+.hero-badge{box-shadow:0 5px 14px rgba(80,74,68,.06)}
+.tab-scroll{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 5px;scrollbar-width:none}
+.tab-scroll::-webkit-scrollbar{display:none}
+.toolbar.sticky-tabs{position:sticky;top:72px;z-index:15;background:rgba(238,234,228,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:7px 0}
+.toolbar.sticky-tabs button{white-space:nowrap}
+.quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:0 0 12px}
+.quick-btn{border:1px solid var(--line);background:rgba(255,253,249,.9);border-radius:15px;padding:12px;text-align:left;color:var(--ink);font-weight:800;box-shadow:0 5px 15px rgba(89,82,74,.04)}
+.quick-btn small{display:block;color:var(--muted);font-size:10px;font-weight:600;margin-top:3px}
+.progress-card{position:relative}
+.progress-card .mini-note{font-size:10px;color:var(--muted);margin-top:7px}
+.empty{background:rgba(255,253,249,.72);border:1px dashed #d7d0c7;border-radius:15px}
+.panel,.card,.helper-card,.add{box-shadow:0 7px 20px rgba(89,82,74,.045)}
+.primary{box-shadow:0 5px 12px rgba(120,135,123,.12)}
+input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3px rgba(158,170,157,.13)}
+.numeric-pad{grid-template-columns:repeat(4,1fr)}
+.num-key{min-height:52px;font-size:17px}
+.num-key.zero{grid-column:span 2}
+.calc-display{font-variant-numeric:tabular-nums;text-align:right;font-size:28px;font-weight:850;letter-spacing:.02em;background:#f5f1eb;border:1px solid #ded7ce;border-radius:15px;padding:13px 14px;min-height:58px;overflow:auto;white-space:nowrap}
+.calc-history{font-size:11px;color:var(--muted);min-height:16px;text-align:right;margin:3px 3px 7px}
+.tool-tabs{display:flex;gap:6px;margin-bottom:9px}
+.tool-tabs button{flex:1;border:1px solid var(--line);background:#f8f5f0;border-radius:11px;padding:9px 7px;font-size:11px;font-weight:800;color:#756e67}
+.tool-tabs button.active{background:#dfe7df;border-color:#c2cec2;color:#56655a}
+.todo-item{background:rgba(255,253,249,.65);border-radius:12px;padding:10px 7px}
+.todo-item+.todo-item{margin-top:3px}
+.time-pill{display:inline-block;background:#ece7df;border-radius:999px;padding:3px 7px;font-size:10px;color:#756e67;margin-top:4px}
+.reminder-item{background:rgba(255,253,249,.76);border-radius:15px}
+.reminder-item+.reminder-item{margin-top:8px}
+.list-item{position:relative}
+.filter-empty{margin-top:8px}
+.section-head{position:relative}
+.section-head span{font-size:10px}
+.bottom-hint{font-size:10px;color:var(--muted);text-align:center;margin:14px 0 0}
+@media(max-width:520px){
+  .top{top:0}
+  .toolbar.sticky-tabs{top:70px}
+  .quick-grid{grid-template-columns:1fr 1fr}
+  .numeric-pad{gap:7px}
+  .num-key{min-height:50px}
+}
+
+.subtitle-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.8);padding:5px 9px;border-radius:999px;font-size:10px;color:#766e68;margin-top:8px}
+.hero-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.hero-action{border:1px solid #e4d9d2;background:rgba(255,255,255,.68);color:#6d655f;border-radius:11px;padding:7px 10px;font-size:11px;font-weight:800}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}
+.stat{background:rgba(255,253,251,.88);border:1px solid var(--line);border-radius:15px;padding:10px 9px;text-align:center}
+.stat strong{display:block;font-size:16px}.stat span{font-size:10px;color:var(--muted)}
+.section-head .action-link{border:0;background:transparent;color:var(--sage-deep);font-size:12px;font-weight:800;padding:5px}
+.todo-summary{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--muted);font-size:11px}
+.todo-summary strong{color:var(--ink)}
+.field-label{font-size:11px;color:var(--muted);font-weight:750;margin:1px 2px -3px}
+.edit-form{display:grid;gap:7px;background:#f8f4ef;border:1px solid #ece2db;border-radius:13px;padding:10px;margin-top:8px}
+.workflow-actions{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+.workflow-actions button{border:0;border-radius:9px;padding:6px 8px;font-size:10px;font-weight:800}
+.workflow-edit{background:#e5ece6;color:#587061}.workflow-delete{background:#eee7e1;color:#89756e}
+.farm-empty{margin-bottom:10px}
+@media(max-width:480px){
+  .stat{padding:9px 5px}.stat strong{font-size:15px}
+}
+
 .numeric-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}
 .num-key{min-height:48px;border:1px solid #d8d2ca;border-radius:13px;background:#f7f4ef;color:var(--ink);font-size:18px;font-weight:800}
 .num-key:active{transform:scale(.97);background:#ebe6df}
@@ -192,6 +261,11 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
     <div>
       <h1 id="greeting">Hi，今天也辛苦了！🌱</h1>
       <p>一點一滴的累積，<br>都會成為更好的自己。</p>
+      <div class="subtitle-chip">🌿 今天專注把事情做好</div>
+      <div class="hero-actions">
+        <button type="button" class="hero-action" data-open="daily">＋ 新增待辦</button>
+        <button type="button" class="hero-action" data-open="calculator">🧮 開啟計算機</button>
+      </div>
     </div>
     <div class="progress-ring" id="progressRing">
       <div class="progress-ring-content"><strong id="heroPct">0%</strong><span>今日進度</span></div>
@@ -209,10 +283,23 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
     <button class="tile" data-open="calculator"><div class="tile-icon">🧮</div><div class="tile-title">金額計算機</div><div class="tile-desc">快速又方便</div></button>
   </div>
 
+  <div class="stat-row">
+    <div class="stat"><strong id="todoStat">0</strong><span>今日待辦</span></div>
+    <div class="stat"><strong id="doneStat">0</strong><span>已完成</span></div>
+    <div class="stat"><strong id="pendingStat">0</strong><span>待確認</span></div>
+  </div>
+
   <section class="panel progress-card">
     <div class="progress-line"><span>今日工作進度</span><span id="progressText">0 / 0</span></div>
     <div class="bar"><div class="fill" id="fill"></div></div>
   </section>
+
+  <div class="quick-grid">
+    <button type="button" class="quick-btn" data-open="daily">☑️ 今日待辦<small>新增、修改、完成今日工作</small></button>
+    <button type="button" class="quick-btn" data-open="notes">📝 工作筆記<small>記下主管教你的流程</small></button>
+    <button type="button" class="quick-btn" data-open="farm">🥬 產業提醒<small>累積公司特殊作法</small></button>
+    <button type="button" class="quick-btn" data-open="calculator">🧮 金額計算<small>加減乘除與常用工具</small></button>
+  </div>
 
   <div class="toolbar" role="tablist">
     <button class="active" data-filter="all">全部</button>
@@ -225,7 +312,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
       <div class="section-head"><h2>📋 工作流程</h2><span id="workflowCount"></span></div>
       <div id="workflow" class="workflow"></div>
       <div class="panel add-panel">
-        <div class="section-head" style="margin-top:0"><h2 style="font-size:16px">＋ 新增工作流程</h2></div>
+        <div class="section-head" style="margin-top:0"><h2 style="font-size:16px">＋ 新增工作流程</h2><span>可自行調整</span></div>
         <form id="addForm">
           <input id="stepTitle" autocomplete="off" placeholder="例如：整理今日進貨發票">
           <textarea id="stepDesc" placeholder="注意事項／操作步驟（可不填）"></textarea>
@@ -241,7 +328,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
         <form id="todoForm" class="inline-form">
           <input id="todoTitle" autocomplete="off" placeholder="例如：核對銀行交易明細">
           <input id="todoTime" type="time" aria-label="待辦時間">
-          <button class="primary" type="submit" id="todoSubmit">＋ 新增待辦</button>
+          <button class="primary" type="submit" id="todoSubmit">＋ 新增待辦</button><button class="hero-action" type="button" id="todoCancel" style="display:none">取消修改</button>
         </form>
         <div class="key-target">新增後可以直接勾選完成，也可以修改或刪除。</div>
       </div>
@@ -276,51 +363,89 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
         <form id="farmForm" class="inline-form">
           <input id="farmTitle" placeholder="例如：退貨單要確認原因與數量">
           <textarea id="farmBody" placeholder="補充提醒內容（可不填）"></textarea>
-          <button class="primary" type="submit" id="farmSubmit">新增提醒</button>
+          <button class="primary" type="submit" id="farmSubmit">新增提醒</button><button class="hero-action" type="button" id="farmCancel" style="display:none">取消修改</button>
         </form>
       </div>
     </section>
 
     <section id="view-tools" class="view">
-      <div class="section-head"><h2>％ 稅務與計算</h2><span>台灣營業稅 5%</span></div>
+      <div class="section-head"><h2>％ 稅務與計算</h2><span>常用會計小工具</span></div>
+
+      <div class="card">
+        <h3>🧮 金額計算機</h3>
+        <div id="calcHistory" class="calc-history"></div>
+        <div id="calcDisplay" class="calc-display">0</div>
+        <div class="numeric-pad" id="mainCalcPad">
+          <button type="button" class="num-key clear" data-calc="C">AC</button>
+          <button type="button" class="num-key back" data-calc="back">⌫</button>
+          <button type="button" class="num-key op" data-calc="%">%</button>
+          <button type="button" class="num-key op" data-calc="/">÷</button>
+          <button type="button" class="num-key" data-calc="7">7</button>
+          <button type="button" class="num-key" data-calc="8">8</button>
+          <button type="button" class="num-key" data-calc="9">9</button>
+          <button type="button" class="num-key op" data-calc="*">×</button>
+          <button type="button" class="num-key" data-calc="4">4</button>
+          <button type="button" class="num-key" data-calc="5">5</button>
+          <button type="button" class="num-key" data-calc="6">6</button>
+          <button type="button" class="num-key op" data-calc="-">−</button>
+          <button type="button" class="num-key" data-calc="1">1</button>
+          <button type="button" class="num-key" data-calc="2">2</button>
+          <button type="button" class="num-key" data-calc="3">3</button>
+          <button type="button" class="num-key op" data-calc="+">＋</button>
+          <button type="button" class="num-key zero" data-calc="0">0</button>
+          <button type="button" class="num-key" data-calc=".">.</button>
+          <button type="button" class="num-key op" data-calc="=">＝</button>
+        </div>
+      </div>
+
       <div class="card">
         <h3>💰 含稅／未稅</h3>
         <form id="taxForm">
-          <input id="taxAmount" inputmode="decimal" autocomplete="off" placeholder="輸入金額">
+          <div class="field-label">金額</div>
+          <input id="taxAmount" inputmode="decimal" autocomplete="off" placeholder="請用下方數字鍵輸入">
           <select id="taxMode"><option value="add">未稅 → 含稅</option><option value="remove">含稅 → 未稅</option></select>
-          <div class="key-target">數字按鍵輸入金額</div>
           <div class="numeric-pad" data-pad-target="taxAmount">
-            <button type="button" class="num-key clear" data-num="C">C</button><button type="button" class="num-key" data-num=".">.</button><button type="button" class="num-key back" data-num="back">⌫</button>
-            <button type="button" class="num-key" data-num="7">7</button><button type="button" class="num-key" data-num="8">8</button><button type="button" class="num-key" data-num="9">9</button>
-            <button type="button" class="num-key" data-num="4">4</button><button type="button" class="num-key" data-num="5">5</button><button type="button" class="num-key" data-num="6">6</button>
-            <button type="button" class="num-key" data-num="1">1</button><button type="button" class="num-key" data-num="2">2</button><button type="button" class="num-key" data-num="3">3</button>
-            <button type="button" class="num-key" data-num="0">0</button><button type="button" class="num-key" data-num="00">00</button><button type="button" class="num-key op" data-num="calc">計算</button>
+            <button type="button" class="num-key clear" data-num="C">C</button><button type="button" class="num-key" data-num=".">.</button><button type="button" class="num-key back" data-num="back">⌫</button><button type="button" class="num-key op" data-num="calc">計算</button>
+            <button type="button" class="num-key" data-num="7">7</button><button type="button" class="num-key" data-num="8">8</button><button type="button" class="num-key" data-num="9">9</button><button type="button" class="num-key" data-num="00">00</button>
+            <button type="button" class="num-key" data-num="4">4</button><button type="button" class="num-key" data-num="5">5</button><button type="button" class="num-key" data-num="6">6</button><button type="button" class="num-key" data-num="0">0</button>
+            <button type="button" class="num-key" data-num="1">1</button><button type="button" class="num-key" data-num="2">2</button><button type="button" class="num-key" data-num="3">3</button><button type="button" class="num-key op" data-num="calc">結果</button>
           </div>
         </form>
         <div id="taxResult" class="result">—</div>
       </div>
-      <div class="card"><h3>📈 毛利快速計算</h3>
+
+      <div class="card">
+        <h3>📈 毛利快速計算</h3>
         <form id="profitForm">
-          <input id="saleAmount" inputmode="decimal" autocomplete="off" placeholder="銷售收入">
-          <div class="key-target">目前輸入：銷售收入</div>
+          <div class="field-label">銷售收入</div>
+          <input id="saleAmount" inputmode="decimal" autocomplete="off" placeholder="輸入銷售收入">
           <div class="numeric-pad" data-pad-target="saleAmount">
-            <button type="button" class="num-key clear" data-num="C">C</button><button type="button" class="num-key" data-num=".">.</button><button type="button" class="num-key back" data-num="back">⌫</button>
-            <button type="button" class="num-key" data-num="7">7</button><button type="button" class="num-key" data-num="8">8</button><button type="button" class="num-key" data-num="9">9</button>
-            <button type="button" class="num-key" data-num="4">4</button><button type="button" class="num-key" data-num="5">5</button><button type="button" class="num-key" data-num="6">6</button>
-            <button type="button" class="num-key" data-num="1">1</button><button type="button" class="num-key" data-num="2">2</button><button type="button" class="num-key" data-num="3">3</button>
-            <button type="button" class="num-key" data-num="0">0</button><button type="button" class="num-key" data-num="00">00</button><button type="button" class="num-key op" data-num="next">下一欄</button>
+            <button type="button" class="num-key clear" data-num="C">C</button><button type="button" class="num-key" data-num=".">.</button><button type="button" class="num-key back" data-num="back">⌫</button><button type="button" class="num-key op" data-num="next">下一欄</button>
+            <button type="button" class="num-key" data-num="7">7</button><button type="button" class="num-key" data-num="8">8</button><button type="button" class="num-key" data-num="9">9</button><button type="button" class="num-key" data-num="00">00</button>
+            <button type="button" class="num-key" data-num="4">4</button><button type="button" class="num-key" data-num="5">5</button><button type="button" class="num-key" data-num="6">6</button><button type="button" class="num-key" data-num="0">0</button>
+            <button type="button" class="num-key" data-num="1">1</button><button type="button" class="num-key" data-num="2">2</button><button type="button" class="num-key" data-num="3">3</button><button type="button" class="num-key op" data-num="next">成本</button>
           </div>
-          <input id="costAmount" inputmode="decimal" autocomplete="off" placeholder="成本">
-          <div class="key-target">點「下一欄」或直接點成本，再輸入數字</div>
+          <div class="field-label">成本</div>
+          <input id="costAmount" inputmode="decimal" autocomplete="off" placeholder="輸入成本">
           <div class="numeric-pad" data-pad-target="costAmount">
-            <button type="button" class="num-key clear" data-num="C">C</button><button type="button" class="num-key" data-num=".">.</button><button type="button" class="num-key back" data-num="back">⌫</button>
-            <button type="button" class="num-key" data-num="7">7</button><button type="button" class="num-key" data-num="8">8</button><button type="button" class="num-key" data-num="9">9</button>
-            <button type="button" class="num-key" data-num="4">4</button><button type="button" class="num-key" data-num="5">5</button><button type="button" class="num-key" data-num="6">6</button>
-            <button type="button" class="num-key" data-num="1">1</button><button type="button" class="num-key" data-num="2">2</button><button type="button" class="num-key" data-num="3">3</button>
-            <button type="button" class="num-key" data-num="0">0</button><button type="button" class="num-key" data-num="00">00</button><button type="button" class="num-key op" data-num="calcprofit">計算</button>
+            <button type="button" class="num-key clear" data-num="C">C</button><button type="button" class="num-key" data-num=".">.</button><button type="button" class="num-key back" data-num="back">⌫</button><button type="button" class="num-key op" data-num="calcprofit">計算</button>
+            <button type="button" class="num-key" data-num="7">7</button><button type="button" class="num-key" data-num="8">8</button><button type="button" class="num-key" data-num="9">9</button><button type="button" class="num-key" data-num="00">00</button>
+            <button type="button" class="num-key" data-num="4">4</button><button type="button" class="num-key" data-num="5">5</button><button type="button" class="num-key" data-num="6">6</button><button type="button" class="num-key" data-num="0">0</button>
+            <button type="button" class="num-key" data-num="1">1</button><button type="button" class="num-key" data-num="2">2</button><button type="button" class="num-key" data-num="3">3</button><button type="button" class="num-key op" data-num="calcprofit">結果</button>
           </div>
         </form>
         <div id="profitResult" class="result">—</div>
+      </div>
+
+      <div class="card">
+        <h3>📌 常用檢查清單</h3>
+        <ul>
+          <li>日期、廠商／客戶名稱是否正確？</li>
+          <li>數量、單價、金額是否一致？</li>
+          <li>發票號碼與日期是否正確？</li>
+          <li>憑證是否完整且能互相對應？</li>
+          <li>KEY IN 完成後是否再次核對？</li>
+        </ul>
       </div>
     </section>
 
@@ -431,6 +556,12 @@ function toast(msg){
   const t=$("toast");t.textContent=msg;t.classList.add("show");
   clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),1600);
 }
+function updateStats(){
+  if($("todoStat"))$("todoStat").textContent=todos.length;
+  if($("doneStat"))$("doneStat").textContent=todos.filter(t=>t.done).length;
+  if($("pendingStat"))$("pendingStat").textContent=questions.length;
+}
+
 function updateProgress(){
   const done=steps.filter(s=>s.done).length,total=steps.length,pct=total?Math.round(done/total*100):0;
   $("progressText").textContent=`${done} / ${total}`;
@@ -438,27 +569,60 @@ function updateProgress(){
   $("fill").style.width=pct+"%";
   $("progressRing").style.setProperty("--pct",pct+"%");
   $("workflowCount").textContent=`共 ${total} 項`;
+  updateStats();
 }
 function renderWorkflow(){
   const list=$("workflow");list.innerHTML="";
-  const visible=steps.map((item,index)=>({item,index})).filter(v=>filter==="all"||(filter==="todo"&&!v.item.done)||(filter==="done"&&v.item.done));
+  const visible=steps.map((item,index)=>({item,index}))
+    .filter(v=>filter==="all"||(filter==="todo"&&!v.item.done)||(filter==="done"&&v.item.done));
   if(!visible.length){list.innerHTML='<div class="empty">目前沒有符合條件的工作。</div>';return}
   visible.forEach(v=>{
     const s=v.item,i=v.index,el=document.createElement("div");
     el.className="step"+(s.done?" done":"");
-    el.innerHTML=`<div class="num">${String(i+1).padStart(2,"0")}</div><div><div class="title"></div><div class="desc"></div></div><input class="check" type="checkbox" ${s.done?"checked":""} aria-label="完成工作">`;
+    el.innerHTML=`<div class="num">${String(i+1).padStart(2,"0")}</div>
+      <div><div class="title"></div><div class="desc"></div>
+      <div class="workflow-actions"><button type="button" class="workflow-edit">修改</button><button type="button" class="workflow-delete">刪除</button></div></div>
+      <input class="check" type="checkbox" ${s.done?"checked":""} aria-label="完成工作">`;
     el.querySelector(".title").textContent=s.title;
     el.querySelector(".desc").textContent=s.desc||"";
     el.querySelector(".check").addEventListener("change",e=>{
-      steps[i].done=e.target.checked;save(KEY_STEPS,steps);renderAll();toast(e.target.checked?"已完成 ✓":"已取消完成");
+      steps[i].done=e.target.checked;save(KEY_STEPS,steps);
+document.querySelectorAll("[data-open]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const view=btn.dataset.open;
+    if(view==="calculator"){showView("tools");window.scrollTo({top:0,behavior:"smooth"});}
+    else {showView(view);window.scrollTo({top:0,behavior:"smooth"});}
+  });
+});
+
+renderAll();toast(e.target.checked?"已完成 ✓":"已取消完成");
+    });
+    el.querySelector(".workflow-edit").addEventListener("click",()=>{
+      $("stepTitle").value=s.title;$("stepDesc").value=s.desc||"";
+      $("addForm").dataset.editIndex=i;$("addForm").scrollIntoView({behavior:"smooth",block:"center"});
+      $("addForm").querySelector(".primary").textContent="儲存流程修改";
+    });
+    el.querySelector(".workflow-delete").addEventListener("click",()=>{
+      if(confirm("確定要刪除這個工作流程嗎？")){
+        steps.splice(i,1);save(KEY_STEPS,steps);renderAll();toast("工作流程已刪除");
+      }
     });
     list.appendChild(el);
   });
 }
 function renderDaily(){
   const list=$("dailyList");list.innerHTML="";
-  if(!todos.length){list.innerHTML='<div class="empty">今天還沒有待辦事項，新增一項吧。</div>';return}
-  todos.forEach((t,i)=>{
+  const summary=document.createElement("div");summary.className="todo-summary";
+  const done=todos.filter(t=>t.done).length;
+  summary.innerHTML=`<span>今天共 <strong>${todos.length}</strong> 項</span><span>完成 <strong>${done}</strong> 項</span>`;
+  list.appendChild(summary);
+  if(!todos.length){list.insertAdjacentHTML("beforeend",'<div class="empty">今天還沒有待辦事項，新增一項吧。</div>');return}
+  const ordered=todos.map((item,index)=>({item,index})).sort((a,b)=>{
+    if(a.item.done!==b.item.done)return a.item.done?1:-1;
+    return (a.item.time||"99:99").localeCompare(b.item.time||"99:99");
+  });
+  ordered.forEach(v=>{
+    const t=v.item,i=v.index;
     const el=document.createElement("div");el.className="todo-item"+(t.done?" done":"");
     el.innerHTML=`<input class="todo-check" type="checkbox" ${t.done?"checked":""} aria-label="完成待辦">
       <div class="todo-main"><strong></strong><small></small></div>
@@ -466,14 +630,15 @@ function renderDaily(){
     el.querySelector("strong").textContent=t.title;
     el.querySelector("small").textContent=t.time?`時間：${t.time}`:"未設定時間";
     el.querySelector(".todo-check").addEventListener("change",e=>{
-      todos[i].done=e.target.checked;save(KEY_TODOS,todos);renderDaily();toast(e.target.checked?"待辦已完成 ✓":"已取消完成");
+      todos[i].done=e.target.checked;save(KEY_TODOS,todos);renderAll();toast(e.target.checked?"待辦已完成 ✓":"已取消完成");
     });
     el.querySelector(".edit").addEventListener("click",()=>{
-      $("todoTitle").value=t.title;$("todoTime").value=t.time||"";$("todoSubmit").textContent="儲存修改";
-      $("todoForm").dataset.editIndex=i;$("todoTitle").focus();
+      $("todoTitle").value=t.title;$("todoTime").value=t.time||"";
+      $("todoForm").dataset.editIndex=i;$("todoSubmit").textContent="儲存修改";$("todoCancel").style.display="inline-block";
+      $("todoForm").scrollIntoView({behavior:"smooth",block:"center"});
     });
     el.querySelector(".delete").addEventListener("click",()=>{
-      if(confirm("確定要刪除這項待辦嗎？")){todos.splice(i,1);save(KEY_TODOS,todos);renderDaily();toast("待辦已刪除")}
+      if(confirm("確定要刪除這項待辦嗎？")){todos.splice(i,1);save(KEY_TODOS,todos);renderAll();toast("待辦已刪除")}
     });
     list.appendChild(el);
   });
@@ -483,10 +648,15 @@ function renderNotes(){
   if(!notes.length){list.innerHTML='<div class="empty">還沒有工作筆記，新增第一筆吧。</div>';return}
   notes.forEach((n,i)=>{
     const el=document.createElement("div");el.className="list-item";
-    el.innerHTML=`<strong></strong><p></p><button class="delete">刪除</button>`;
+    el.innerHTML=`<strong></strong><p></p><button class="edit">修改</button><button class="delete">刪除</button>`;
     el.querySelector("strong").textContent=n.title||"未命名筆記";
     el.querySelector("p").textContent=n.body||"—";
-    el.querySelector(".delete").addEventListener("click",()=>{notes.splice(i,1);save(KEY_NOTES,notes);renderNotes();toast("筆記已刪除")});
+    el.querySelector(".edit").addEventListener("click",()=>{
+      $("noteTitle").value=n.title||"";$("noteBody").value=n.body||"";
+      $("noteForm").dataset.editIndex=i;$("noteForm").querySelector(".primary").textContent="儲存修改";
+      $("noteForm").scrollIntoView({behavior:"smooth",block:"center"});
+    });
+    el.querySelector(".delete").addEventListener("click",()=>{if(confirm("確定要刪除這筆筆記嗎？")){notes.splice(i,1);save(KEY_NOTES,notes);renderNotes();toast("筆記已刪除")}});
     list.appendChild(el);
   });
 }
@@ -514,7 +684,7 @@ function showView(view){
 
 function renderFarm(){
   const list=$("farmList");list.innerHTML="";
-  if(!farmReminders.length){list.innerHTML='<div class="card empty">目前沒有產業提醒，請新增第一筆。</div>';return}
+  if(!farmReminders.length){list.innerHTML='<div class="card empty farm-empty">目前沒有產業提醒，請新增第一筆。</div>';return}
   farmReminders.forEach((r,i)=>{
     const card=document.createElement("div");card.className="card reminder-item";
     card.innerHTML=`<div class="reminder-row"><div><h3></h3><div class="reminder-text"></div></div>
@@ -522,16 +692,15 @@ function renderFarm(){
     card.querySelector("h3").textContent=r.title;
     card.querySelector(".reminder-text").textContent=r.body||"";
     card.querySelector(".edit").addEventListener("click",()=>{
-      $("farmTitle").value=r.title;$("farmBody").value=r.body||"";$("farmSubmit").textContent="儲存修改";
-      $("farmForm").dataset.editIndex=i;$("farmTitle").focus();
+      $("farmTitle").value=r.title;$("farmBody").value=r.body||"";$("farmSubmit").textContent="儲存修改";$("farmCancel").style.display="inline-block";
+      $("farmForm").dataset.editIndex=i;$("farmForm").scrollIntoView({behavior:"smooth",block:"center"});
     });
     card.querySelector(".delete").addEventListener("click",()=>{
-      if(confirm("確定要刪除這項產業提醒嗎？")){farmReminders.splice(i,1);save(KEY_FARM,farmReminders);renderFarm();toast("提醒已刪除")}
+      if(confirm("確定要刪除這項產業提醒嗎？")){farmReminders.splice(i,1);save(KEY_FARM,farmReminders);renderFarm();updateStats();toast("提醒已刪除")}
     });
     list.appendChild(card);
   });
 }
-
 function renderAll(){updateProgress();renderWorkflow();renderDaily();renderNotes();renderQuestions();renderFarm()}
 
 document.querySelectorAll("[data-filter]").forEach(btn=>btn.addEventListener("click",()=>{
@@ -546,12 +715,27 @@ document.querySelectorAll("[data-nav]").forEach(btn=>btn.addEventListener("click
 $("addForm").addEventListener("submit",e=>{
   e.preventDefault();const title=$("stepTitle").value.trim(),desc=$("stepDesc").value.trim();
   if(!title){$("stepTitle").focus();toast("請先輸入工作名稱");return}
-  steps.push({title,desc,done:false});save(KEY_STEPS,steps);
+  const editIndex=$("addForm").dataset.editIndex;
+  if(editIndex!==undefined && editIndex!==""){
+    steps[Number(editIndex)]={...steps[Number(editIndex)],title,desc};
+    delete $("addForm").dataset.editIndex;
+    $("addForm").querySelector(".primary").textContent="新增工作步驟";
+    toast("工作流程已修改");
+  }else{
+    steps.push({title,desc,done:false});
+    toast("已新增工作步驟");
+  }
+  save(KEY_STEPS,steps);
   $("stepTitle").value="";$("stepDesc").value="";filter="all";
   document.querySelectorAll("[data-filter]").forEach(b=>b.classList.toggle("active",b.dataset.filter==="all"));
-  renderAll();toast("已新增工作步驟");
+  renderAll();
 });
 
+
+$("todoCancel").addEventListener("click",()=>{
+  delete $("todoForm").dataset.editIndex;$("todoTitle").value="";$("todoTime").value="";
+  $("todoSubmit").textContent="＋ 新增待辦";$("todoCancel").style.display="none";
+});
 
 $("todoForm").addEventListener("submit",e=>{
   e.preventDefault();
@@ -561,11 +745,16 @@ $("todoForm").addEventListener("submit",e=>{
   if(idx!==undefined && idx!==""){
     todos[Number(idx)]={...todos[Number(idx)],title,time};
     delete $("todoForm").dataset.editIndex;
-    $("todoSubmit").textContent="＋ 新增待辦";toast("待辦已修改");
+    $("todoSubmit").textContent="＋ 新增待辦";$("todoCancel").style.display="none";toast("待辦已修改");
   }else{
     todos.push({title,time,done:false});toast("已新增待辦");
   }
   save(KEY_TODOS,todos);$("todoTitle").value="";$("todoTime").value="";renderDaily();
+});
+
+$("farmCancel").addEventListener("click",()=>{
+  delete $("farmForm").dataset.editIndex;$("farmTitle").value="";$("farmBody").value="";
+  $("farmSubmit").textContent="新增提醒";$("farmCancel").style.display="none";
 });
 
 $("farmForm").addEventListener("submit",e=>{
@@ -576,7 +765,7 @@ $("farmForm").addEventListener("submit",e=>{
   if(idx!==undefined && idx!==""){
     farmReminders[Number(idx)]={title,body};
     delete $("farmForm").dataset.editIndex;
-    $("farmSubmit").textContent="新增提醒";toast("產業提醒已修改");
+    $("farmSubmit").textContent="新增提醒";$("farmCancel").style.display="none";toast("產業提醒已修改");
   }else{
     farmReminders.push({title,body});toast("已新增產業提醒");
   }
@@ -586,13 +775,62 @@ $("farmForm").addEventListener("submit",e=>{
 $("noteForm").addEventListener("submit",e=>{
   e.preventDefault();const title=$("noteTitle").value.trim(),body=$("noteBody").value.trim();
   if(!title&&!body){toast("請輸入筆記內容");return}
-  notes.unshift({title:title||"未命名筆記",body:body||"—",created:new Date().toISOString()});
-  save(KEY_NOTES,notes);$("noteTitle").value="";$("noteBody").value="";renderNotes();toast("筆記已儲存");
+  const editIndex=$("noteForm").dataset.editIndex;
+  if(editIndex!==undefined && editIndex!==""){
+    notes[Number(editIndex)]={...notes[Number(editIndex)],title:title||"未命名筆記",body:body||"—"};
+    delete $("noteForm").dataset.editIndex;
+    $("noteForm").querySelector(".primary").textContent="儲存筆記";
+    toast("筆記已修改");
+  }else{
+    notes.unshift({title:title||"未命名筆記",body:body||"—",created:new Date().toISOString()});
+    toast("筆記已儲存");
+  }
+  save(KEY_NOTES,notes);$("noteTitle").value="";$("noteBody").value="";renderNotes();
 });
 $("questionForm").addEventListener("submit",e=>{
   e.preventDefault();const q=$("questionInput").value.trim();if(!q){$("questionInput").focus();return}
   questions.unshift(q);save(KEY_QUESTIONS,questions);$("questionInput").value="";renderQuestions();toast("已加入待確認");
 });
+
+let calcExpr="",calcJustAnswered=false;
+function renderCalc(){
+  $("calcDisplay").textContent=calcExpr||"0";
+}
+function calcSafe(expr){
+  expr=expr.replace(/%/g,"/100");
+  if(!expr || !/^[0-9+\-*/().]+$/.test(expr))throw new Error();
+  const r=Function('"use strict";return ('+expr+')')();
+  if(!Number.isFinite(r))throw new Error();
+  return r;
+}
+function pressCalc(key){
+  if(key==="C"){calcExpr="";calcJustAnswered=false;$("calcHistory").textContent="";renderCalc();return}
+  if(key==="back"){calcExpr=calcExpr.slice(0,-1);calcJustAnswered=false;renderCalc();return}
+  if(key==="="){
+    try{
+      const result=calcSafe(calcExpr);
+      $("calcHistory").textContent=calcExpr+" =";
+      calcExpr=String(Number(result.toFixed(8)));
+      calcJustAnswered=true;renderCalc();
+    }catch(e){$("calcHistory").textContent="算式無法計算";calcExpr="";renderCalc()}
+    return
+  }
+  if(calcJustAnswered && /[0-9.]/.test(key)){calcExpr="";calcJustAnswered=false}
+  if(key==="."){
+    const last=calcExpr.split(/[+\-*/]/).pop();
+    if(last.includes("."))return;
+    if(!last)calcExpr+="0";
+  }
+  if(/[+\-*/]/.test(key)){
+    if(!calcExpr && key!=="-")return;
+    if(/[+\-*/]$/.test(calcExpr))calcExpr=calcExpr.slice(0,-1);
+  }
+  calcExpr+=key;renderCalc();
+}
+document.querySelectorAll("[data-calc]").forEach(btn=>{
+  btn.addEventListener("click",()=>pressCalc(btn.dataset.calc));
+});
+
 function calculateTax(){
   const n=Number($("taxAmount").value);
   if(!Number.isFinite(n)||n<0){$("taxResult").textContent="請輸入有效金額";return}
@@ -625,20 +863,16 @@ function pressNumericKey(targetId,key){
   else if(key==="00"){input.value+="00";}
   else if(key==="."){
     if(!input.value.includes("."))input.value+=input.value?"." : "0.";
-  }else if(key!=="calc"&&key!=="next"&&key!=="calcprofit"){input.value+=key;}
-  if(targetId==="taxAmount")calculateTax();
-  if(targetId==="saleAmount"||targetId==="costAmount")calculateProfit();
+  }else if(!["calc","next","calcprofit"].includes(key)){input.value+=key;}
 }
 
-document.querySelectorAll(".numeric-pad").forEach(pad=>{
+document.querySelectorAll(".numeric-pad[data-pad-target]").forEach(pad=>{
   pad.querySelectorAll("[data-num]").forEach(btn=>{
     btn.addEventListener("click",()=>{
       const target=pad.dataset.padTarget,key=btn.dataset.num;
-      if(key==="next"){
-        $("costAmount").focus();return;
-      }
-      if(key==="calc"){calculateTax();return}
-      if(key==="calcprofit"){calculateProfit();return}
+      if(key==="next"){ $("costAmount").focus(); return; }
+      if(key==="calc"){pressNumericKey(target,key);calculateTax();return}
+      if(key==="calcprofit"){pressNumericKey(target,key);calculateProfit();return}
       pressNumericKey(target,key);
     });
   });
