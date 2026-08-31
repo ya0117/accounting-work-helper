@@ -113,6 +113,16 @@ input,textarea,select{
 textarea{min-height:78px;resize:vertical}
 input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3px rgba(145,169,153,.12)}
 .primary{border:0;background:var(--sage-deep);color:#fff;border-radius:12px;min-height:43px;padding:8px 12px;font-weight:800}
+.calculator{display:grid;gap:10px}
+#calcInput{width:100%;font-size:20px;font-weight:750;text-align:right;min-height:50px}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.calc-btn{min-height:48px;border:1px solid #d8d2ca;border-radius:13px;background:#f7f4ef;color:var(--ink);font-size:18px;font-weight:800}
+.calc-btn:active{transform:scale(.97);background:#ebe6df}
+.calc-op{background:#e4ebe4;color:#536258;border-color:#c8d2c8}
+.calc-clear{background:#eee7e1;color:#8b6f67}
+.calc-back{background:#ece9e4;color:#6f6962}
+.calc-equal{background:var(--sage-deep);color:#fff;border-color:var(--sage-deep)}
+@media(max-width:520px){.calc-btn{min-height:50px}}
 .result{margin-top:8px;background:#eee8e1;border-radius:12px;padding:11px;font-size:13px;font-weight:750;line-height:1.55}
 .list-item{padding:11px 0;border-top:1px solid #eee7e1}.list-item:first-child{border-top:0}
 .list-item strong{font-size:13px}.list-item p{margin:4px 0}.delete{border:0;background:#eee7e1;color:#89756e;border-radius:9px;padding:6px 9px;font-size:11px;font-weight:750}
@@ -260,9 +270,36 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
     <section id="view-calculator" class="view">
       <div class="section-head"><h2>🧮 金額計算機</h2><span>快速計算</span></div>
       <div class="card">
-        <form id="calcForm"><input id="calcInput" inputmode="decimal" placeholder="例如：1200+350-80">
-          <button class="primary">計算</button></form>
-        <div id="calcResult" class="result">—</div>
+        <div class="calculator">
+          <input id="calcInput" inputmode="decimal" autocomplete="off" placeholder="例如：1200+350-80" aria-label="計算式">
+          <div class="calc-grid" aria-label="計算機按鍵">
+            <button type="button" class="calc-btn calc-clear" data-calc="C">C</button>
+            <button type="button" class="calc-btn" data-calc="(">(</button>
+            <button type="button" class="calc-btn" data-calc=")">)</button>
+            <button type="button" class="calc-btn calc-op" data-calc="÷">÷</button>
+
+            <button type="button" class="calc-btn" data-calc="7">7</button>
+            <button type="button" class="calc-btn" data-calc="8">8</button>
+            <button type="button" class="calc-btn" data-calc="9">9</button>
+            <button type="button" class="calc-btn calc-op" data-calc="×">×</button>
+
+            <button type="button" class="calc-btn" data-calc="4">4</button>
+            <button type="button" class="calc-btn" data-calc="5">5</button>
+            <button type="button" class="calc-btn" data-calc="6">6</button>
+            <button type="button" class="calc-btn calc-op" data-calc="-">−</button>
+
+            <button type="button" class="calc-btn" data-calc="1">1</button>
+            <button type="button" class="calc-btn" data-calc="2">2</button>
+            <button type="button" class="calc-btn" data-calc="3">3</button>
+            <button type="button" class="calc-btn calc-op" data-calc="+">＋</button>
+
+            <button type="button" class="calc-btn" data-calc="0">0</button>
+            <button type="button" class="calc-btn" data-calc=".">.</button>
+            <button type="button" class="calc-btn calc-back" data-calc="back">⌫</button>
+            <button type="button" class="calc-btn calc-equal" data-calc="=">=</button>
+          </div>
+        </div>
+        <div id="calcResult" class="result" aria-live="polite">—</div>
       </div>
       <div class="card"><h3>📌 單據檢查清單</h3><ul>
         <li>日期是否正確？</li><li>廠商／客戶名稱是否正確？</li><li>數量與金額是否一致？</li>
@@ -428,9 +465,10 @@ $("profitForm").addEventListener("submit",e=>{
   const profit=sale-cost,margin=sale?profit/sale*100:0;
   $("profitResult").textContent=`毛利 ${profit.toLocaleString("zh-TW",{maximumFractionDigits:2})}；毛利率 ${margin.toFixed(2)}%`;
 });
-$("calcForm").addEventListener("submit",e=>{
-  e.preventDefault();let s=$("calcInput").value.replaceAll("×","*").replaceAll("÷","/").replace(/\s/g,"");
-  if(!s||!/^[0-9+\-*/().]+$/.test(s)){ $("calcResult").textContent="請輸入有效算式";return}
+function runCalculator(){
+  let s=$("calcInput").value.replaceAll("×","*").replaceAll("÷","/").replaceAll("−","-").replace(/\s/g,"");
+  if(!s){$("calcResult").textContent="—";return}
+  if(!/^[0-9+\-*/().]+$/.test(s)){$("calcResult").textContent="請輸入有效算式";return}
   try{
     const tokens=s.match(/(\d+(?:\.\d+)?|[()+\-*/])/g);
     if(!tokens||tokens.join("")!==s)throw 0;
@@ -441,7 +479,21 @@ $("calcForm").addEventListener("submit",e=>{
     const r=expr();if(pos!==tokens.length||!Number.isFinite(r))throw 0;
     $("calcResult").textContent=Number(r).toLocaleString("zh-TW",{maximumFractionDigits:2});
   }catch(err){$("calcResult").textContent="算式無法計算"}
+}
+document.querySelectorAll("[data-calc]").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    const key=btn.getAttribute("data-calc");
+    const input=$("calcInput");
+    if(key==="C"){input.value="";$("calcResult").textContent="—";input.focus();return}
+    if(key==="back"){input.value=input.value.slice(0,-1);runCalculator();input.focus();return}
+    if(key==="="){runCalculator();input.focus();return}
+    input.value+=key;
+    runCalculator();
+    input.focus();
+  });
 });
+$("calcInput").addEventListener("input",runCalculator);
+$("calcInput").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();runCalculator()}});
 $("menuBtn").addEventListener("click",()=>showView("workflow"));
 
 const now=new Date(),hour=now.getHours();
