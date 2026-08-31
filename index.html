@@ -432,14 +432,6 @@ let questions=load(KEY_QUESTIONS,[]);
 let daily=load(KEY_DAILY,defaultDaily);
 let industry=load(KEY_INDUSTRY,defaultIndustry);
 let editingDaily=-1,editingIndustry=-1;
-let daily=load("accounting_daily_v1",[]);\
-let farm=load("accounting_farm_v1",[
-  {title:"進貨單據核對",body:"確認日期、供應商、品項、數量、單價與金額。"},
-  {title:"銷貨／出貨",body:"確認客戶、品項、數量與金額。"},
-  {title:"退貨／折讓",body:"確認原因、數量、金額與相關憑證。"},
-  {title:"生鮮蔬果提醒",body:"可能有損耗、退貨或折讓，遇到不確定情況先確認公司規則。"}
-]);
- daily=Array.isArray(daily)?daily:[];
 let filter="all";
 let currentView="workflow";
 let editingDailyIndex=-1;
