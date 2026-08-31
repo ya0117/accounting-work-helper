@@ -270,6 +270,12 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
 .saved-images{margin:7px 0 4px}
 .saved-images img{width:70px;height:70px;border-radius:11px;border:1px solid #ddd3cb;cursor:pointer}
 
+
+/* custom keypad: never trigger iPhone system keyboard */
+#view-tools input[readonly]{cursor:pointer}
+#view-tools .key-active{border-color:#9eafa4;box-shadow:0 0 0 3px rgba(158,175,164,.14);background:#fffdf9}
+#view-tools .key-target{min-height:15px}
+
 </style>
 </head>
 <body>
@@ -427,7 +433,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
         <h3>💰 含稅／未稅</h3>
         <form id="taxForm">
           <div class="field-label">金額</div>
-          <input id="taxAmount" inputmode="decimal" autocomplete="off" placeholder="請用下方數字鍵輸入">
+          <input id="taxAmount" inputmode="none" readonly autocomplete="off" placeholder="請用下方數字鍵輸入">
           <select id="taxMode"><option value="add">未稅 → 含稅</option><option value="remove">含稅 → 未稅</option></select>
           <div class="numeric-pad" data-pad-target="taxAmount">
             <button type="button" class="num-key clear" data-num="C">C</button><button type="button" class="num-key" data-num=".">.</button><button type="button" class="num-key back" data-num="back">⌫</button><button type="button" class="num-key op" data-num="calc">計算</button>
@@ -443,7 +449,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
         <h3>📈 毛利快速計算</h3>
         <form id="profitForm">
           <div class="field-label">銷售收入</div>
-          <input id="saleAmount" inputmode="decimal" autocomplete="off" placeholder="輸入銷售收入">
+          <input id="saleAmount" inputmode="none" readonly autocomplete="off" placeholder="輸入銷售收入">
           <div class="numeric-pad" data-pad-target="saleAmount">
             <button type="button" class="num-key clear" data-num="C">C</button><button type="button" class="num-key" data-num=".">.</button><button type="button" class="num-key back" data-num="back">⌫</button><button type="button" class="num-key op" data-num="next">下一欄</button>
             <button type="button" class="num-key" data-num="7">7</button><button type="button" class="num-key" data-num="8">8</button><button type="button" class="num-key" data-num="9">9</button><button type="button" class="num-key" data-num="00">00</button>
@@ -451,7 +457,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
             <button type="button" class="num-key" data-num="1">1</button><button type="button" class="num-key" data-num="2">2</button><button type="button" class="num-key" data-num="3">3</button><button type="button" class="num-key op" data-num="next">成本</button>
           </div>
           <div class="field-label">成本</div>
-          <input id="costAmount" inputmode="decimal" autocomplete="off" placeholder="輸入成本">
+          <input id="costAmount" inputmode="none" readonly autocomplete="off" placeholder="輸入成本">
           <div class="numeric-pad" data-pad-target="costAmount">
             <button type="button" class="num-key clear" data-num="C">C</button><button type="button" class="num-key" data-num=".">.</button><button type="button" class="num-key back" data-num="back">⌫</button><button type="button" class="num-key op" data-num="calcprofit">計算</button>
             <button type="button" class="num-key" data-num="7">7</button><button type="button" class="num-key" data-num="8">8</button><button type="button" class="num-key" data-num="9">9</button><button type="button" class="num-key" data-num="00">00</button>
