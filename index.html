@@ -654,8 +654,32 @@ function closeImageModal(){
 $("imageModalImg").addEventListener("dblclick",()=>{
   imageScale=imageScale===1?2:1;imageX=0;imageY=0;applyImageTransform();
 });
+
+let pinchDistanceStart=0,pinchScaleStart=1;
+function touchDistance(a,b){return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}
+$("imageModalInner").addEventListener("touchstart",e=>{
+  if(e.touches.length===2){
+    pinchDistanceStart=touchDistance(e.touches[0],e.touches[1]);
+    pinchScaleStart=imageScale;
+  }
+},{passive:true});
+$("imageModalInner").addEventListener("touchmove",e=>{
+  if(e.touches.length===2 && pinchDistanceStart){
+    e.preventDefault();
+    const d=touchDistance(e.touches[0],e.touches[1]);
+    imageScale=Math.max(.5,Math.min(4,pinchScaleStart*d/pinchDistanceStart));
+    applyImageTransform();
+  }
+},{passive:false});
+$("imageModalInner").addEventListener("touchend",e=>{
+  if(e.touches.length<2)pinchDistanceStart=0;
+},{passive:true});
+
 function bindImageClicks(){
-  document.querySelectorAll(".saved-images img").forEach(img=>img.onclick=()=>openImageModal(img.src));
+  document.querySelectorAll(".saved-images img").forEach(img=>{
+    img.style.cursor="zoom-in";
+    img.onclick=()=>openImageModal(img.getAttribute("src"));
+  });
 }
 $("imageModalClose").addEventListener("click",closeImageModal);
 $("imageZoomIn").addEventListener("click",()=>{imageScale=Math.min(4,imageScale+.25);applyImageTransform()});
@@ -758,7 +782,7 @@ function renderNotes(){
     const el=document.createElement("div");el.className="list-item";
     el.innerHTML=`<strong></strong><p></p><button class="edit">修改</button><button class="delete">刪除</button>`;
     el.querySelector("strong").textContent=n.title||"未命名筆記";
-    el.querySelector("p").textContent=n.body||"—"; if(n.images?.length)el.insertAdjacentHTML("beforeend",imageMarkup(n.images));
+    el.querySelector("p").textContent=n.body||"—"; if(Array.isArray(n.images)&&n.images.length)el.insertAdjacentHTML("beforeend",imageMarkup(n.images));
     el.querySelector(".edit").addEventListener("click",()=>{
       $("noteTitle").value=n.title||"";$("noteBody").value=n.body||"";$("notePreview").innerHTML=n.images?.length?imageMarkup(n.images):"";
       $("noteForm").dataset.editIndex=i;$("noteForm").querySelector(".primary").textContent="儲存修改";
@@ -928,6 +952,12 @@ function pressCalc(key){
   }
   calcExpr+=key;renderCalc();
 }
+
+document.addEventListener("click",e=>{
+  const img=e.target.closest(".saved-images img");
+  if(img && $("imageModal")){e.preventDefault();openImageModal(img.getAttribute("src"));}
+});
+
 document.querySelectorAll("[data-calc]").forEach(btn=>{
   btn.addEventListener("click",()=>pressCalc(btn.dataset.calc));
 });
