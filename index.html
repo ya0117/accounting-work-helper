@@ -265,10 +265,10 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
 .image-input{font-size:12px!important;padding:8px!important;min-height:42px!important;background:#f8f4ef!important}
 .image-preview,.saved-images{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}
 .image-thumb{position:relative;width:68px;height:68px;border-radius:11px;overflow:hidden;border:1px solid #ddd3cb;background:#f1ece6}
-.image-thumb img,.saved-images img{width:62px;height:62px;object-fit:cover;border-radius:11px;border:1px solid #ddd3cb;cursor:zoom-in;pointer-events:auto!important;display:block;position:relative;z-index:20}
+.image-thumb img,.saved-images img{width:76px;height:76px;object-fit:cover;border-radius:11px;border:1px solid #ddd3cb;cursor:zoom-in;pointer-events:auto!important;display:block;position:relative;z-index:20}
 .image-remove{position:absolute;right:3px;top:3px;width:20px;height:20px;border:0;border-radius:50%;background:rgba(70,62,57,.78);color:#fff;padding:0;line-height:20px;font-size:12px}
 .saved-images{margin:7px 0 4px}
-.saved-images img{width:62px;height:62px;border-radius:11px;border:1px solid #ddd3cb;cursor:pointer}
+.saved-images img{width:70px;height:70px;border-radius:11px;border:1px solid #ddd3cb;cursor:pointer}
 
 
 /* custom keypad: never trigger iPhone system keyboard */
@@ -577,7 +577,7 @@ function toast(msg){const t=$('toast');if(!t)return;t.textContent=msg;t.classLis
 function updateStats(){ $('todoStat').textContent=todos.length;$('doneStat').textContent=todos.filter(x=>x.done).length;$('pendingStat').textContent=questions.length; }
 function updateProgress(){const d=steps.filter(x=>x.done).length,t=steps.length,p=t?Math.round(d/t*100):0;$('progressText').textContent=`${d} / ${t}`;$('heroPct').textContent=p+'%';$('fill').style.width=p+'%';$('progressRing').style.setProperty('--pct',p+'%');$('workflowCount').textContent=`共 ${t} 項`;updateStats();}
 function showView(v){currentView=v==='calculator'?'calculator':v;document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const el=$('view-'+currentView)||$('view-workflow');el.classList.add('active');document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===currentView));window.scrollTo({top:0,behavior:'smooth'});}
-function compressImage(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const max=1800,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.9));};img.onerror=reject;img.src=r.result;};r.onerror=reject;r.readAsDataURL(file);});}
+function compressImage(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const max=2200,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.92));};img.onerror=reject;img.src=r.result;};r.onerror=reject;r.readAsDataURL(file);});}
 async function getImages(id){const el=$(id);return uniqueImages(await Promise.all(Array.from(el.files||[]).map(compressImage)));}
 function uniqueImages(images){if(!Array.isArray(images))return [];const seen=new Set();return images.filter(x=>{if(!x||seen.has(x))return false;seen.add(x);return true;});}
 function imageMarkup(images){const arr=uniqueImages(images);if(!arr.length)return '';return '<div class="saved-images">'+arr.map((x,i)=>`<img src="${x}" alt="附加圖片 ${i+1}" loading="lazy">`).join('')+'</div>';}
@@ -613,12 +613,13 @@ function safeCalc(s){s=s.replaceAll('×','*').replaceAll('÷','/').replaceAll('�
 function pressCalc(k){if(k==='C'){calcExpr='';renderCalc();$('calcResult').textContent='—';return;}if(k==='back'){calcExpr=calcExpr.slice(0,-1);renderCalc();return;}if(k==='='){try{$('calcResult').textContent=safeCalc(calcExpr).toLocaleString('zh-TW',{maximumFractionDigits:2});}catch(_){$('calcResult').textContent='算式無法計算';}return;}calcExpr+=k;renderCalc();try{$('calcResult').textContent=safeCalc(calcExpr).toLocaleString('zh-TW',{maximumFractionDigits:2});}catch(_){} }
 document.querySelectorAll('[data-calc]').forEach(b=>b.onclick=()=>pressCalc(b.dataset.calc));
 // Image modal: delegated click works even after lists are re-rendered.
-let imageScale=1,imageX=0,imageY=0,drag=false,lastX=0,lastY=0;
+let imageScale=.8,imageX=0,imageY=0,drag=false,lastX=0,lastY=0;
+function clampScale(v){return Math.max(.25,Math.min(5,v));}
 function transformImage(){const im=$('imageModalImg');im.style.transform=`translate(${imageX}px,${imageY}px) scale(${imageScale})`;$('imageZoomLabel').textContent=Math.round(imageScale*100)+'%';}
-function openImage(src){$('imageModalImg').src=src;imageScale=1;imageX=0;imageY=0;$('imageModal').classList.add('open');$('imageModal').style.display='flex';document.body.style.overflow='hidden';transformImage();}
+function openImage(src){$('imageModalImg').src=src;imageScale=.8;imageX=0;imageY=0;$('imageModal').classList.add('open');$('imageModal').style.display='flex';document.body.style.overflow='hidden';transformImage();}
 function closeImage(){$('imageModal').classList.remove('open');$('imageModal').style.display='none';$('imageModalImg').src='';document.body.style.overflow='';}
 document.addEventListener('click',e=>{const im=e.target.closest('.saved-images img');if(im){e.preventDefault();e.stopPropagation();openImage(im.currentSrc||im.src);}});
-$('imageModalClose').onclick=closeImage;$('imageZoomIn').onclick=()=>{imageScale=Math.min(5,imageScale+.25);transformImage();};$('imageZoomOut').onclick=()=>{imageScale=Math.max(.5,imageScale-.25);transformImage();};$('imageZoomReset').onclick=()=>{imageScale=1;imageX=0;imageY=0;transformImage();};$('imageModal').onclick=e=>{if(e.target===$('imageModal'))closeImage();};$('imageModalImg').ondblclick=()=>{imageScale=imageScale===1?2:1;imageX=0;imageY=0;transformImage();};
+$('imageModalClose').onclick=closeImage;$('imageZoomIn').onclick=()=>{imageScale=clampScale(imageScale+.15);transformImage();};$('imageZoomOut').onclick=()=>{imageScale=clampScale(imageScale-.15);transformImage();};$('imageZoomReset').onclick=()=>{imageScale=.8;imageX=0;imageY=0;transformImage();};$('imageModal').onclick=e=>{if(e.target===$('imageModal'))closeImage();};$('imageModalImg').ondblclick=()=>{imageScale=imageScale<=.8?1.6:.8;imageX=0;imageY=0;transformImage();};
 const inner=$('imageModalInner');inner.addEventListener('pointerdown',e=>{if(e.target.closest('.image-modal-bar,.image-modal-close'))return;drag=true;lastX=e.clientX;lastY=e.clientY;inner.setPointerCapture?.(e.pointerId);});inner.addEventListener('pointermove',e=>{if(!drag)return;imageX+=e.clientX-lastX;imageY+=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;transformImage();});['pointerup','pointercancel'].forEach(x=>inner.addEventListener(x,()=>drag=false));
 // Make all three tool displays incapable of invoking the native iOS keyboard.
 ['taxAmount','saleAmount','costAmount','calcInput'].forEach(id=>{const el=$(id);if(el){el.readOnly=true;el.setAttribute('inputmode','none');el.setAttribute('autocomplete','off');el.addEventListener('focus',e=>e.target.blur());}});
