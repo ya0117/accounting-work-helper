@@ -265,7 +265,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
 .image-input{font-size:12px!important;padding:8px!important;min-height:42px!important;background:#f8f4ef!important}
 .image-preview,.saved-images{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}
 .image-thumb{position:relative;width:68px;height:68px;border-radius:11px;overflow:hidden;border:1px solid #ddd3cb;background:#f1ece6}
-.image-thumb img,.saved-images img{width:100%;height:100%;object-fit:cover;display:block}
+.image-thumb img,.saved-images img{width:76px;height:76px;object-fit:cover;border-radius:11px;border:1px solid #ddd3cb;cursor:zoom-in;pointer-events:auto!important;display:block;position:relative;z-index:20}
 .image-remove{position:absolute;right:3px;top:3px;width:20px;height:20px;border:0;border-radius:50%;background:rgba(70,62,57,.78);color:#fff;padding:0;line-height:20px;font-size:12px}
 .saved-images{margin:7px 0 4px}
 .saved-images img{width:70px;height:70px;border-radius:11px;border:1px solid #ddd3cb;cursor:pointer}
@@ -424,7 +424,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
         <h3>💰 含稅／未稅</h3>
         <form id="taxForm">
           <div class="field-label">金額</div>
-          <input id="taxAmount" inputmode="none" readonly autocomplete="off" placeholder="請用下方數字鍵輸入">
+          <input id="taxAmount" autocomplete="off" placeholder="請用下方數字鍵輸入" readonly inputmode="none">
           <select id="taxMode"><option value="add">未稅 → 含稅</option><option value="remove">含稅 → 未稅</option></select>
           <div class="numeric-pad" data-pad-target="taxAmount">
             <button type="button" class="num-key clear" data-num="C">C</button><button type="button" class="num-key" data-num=".">.</button><button type="button" class="num-key back" data-num="back">⌫</button><button type="button" class="num-key op" data-num="calc">計算</button>
@@ -440,7 +440,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
         <h3>📈 毛利快速計算</h3>
         <form id="profitForm">
           <div class="field-label">銷售收入</div>
-          <input id="saleAmount" inputmode="none" readonly autocomplete="off" placeholder="輸入銷售收入">
+          <input id="saleAmount" autocomplete="off" placeholder="輸入銷售收入" readonly inputmode="none">
           <div class="numeric-pad" data-pad-target="saleAmount">
             <button type="button" class="num-key clear" data-num="C">C</button><button type="button" class="num-key" data-num=".">.</button><button type="button" class="num-key back" data-num="back">⌫</button><button type="button" class="num-key op" data-num="next">下一欄</button>
             <button type="button" class="num-key" data-num="7">7</button><button type="button" class="num-key" data-num="8">8</button><button type="button" class="num-key" data-num="9">9</button><button type="button" class="num-key" data-num="00">00</button>
@@ -448,7 +448,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
             <button type="button" class="num-key" data-num="1">1</button><button type="button" class="num-key" data-num="2">2</button><button type="button" class="num-key" data-num="3">3</button><button type="button" class="num-key op" data-num="next">成本</button>
           </div>
           <div class="field-label">成本</div>
-          <input id="costAmount" inputmode="none" readonly autocomplete="off" placeholder="輸入成本">
+          <input id="costAmount" autocomplete="off" placeholder="輸入成本" readonly inputmode="none">
           <div class="numeric-pad" data-pad-target="costAmount">
             <button type="button" class="num-key clear" data-num="C">C</button><button type="button" class="num-key" data-num=".">.</button><button type="button" class="num-key back" data-num="back">⌫</button><button type="button" class="num-key op" data-num="calcprofit">計算</button>
             <button type="button" class="num-key" data-num="7">7</button><button type="button" class="num-key" data-num="8">8</button><button type="button" class="num-key" data-num="9">9</button><button type="button" class="num-key" data-num="00">00</button>
@@ -655,26 +655,6 @@ $("imageModalImg").addEventListener("dblclick",()=>{
 
 
 
-$("imageZoomIn").addEventListener("click",()=>{imageScale=Math.min(4,imageScale+.25);applyImageTransform()});
-$("imageZoomOut").addEventListener("click",()=>{imageScale=Math.max(.5,imageScale-.25);applyImageTransform()});
-$("imageZoomReset").addEventListener("click",()=>{imageScale=1;imageX=0;imageY=0;applyImageTransform()});
-$("imageModal").addEventListener("click",e=>{if(e.target===$("imageModal"))closeImageModal()});
-$("imageModalInner").addEventListener("pointerdown",e=>{
-  if(e.target.closest(".image-modal-bar,.image-modal-close"))return;
-  dragging=true;lastX=e.clientX;lastY=e.clientY;e.currentTarget.setPointerCapture?.(e.pointerId);
-});
-$("imageModalInner").addEventListener("pointermove",e=>{
-  if(!dragging)return;
-  imageX+=e.clientX-lastX;imageY+=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;applyImageTransform();
-});
-$("imageModalInner").addEventListener("pointerup",()=>dragging=false);
-$("imageModalInner").addEventListener("pointercancel",()=>dragging=false);
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeImageModal()});
-
-["todo","note","question","farm"].forEach(p=>{
-  const input=$(p+"Images");
-  if(input)input.addEventListener("change",()=>previewSelectedImages(p+"Images",p+"Preview"));
-});
 
 
 let imageScale=1,imageX=0,imageY=0,draggingImage=false,lastImageX=0,lastImageY=0;
@@ -683,62 +663,51 @@ function applyImageTransform(){
   const img=document.getElementById("imageModalImg");
   const label=document.getElementById("imageZoomLabel");
   if(!img)return;
-  img.style.transform=`translate(${imageX}px,${imageY}px) scale(${imageScale})`;
+  img.style.transform="translate("+imageX+"px,"+imageY+"px) scale("+imageScale+")";
   if(label)label.textContent=Math.round(imageScale*100)+"%";
 }
 function openImageModal(src){
   const modal=document.getElementById("imageModal"),img=document.getElementById("imageModalImg");
   if(!modal||!img)return;
-  img.src=src; imageScale=1; imageX=0; imageY=0;
-  modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
-  document.body.style.overflow="hidden"; applyImageTransform();
+  img.src=src;imageScale=1;imageX=0;imageY=0;
+  modal.style.display="flex";modal.classList.add("open");modal.setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";applyImageTransform();
 }
 function closeImageModal(){
   const modal=document.getElementById("imageModal"),img=document.getElementById("imageModalImg");
   if(!modal)return;
-  modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");
-  if(img)img.removeAttribute("src"); document.body.style.overflow="";
+  modal.style.display="none";modal.classList.remove("open");modal.setAttribute("aria-hidden","true");
+  if(img)img.src="";document.body.style.overflow="";
 }
 function bindImageClicks(){
-  if(window.__imageClickBound)return;
-  window.__imageClickBound=true;
-  document.addEventListener("click",function(e){
-    const img=e.target.closest(".saved-images img");
-    if(!img)return;
-    e.preventDefault();
-    e.stopPropagation();
-    openImageModal(img.currentSrc||img.src);
-  },true);
+  document.querySelectorAll(".saved-images img").forEach(img=>{
+    img.onclick=function(e){e.preventDefault();e.stopPropagation();openImageModal(this.currentSrc||this.src);};
+  });
 }
-
 function initImageModal(){
-  const modal=document.getElementById("imageModal");
-  const inner=document.getElementById("imageModalInner");
+  const modal=document.getElementById("imageModal"),inner=document.getElementById("imageModalInner");
   if(!modal||!inner)return;
   const close=document.getElementById("imageModalClose");
-  const zin=document.getElementById("imageZoomIn");
-  const zout=document.getElementById("imageZoomOut");
-  const reset=document.getElementById("imageZoomReset");
-  const image=document.getElementById("imageModalImg");
+  const zin=document.getElementById("imageZoomIn"),zout=document.getElementById("imageZoomOut"),reset=document.getElementById("imageZoomReset");
+  const img=document.getElementById("imageModalImg");
   if(close)close.onclick=closeImageModal;
-  if(zin)zin.onclick=()=>{imageScale=Math.min(5,imageScale+.25);applyImageTransform()};
-  if(zout)zout.onclick=()=>{imageScale=Math.max(.5,imageScale-.25);applyImageTransform()};
-  if(reset)reset.onclick=()=>{imageScale=1;imageX=0;imageY=0;applyImageTransform()};
-  modal.onclick=e=>{if(e.target===modal)closeImageModal()};
-  if(image)image.ondblclick=()=>{imageScale=imageScale===1?2:1;imageX=0;imageY=0;applyImageTransform()};
-  inner.onpointerdown=e=>{
+  if(zin)zin.onclick=function(){imageScale=Math.min(5,imageScale+.25);applyImageTransform();};
+  if(zout)zout.onclick=function(){imageScale=Math.max(.5,imageScale-.25);applyImageTransform();};
+  if(reset)reset.onclick=function(){imageScale=1;imageX=0;imageY=0;applyImageTransform();};
+  modal.onclick=function(e){if(e.target===modal)closeImageModal();};
+  if(img)img.ondblclick=function(){imageScale=imageScale===1?2:1;imageX=0;imageY=0;applyImageTransform();};
+  inner.onpointerdown=function(e){
     if(e.target.closest(".image-modal-bar,.image-modal-close"))return;
     draggingImage=true;lastImageX=e.clientX;lastImageY=e.clientY;
     if(inner.setPointerCapture)inner.setPointerCapture(e.pointerId);
   };
-  inner.onpointermove=e=>{
+  inner.onpointermove=function(e){
     if(!draggingImage)return;
-    imageX+=e.clientX-lastImageX; imageY+=e.clientY-lastImageY;
-    lastImageX=e.clientX; lastImageY=e.clientY; applyImageTransform();
+    imageX+=e.clientX-lastImageX;imageY+=e.clientY-lastImageY;
+    lastImageX=e.clientX;lastImageY=e.clientY;applyImageTransform();
   };
-  inner.onpointerup=()=>draggingImage=false;
-  inner.onpointercancel=()=>draggingImage=false;
-  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeImageModal()});
+  inner.onpointerup=function(){draggingImage=false;};
+  inner.onpointercancel=function(){draggingImage=false;};
 }
 
 function renderWorkflow(){
@@ -1081,6 +1050,18 @@ const now=new Date(),hour=now.getHours();
 $("greeting").textContent=(hour<11?"早安":hour<18?"Hi，今天也辛苦了！":"辛苦了，今天也完成不少了！")+" 🌱";
 renderAll();
 showView("workflow");
+
+function lockCustomNumberInput(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.setAttribute("readonly","readonly");
+  el.setAttribute("inputmode","none");
+  el.addEventListener("touchstart",function(e){e.preventDefault();el.focus({preventScroll:true});},{passive:false});
+  el.addEventListener("mousedown",function(e){e.preventDefault();},{passive:false});
+  el.addEventListener("focus",function(){el.setAttribute("readonly","readonly");});
+}
+["taxAmount","saleAmount","costAmount"].forEach(lockCustomNumberInput);
+
 initImageModal();bindImageClicks();
 })();
 </script>
