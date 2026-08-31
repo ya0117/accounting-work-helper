@@ -155,6 +155,9 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
 .result{margin-top:8px;background:#eee8e1;border-radius:12px;padding:11px;font-size:13px;font-weight:750;line-height:1.55}
 .list-item{padding:11px 0;border-top:1px solid #eee7e1}.list-item:first-child{border-top:0}
 .list-item strong{font-size:13px}.list-item p{margin:4px 0}.delete{border:0;background:#eee7e1;color:#89756e;border-radius:9px;padding:6px 9px;font-size:11px;font-weight:750}
+.edit-btn{border:0;background:#e1e9e2;color:#5d7565;border-radius:9px;padding:6px 9px;font-size:11px;font-weight:750}
+.daily-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+
 .empty{text-align:center;padding:25px 10px;color:#9a928c;font-size:13px}
 .add-panel{margin-top:10px}
 .bottom-nav{
@@ -242,12 +245,16 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
     <section id="view-daily" class="view">
       <div class="section-head"><h2>☑️ 每日工作</h2><span>可新增、修改、刪除與勾選</span></div>
       <div class="panel">
-        <div class="daily-add">
-          <form id="dailyForm">
-            <input id="dailyTitle" autocomplete="off" placeholder="新增每日工作，例如：整理今日發票">
-            <button class="primary" type="submit">＋ 新增工作</button>
-          </form>
-        </div>
+        <form id="dailyForm">
+          <input id="dailyTitle" autocomplete="off" placeholder="新增每日工作，例如：整理今日發票">
+          <textarea id="dailyDesc" placeholder="工作說明／注意事項（可不填）"></textarea>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
+            <button class="primary" id="dailySaveBtn" type="submit">＋ 新增工作</button>
+            <button class="delete" id="dailyCancelBtn" type="button" style="display:none;min-height:43px">取消修改</button>
+          </div>
+        </form>
+      </div>
+      <div class="panel">
         <div class="quick-list" id="dailyList"></div>
       </div>
     </section>
@@ -381,8 +388,10 @@ function save(key,value){try{localStorage.setItem(key,JSON.stringify(value))}cat
 let steps=load(KEY_STEPS,defaults);
 let notes=load(KEY_NOTES,[]);
 let questions=load(KEY_QUESTIONS,[]);
+let daily=load("accounting_daily_v1",[]);
 let filter="all";
 let currentView="workflow";
+let editingDailyIndex=-1;
 
 const $=id=>document.getElementById(id);
 function toast(msg){
@@ -415,31 +424,45 @@ function renderWorkflow(){
 }
 function renderDaily(){
   const list=$("dailyList");list.innerHTML="";
-  if(!steps.length){list.innerHTML='<div class="empty">目前沒有每日工作，請先新增。</div>';return}
-  steps.forEach((s,i)=>{
+  if(!daily.length){
+    list.innerHTML='<div class="empty">目前還沒有每日工作，請新增第一項。</div>';
+    return;
+  }
+  daily.forEach((item,i)=>{
     const el=document.createElement("div");
-    el.className="quick-item"+(s.done?" done-row":"");
-    el.innerHTML=`<div class="left"><span class="daily-check">${s.done?"✅":"○"}</span><span class="daily-title"></span></div>
-      <div class="daily-actions"><button type="button" class="daily-edit">修改</button><button type="button" class="daily-delete">刪除</button></div>`;
-    el.querySelector(".daily-title").textContent=s.title;
-    el.querySelector(".daily-check").style.cursor="pointer";
-    el.querySelector(".daily-check").addEventListener("click",()=>{
-      s.done=!s.done;save(KEY_STEPS,steps);renderAll();toast(s.done?"已完成 ✓":"已取消完成");
+    el.className="quick-item";
+    el.innerHTML='<div class="left" style="min-width:0;align-items:flex-start">'+
+      '<input type="checkbox" style="width:21px;height:21px;flex:0 0 auto;accent-color:var(--sage-deep)" '+(item.done?"checked":"")+' aria-label="完成每日工作">'+
+      '<div style="min-width:0"><div class="daily-title" style="font-weight:800;line-height:1.45"></div><small class="daily-desc" style="display:block;margin-top:3px;line-height:1.45"></small></div></div>'+
+      '<div class="daily-actions"><button type="button" class="edit-btn">修改</button><button type="button" class="delete">刪除</button></div>';
+    el.querySelector(".daily-title").textContent=item.title;
+    el.querySelector(".daily-desc").textContent=item.desc||"";
+    el.querySelector("input").addEventListener("change",e=>{
+      daily[i].done=e.target.checked;
+      save("accounting_daily_v1",daily);
+      renderDaily();
+      toast(e.target.checked?"已完成 ✓":"已取消完成");
     });
-    el.querySelector(".daily-edit").addEventListener("click",()=>{
-      const title=prompt("修改每日工作名稱：",s.title);
-      if(title===null)return;
-      const t=title.trim();
-      if(!t){toast("工作名稱不能空白");return}
-      s.title=t;save(KEY_STEPS,steps);renderAll();toast("每日工作已修改");
+    el.querySelector(".edit-btn").addEventListener("click",()=>{
+      editingDailyIndex=i;
+      $("dailyTitle").value=item.title;
+      $("dailyDesc").value=item.desc||"";
+      $("dailySaveBtn").textContent="儲存修改";
+      $("dailyCancelBtn").style.display="block";
+      $("dailyTitle").focus();
+      window.scrollTo({top:0,behavior:"smooth"});
     });
-    el.querySelector(".daily-delete").addEventListener("click",()=>{
-      if(!confirm(`確定要刪除「${s.title}」嗎？`))return;
-      steps.splice(i,1);save(KEY_STEPS,steps);renderAll();toast("每日工作已刪除");
+    el.querySelector(".delete").addEventListener("click",()=>{
+      daily.splice(i,1);
+      save("accounting_daily_v1",daily);
+      if(editingDailyIndex===i) cancelDailyEdit();
+      renderDaily();
+      toast("每日工作已刪除");
     });
     list.appendChild(el);
   });
 }
+
 function renderNotes(){
   const list=$("noteList");list.innerHTML="";
   if(!notes.length){list.innerHTML='<div class="empty">還沒有工作筆記，新增第一筆吧。</div>';return}
@@ -552,6 +575,35 @@ $("dailyForm").addEventListener("submit",e=>{
   steps.push({title,desc:"每日工作",done:false});
   save(KEY_STEPS,steps);input.value="";renderAll();toast("已新增每日工作");
 });
+
+function cancelDailyEdit(){
+  editingDailyIndex=-1;
+  $("dailyTitle").value="";
+  $("dailyDesc").value="";
+  $("dailySaveBtn").textContent="＋ 新增工作";
+  $("dailyCancelBtn").style.display="none";
+}
+$("dailyForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const title=$("dailyTitle").value.trim();
+  const desc=$("dailyDesc").value.trim();
+  if(!title){$("dailyTitle").focus();toast("請先輸入每日工作");return;}
+  if(editingDailyIndex>=0){
+    daily[editingDailyIndex]={...daily[editingDailyIndex],title,desc};
+    save("accounting_daily_v1",daily);
+    cancelDailyEdit();
+    renderDaily();
+    toast("每日工作已修改");
+  }else{
+    daily.push({title,desc,done:false});
+    save("accounting_daily_v1",daily);
+    $("dailyTitle").value="";
+    $("dailyDesc").value="";
+    renderDaily();
+    toast("已新增每日工作");
+  }
+});
+$("dailyCancelBtn").addEventListener("click",cancelDailyEdit);
 
 $("addForm").addEventListener("submit",e=>{
   e.preventDefault();const title=$("stepTitle").value.trim(),desc=$("stepDesc").value.trim();
