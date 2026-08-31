@@ -113,6 +113,18 @@ input,textarea,select{
 textarea{min-height:78px;resize:vertical}
 input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3px rgba(145,169,153,.12)}
 .primary{border:0;background:var(--sage-deep);color:#fff;border-radius:12px;min-height:43px;padding:8px 12px;font-weight:800}
+.tax-calculator{display:grid;gap:10px}
+.tax-display{min-height:58px;border:1px solid #d6d0c8;background:#faf8f4;border-radius:13px;padding:10px 13px;text-align:right;font-size:27px;font-weight:850;display:flex;align-items:center;justify-content:flex-end;overflow:hidden}
+.tax-mode{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tax-mode-btn{min-height:44px;border:1px solid #d8d2ca;border-radius:12px;background:#f7f4ef;color:#6b655e;font-weight:800}
+.tax-mode-btn.active{background:#dce5dc;border-color:#bcc9bd;color:#526055}
+.tax-keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tax-key{min-height:48px;border:1px solid #d8d2ca;border-radius:13px;background:#f7f4ef;color:var(--ink);font-size:18px;font-weight:800}
+.tax-key:active{transform:scale(.97);background:#ebe6df}
+.tax-clear{background:#eee7e1;color:#8b6f67}
+.tax-equal{background:var(--sage-deep);color:#fff;border-color:var(--sage-deep);grid-row:span 2}
+.tax-zero{grid-column:span 3}
+@media(max-width:520px){.tax-key{min-height:50px}}
 .calculator{display:grid;gap:10px}
 #calcInput{width:100%;font-size:20px;font-weight:750;text-align:right;min-height:50px}
 .calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -256,10 +268,33 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
       <div class="section-head"><h2>％ 稅務與計算</h2><span>台灣營業稅 5%</span></div>
       <div class="card">
         <h3>💰 含稅／未稅</h3>
-        <form id="taxForm"><input id="taxAmount" type="number" min="0" step="0.01" placeholder="輸入金額">
-          <select id="taxMode"><option value="add">未稅 → 含稅</option><option value="remove">含稅 → 未稅</option></select>
-          <button class="primary">計算</button></form>
-        <div id="taxResult" class="result">—</div>
+        <div class="tax-calculator">
+          <div class="tax-display" id="taxAmountDisplay">0</div>
+          <div class="tax-mode">
+            <button type="button" class="tax-mode-btn active" data-tax-mode="add">未稅 → 含稅</button>
+            <button type="button" class="tax-mode-btn" data-tax-mode="remove">含稅 → 未稅</button>
+          </div>
+          <div class="tax-keypad">
+            <button type="button" class="tax-key tax-clear" data-tax-key="C">C</button>
+            <button type="button" class="tax-key" data-tax-key="back">⌫</button>
+            <button type="button" class="tax-key" data-tax-key="00">00</button>
+            <button type="button" class="tax-key" data-tax-key="000">000</button>
+            <button type="button" class="tax-key" data-tax-key="7">7</button>
+            <button type="button" class="tax-key" data-tax-key="8">8</button>
+            <button type="button" class="tax-key" data-tax-key="9">9</button>
+            <button type="button" class="tax-key" data-tax-key="0000">0000</button>
+            <button type="button" class="tax-key" data-tax-key="4">4</button>
+            <button type="button" class="tax-key" data-tax-key="5">5</button>
+            <button type="button" class="tax-key" data-tax-key="6">6</button>
+            <button type="button" class="tax-key" data-tax-key=".">.</button>
+            <button type="button" class="tax-key" data-tax-key="1">1</button>
+            <button type="button" class="tax-key" data-tax-key="2">2</button>
+            <button type="button" class="tax-key" data-tax-key="3">3</button>
+            <button type="button" class="tax-key tax-equal" data-tax-key="=">=</button>
+            <button type="button" class="tax-key tax-zero" data-tax-key="0">0</button>
+          </div>
+        </div>
+        <div id="taxResult" class="result" aria-live="polite">—</div>
       </div>
       <div class="card"><h3>📈 毛利快速計算</h3>
         <form id="profitForm"><input id="saleAmount" type="number" min="0" step="0.01" placeholder="銷售收入"><input id="costAmount" type="number" min="0" step="0.01" placeholder="成本"><button class="primary">計算毛利</button></form>
@@ -450,15 +485,38 @@ $("questionForm").addEventListener("submit",e=>{
   e.preventDefault();const q=$("questionInput").value.trim();if(!q){$("questionInput").focus();return}
   questions.unshift(q);save(KEY_QUESTIONS,questions);$("questionInput").value="";renderQuestions();toast("已加入待確認");
 });
-$("taxForm").addEventListener("submit",e=>{
-  e.preventDefault();const n=Number($("taxAmount").value);
-  if(!Number.isFinite(n)||n<0){$("taxResult").textContent="請輸入有效金額";return}
-  if($("taxMode").value==="add"){
-    const tax=n*.05;$("taxResult").textContent=`未稅 ${n.toLocaleString("zh-TW",{maximumFractionDigits:2})} → 含稅 ${(n+tax).toLocaleString("zh-TW",{maximumFractionDigits:2})}；稅額 ${tax.toLocaleString("zh-TW",{maximumFractionDigits:2})}`;
-  }else{
-    const base=n/1.05,tax=n-base;$("taxResult").textContent=`含稅 ${n.toLocaleString("zh-TW",{maximumFractionDigits:2})} → 未稅 ${base.toLocaleString("zh-TW",{maximumFractionDigits:2})}；稅額 ${tax.toLocaleString("zh-TW",{maximumFractionDigits:2})}`;
-  }
+let taxMode="add",taxAmount="";
+function updateTaxDisplay(){ $("taxAmountDisplay").textContent=taxAmount||"0"; }
+function calculateTax(){
+ const n=Number(taxAmount);
+ if(!taxAmount||!Number.isFinite(n)||n<0){$("taxResult").textContent="請輸入金額";return}
+ if(taxMode==="add"){
+  const tax=n*.05,total=n+tax;
+  $("taxResult").textContent="未稅 "+n.toLocaleString("zh-TW",{maximumFractionDigits:2})+" → 含稅 "+total.toLocaleString("zh-TW",{maximumFractionDigits:2})+"；稅額 "+tax.toLocaleString("zh-TW",{maximumFractionDigits:2});
+ }else{
+  const net=n/1.05,tax=n-net;
+  $("taxResult").textContent="含稅 "+n.toLocaleString("zh-TW",{maximumFractionDigits:2})+" → 未稅 "+net.toLocaleString("zh-TW",{maximumFractionDigits:2})+"；稅額 "+tax.toLocaleString("zh-TW",{maximumFractionDigits:2});
+ }
+}
+document.querySelectorAll("[data-tax-mode]").forEach(function(btn){
+ btn.addEventListener("click",function(){
+  taxMode=btn.getAttribute("data-tax-mode");
+  document.querySelectorAll("[data-tax-mode]").forEach(function(b){b.classList.toggle("active",b===btn)});
+  calculateTax();
+ });
 });
+document.querySelectorAll("[data-tax-key]").forEach(function(btn){
+ btn.addEventListener("click",function(){
+  const key=btn.getAttribute("data-tax-key");
+  if(key==="C"){taxAmount="";$("taxResult").textContent="—"}
+  else if(key==="back"){taxAmount=taxAmount.slice(0,-1);calculateTax()}
+  else if(key==="="){calculateTax()}
+  else if(key==="."){if(!taxAmount.includes(".")){taxAmount=taxAmount||"0";taxAmount+="."}}
+  else{if(taxAmount==="0")taxAmount="";if(taxAmount.replace(".","").length<12)taxAmount+=key}
+  updateTaxDisplay();
+ });
+});
+
 $("profitForm").addEventListener("submit",e=>{
   e.preventDefault();const sale=Number($("saleAmount").value),cost=Number($("costAmount").value);
   if(!Number.isFinite(sale)||!Number.isFinite(cost)){ $("profitResult").textContent="請輸入有效金額";return}
