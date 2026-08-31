@@ -272,15 +272,20 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manip
       <div id="taxResult" class="tool-result">—</div>
     </div>
     <div class="card">
-      <h3>毛利金額</h3>
+      <h3>毛利快速計算</h3>
       <form id="grossForm" class="form">
-        <input id="grossSales" readonly inputmode="decimal" placeholder="銷售金額">
-        <input id="grossCost" readonly inputmode="decimal" placeholder="成本金額">
+        <input id="grossSales" readonly inputmode="decimal" placeholder="點這裡輸入銷售金額">
+        <input id="grossCost" readonly inputmode="decimal" placeholder="點這裡輸入成本金額">
         <button class="primary">計算毛利</button>
       </form>
-      <div class="keypad" data-target="grossSales"><button>7</button><button>8</button><button>9</button><button class="op">⌫</button><button>4</button><button>5</button><button>6</button><button class="clear">C</button><button>1</button><button>2</button><button>3</button><button class="op">.</button><button>0</button><button>00</button><button class="op">+</button><button class="equal">下一欄</button></div>
-      <div class="keypad" data-target="grossCost"><button>7</button><button>8</button><button>9</button><button class="op">⌫</button><button>4</button><button>5</button><button>6</button><button class="clear">C</button><button>1</button><button>2</button><button>3</button><button class="op">.</button><button>0</button><button>00</button><button class="op">+</button><button class="equal">=</button></div>
-      <div id="grossResult" class="tool-result">—</div>
+      <div class="hint" style="margin-top:8px">先點「銷售金額」或「成本金額」，再用下方數字鍵輸入。</div>
+      <div class="keypad" id="grossKeys">
+        <button>7</button><button>8</button><button>9</button><button class="op">⌫</button>
+        <button>4</button><button>5</button><button>6</button><button class="clear">C</button>
+        <button>1</button><button>2</button><button>3</button><button class="op">.</button>
+        <button>0</button><button>00</button><button class="op">清除欄位</button><button class="equal">下一欄</button>
+      </div>
+      <div id="grossResult" class="tool-result">毛利金額：—　毛利率：—</div>
     </div>
   </section>
 
@@ -382,6 +387,19 @@ $("calcKeys").querySelectorAll("button").forEach(btn=>btn.onclick=()=>{
  if(t==="C")v="";else if(t==="⌫")v=v.slice(0,-1);else if(t==="="){try{const expr=v.replaceAll("×","*").replaceAll("÷","/").replaceAll("−","-");if(!/^[0-9+\-*/().\s]+$/.test(expr))throw 0;const r=Function('"use strict";return ('+expr+')')();$("calcResult").textContent=Number(r).toLocaleString("zh-TW",{maximumFractionDigits:2});}catch(e){$("calcResult").textContent="算式無法計算";}return}else v+=t;$("calcInput").value=v;
 });
 $("taxForm").onsubmit=e=>{e.preventDefault();const n=Number($("taxAmount").value);if(!Number.isFinite(n))return $("taxResult").textContent="請輸入金額";$("taxResult").textContent=$("taxMode").value==="add"?`未稅 ${n.toLocaleString()} → 含稅 ${(n*1.05).toLocaleString(undefined,{maximumFractionDigits:2})}；稅額 ${(n*.05).toLocaleString(undefined,{maximumFractionDigits:2})}`:`含稅 ${n.toLocaleString()} → 未稅 ${(n/1.05).toLocaleString(undefined,{maximumFractionDigits:2})}；稅額 ${(n-n/1.05).toLocaleString(undefined,{maximumFractionDigits:2})}`};
+let grossTarget=$("grossSales");
+[$("grossSales"),$("grossCost")].forEach(input=>input.onclick=()=>{grossTarget=input;});
+$("grossKeys").querySelectorAll("button").forEach(btn=>btn.onclick=()=>{
+  const t=btn.textContent;
+  let v=grossTarget.value;
+  if(t==="⌫"){grossTarget.value=v.slice(0,-1);return}
+  if(t==="C"){grossTarget.value="";return}
+  if(t==="清除欄位"){grossTarget.value="";return}
+  if(t==="下一欄"){grossTarget=$("grossCost");$("grossCost").focus();return}
+  if(t==="=")return;
+  if(t==="." && v.includes("."))return;
+  grossTarget.value+=t;
+});
 $("grossForm").onsubmit=e=>{e.preventDefault();const s=Number($("grossSales").value),c=Number($("grossCost").value);if(!Number.isFinite(s)||!Number.isFinite(c))return $("grossResult").textContent="請輸入銷售金額與成本金額";const g=s-c,p=s?g/s*100:0;$("grossResult").textContent=`毛利金額：${g.toLocaleString("zh-TW",{maximumFractionDigits:2})}　毛利率：${p.toFixed(2)}%`};
 bindKeypads();renderNotes();renderQuestions();render();
 })();
