@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f2ea">
+<title>會計工作流程</title>
+<style>
+:root{
+  --bg:#eeeae4; --paper:#f8f6f2; --white:#fffdf9;
+  --ink:#4f4b46; --muted:#8b857d; --line:#ddd7cf;
+  --sage:#9eaa9d; --sage-deep:#78877b;
+  --rose:#c5a5a1; --rose-deep:#9f7f7b;
+  --blue:#9eabb2; --blue-deep:#74848c;
+  --beige:#cbbba7; --beige-deep:#9e8d78;
+  --lav:#b3abb9; --lav-deep:#8f8497;
+  --cream:#e3d9ca;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:
+  radial-gradient(circle at 10% 0%,#f6f1eb 0 18%,transparent 40%),
+  radial-gradient(circle at 100% 20%,#e7e2db 0 15%,transparent 38%),
+  var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Segoe UI",sans-serif;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.app{max-width:780px;margin:auto;padding:18px 14px 38px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.brand-wrap{display:flex;align-items:center;gap:10px}
+.logo{
+  width:45px;height:45px;border-radius:15px;background:var(--sage);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 5px 16px rgba(91,84,75,.10)
+}
+.brand{font-weight:850;font-size:21px;letter-spacing:.2px}
+.date{font-size:12px;color:var(--muted);margin-top:3px}
+.reset{
+  min-height:42px;border:1px solid var(--line);border-radius:13px;
+  background:rgba(255,253,249,.8);color:var(--muted);padding:8px 11px;font-weight:700
+}
+.hero{
+  background:linear-gradient(135deg,#dfe5dc,#eee6df 55%,#e5e0e6);
+  border:1px solid rgba(255,255,255,.75);border-radius:23px;
+  padding:18px;margin-bottom:12px;box-shadow:0 10px 28px rgba(92,85,76,.08)
+}
+.hero-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.hero h1{font-size:23px;margin:0 0 5px;font-weight:850}
+.hero p{font-size:13px;color:#706b64;margin:0;line-height:1.6}
+.hero-badge{background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.75);border-radius:14px;padding:8px 10px;text-align:center;min-width:70px}
+.hero-badge strong{display:block;font-size:19px}.hero-badge span{font-size:11px;color:var(--muted)}
+.progress-card{
+  background:rgba(255,253,249,.92);border:1px solid var(--line);
+  border-radius:19px;padding:14px;margin-bottom:12px
+}
+.progress-line{display:flex;justify-content:space-between;font-size:14px;font-weight:750}
+.bar{height:10px;background:#e6e1da;border-radius:99px;overflow:hidden;margin-top:10px}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--sage-deep),var(--blue-deep));border-radius:99px;transition:.25s}
+.toolbar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.toolbar button{
+  min-height:43px;border:1px solid var(--line);border-radius:13px;
+  background:rgba(255,253,249,.88);color:#6b655e;font-weight:750;padding:8px 12px
+}
+.toolbar button.active{background:#d8dfd7;border-color:#b9c6ba;color:#4e5b51}
+.workflow{display:grid;gap:10px}
+.step{
+  display:grid;grid-template-columns:44px 1fr 38px;gap:10px;align-items:start;
+  background:rgba(255,253,249,.95);border:1px solid var(--line);
+  border-radius:18px;padding:14px 12px;
+  box-shadow:0 5px 16px rgba(89,82,74,.045)
+}
+.step:nth-child(4n+1) .num{background:#dce3db;color:#627063}
+.step:nth-child(4n+2) .num{background:#e8dcda;color:#806865}
+.step:nth-child(4n+3) .num{background:#dce4e8;color:#64747c}
+.step:nth-child(4n) .num{background:#e5dfe8;color:#766c7e}
+.num{
+  width:39px;height:39px;border-radius:13px;background:#e9e4dd;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:850
+}
+.title{font-weight:850;font-size:16px;line-height:1.45}
+.desc{font-size:13px;color:var(--muted);line-height:1.6;margin-top:3px}
+.step.done{opacity:.58}.step.done .title{text-decoration:line-through}
+.check{width:24px;height:24px;margin:5px auto 0;accent-color:var(--sage-deep);cursor:pointer}
+.empty{text-align:center;padding:30px 15px;color:#9a948c}
+.add,.helper-card{
+  background:rgba(255,253,249,.94);border:1px solid var(--line);
+  border-radius:18px;padding:15px;margin-top:12px;
+  box-shadow:0 5px 16px rgba(89,82,74,.045)
+}
+.add h2,.helper-card h3{font-size:17px;margin:0 0 8px}
+.add form,.helper-form{display:grid;gap:8px}
+.add input,.add textarea,.helper-form input,.helper-form textarea,.helper-form select{
+  width:100%;font:inherit;font-size:16px;border:1px solid #d6d0c8;
+  background:#faf8f4;border-radius:13px;padding:11px 12px;min-height:45px;color:var(--ink);outline:none
+}
+.add textarea,.helper-form textarea{min-height:84px;resize:vertical}
+.add button,.small-btn{
+  min-height:44px;border:0;border-radius:13px;background:var(--sage-deep);
+  color:#fff;padding:9px 13px;font-weight:800
+}
+.hint,.helper-card p,.helper-card li{font-size:12.5px;color:var(--muted);line-height:1.65}
+.helper-view{display:none}.helper-view.active{display:block}
+.helper-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.helper-card{margin-top:0}.helper-card h3{display:flex;align-items:center;gap:7px}
+.helper-card ul{padding-left:19px;margin:8px 0 0}
+.helper-card li{margin:4px 0}
+.helper-item{border-top:1px solid #eee9e2;padding:11px 0}
+.helper-item:first-child{border-top:0}
+.delete{
+  border:0;background:#eee8e1;color:#8c7770;border-radius:9px;
+  min-height:34px;padding:6px 9px;font-weight:700;margin-top:7px
+}
+.tool-result{
+  margin-top:10px;padding:12px 13px;border-radius:13px;
+  background:#ece8e1;color:#5e5952;font-weight:750
+}
+.section-label{
+  font-size:11px;letter-spacing:.12em;color:#928b82;font-weight:800;margin:14px 3px 7px
+}
+@media(max-width:520px){
+  .app{padding:14px 10px 30px}.brand{font-size:19px}
+  .hero h1{font-size:21px}.hero-badge{min-width:64px}
+  .helper-grid{grid-template-columns:1fr}
+  .step{grid-template-columns:39px 1fr 36px;padding:12px 10px}
+  .num{width:36px;height:36px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="top">
+  <div class="brand-wrap">
+    <div class="logo">📒</div>
+    <div><div class="brand">會計助理工作小幫手</div><div class="date" id="today"></div></div>
+  </div>
+  <button type="button" id="reset" class="reset">↺ 重置</button>
+</div>
+
+<div class="hero">
+  <div class="hero-top">
+    <div><h1>今天也一步一步完成 🌿</h1><p>工作流程、主管交代、小抄與會計工具，集中在這裡。</p></div>
+    <div class="hero-badge"><strong id="heroPct">0%</strong><span>完成率</span></div>
+  </div>
+</div>
+
+<div class="progress-card">
+  <div class="progress-line"><span>今日進度</span><span id="progressText">0 / 0</span></div>
+  <div class="bar"><div class="fill" id="fill"></div></div>
+</div>
+
+<div class="toolbar" role="tablist" aria-label="工作篩選">
+  <button type="button" class="active" data-filter="all">全部</button>
+  <button type="button" data-filter="todo">待完成</button>
+  <button type="button" data-filter="done">已完成</button>
+</div>
+<div class="toolbar" style="margin-top:-4px">
+  <button type="button" data-view="workflow" class="active">📋 工作流程</button>
+  <button type="button" data-view="notes">📝 工作小幫手</button>
+  <button type="button" data-view="tools">🔢 會計工具</button>
+</div>
+
+<div id="workflow" class="workflow"></div>
+
+
+<div id="notesView" class="helper-view">
+  <div class="helper-grid">
+    <div class="helper-card">
+      <h3>📝 主管交代</h3>
+      <p>把主管今天交代的事情記下來，避免下班前忘記。</p>
+      <form id="noteForm" class="helper-form">
+        <input id="noteTitle" placeholder="標題，例如：月底對帳流程">
+        <textarea id="noteBody" placeholder="流程、注意事項、主管說明..."></textarea>
+        <button type="submit" class="small-btn">儲存筆記</button>
+      </form>
+    </div>
+    <div class="helper-card">
+      <h3>⚠️ 待確認事項</h3>
+      <p>遇到不確定的會計處理，先記錄，確認後再完成。</p>
+      <form id="questionForm" class="helper-form">
+        <input id="questionInput" placeholder="例如：這張發票要歸哪一科目？">
+        <button type="submit" class="small-btn">新增待確認</button>
+      </form>
+    </div>
+  </div>
+  <div class="helper-card" style="margin-top:10px">
+    <h3>📚 我的工作小抄</h3>
+    <div id="noteList"></div>
+  </div>
+  <div class="helper-card" style="margin-top:10px">
+    <h3>❓ 待確認清單</h3>
+    <div id="questionList"></div>
+  </div>
+  <div class="helper-card" style="margin-top:10px">
+    <h3>🌱 農作物／蔬果批發工作提醒</h3>
+    <ul>
+      <li>進貨、銷貨單據：確認日期、廠商、品項、數量、金額。</li>
+      <li>發票與憑證：確認憑證是否完整、是否與單據相符。</li>
+      <li>出貨資料：輸入後再核對數量與金額，避免 KEY IN 錯誤。</li>
+      <li>不確定的流程：先記下來，不要憑印象自行判斷。</li>
+      <li>把公司自己的特殊流程記進小抄，之後就能快速查。</li>
+    </ul>
+  </div>
+</div>
+
+<div id="toolsView" class="helper-view">
+  <div class="helper-card">
+    <h3>💰 含稅／未稅計算</h3>
+    <form id="taxForm" class="helper-form">
+      <input id="taxAmount" type="number" min="0" step="0.01" placeholder="輸入金額">
+      <select id="taxMode">
+        <option value="add">未稅 → 含稅</option>
+        <option value="remove">含稅 → 未稅</option>
+      </select>
+      <button type="submit" class="small-btn">計算</button>
+    </form>
+    <div id="taxResult" class="tool-result">—</div>
+  </div>
+  <div class="helper-card" style="margin-top:10px">
+    <h3>🧮 金額快速計算</h3>
+    <form id="calcForm" class="helper-form">
+      <input id="calcInput" inputmode="decimal" placeholder="例如：1200+350-80">
+      <button type="submit" class="small-btn">計算</button>
+    </form>
+    <div id="calcResult" class="tool-result">—</div>
+  </div>
+  <div class="helper-card" style="margin-top:10px">
+    <h3>📌 常用檢查清單</h3>
+    <ul>
+      <li>日期是否正確？</li>
+      <li>廠商／客戶名稱是否正確？</li>
+      <li>數量與金額是否一致？</li>
+      <li>發票號碼與日期是否正確？</li>
+      <li>憑證是否有缺漏？</li>
+      <li>輸入完成後是否再次核對？</li>
+    </ul>
+  </div>
+</div>
+
+<div class="add">
+<h2>＋ 新增工作流程</h2>
+<form id="addForm">
+<input id="stepTitle" autocomplete="off" placeholder="例如：整理今日進貨發票">
+<textarea id="stepDesc" placeholder="注意事項／操作步驟（可不填）"></textarea>
+<button type="submit">新增工作步驟</button>
+</form>
+<div class="hint">新增及勾選的內容會保存在此瀏覽器。</div>
+</div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var STORAGE="accounting_workflow_v3";
+var defaults=[
+{title:"開管銷表－檢查零用金",desc:"確認零用金餘額及當日需要處理的事項。",done:false},
+{title:"進銷存－進貨紀錄",desc:"確認進貨日期、廠商、品項、數量與金額。",done:false},
+{title:"進銷存－進退貨紀錄分頁",desc:"依實際單據確認進貨與退貨資料。",done:false},
+{title:"複製今日工作資料夾至桌面",desc:"依公司既定資料夾結構建立今日工作檔案。",done:false},
+{title:"開啟總體銷貨資料",desc:"確認當日銷貨資料是否完整。",done:false},
+{title:"KEY IN 各車今日出貨",desc:"依出貨單逐筆輸入，輸入後核對數量與金額。",done:false},
+{title:"整理發票與憑證",desc:"依日期或公司規定順序整理，確認憑證完整。",done:false},
+{title:"確認今日待辦是否全部完成",desc:"檢查主管交代事項及尚未處理的單據。",done:false}
+];
+var steps;
+try{
+  var saved=localStorage.getItem(STORAGE);
+  steps=saved?JSON.parse(saved):defaults.slice();
+  if(!Array.isArray(steps)) throw new Error();
+}catch(e){steps=defaults.slice();}
+var filter="all";
+
+function $(id){return document.getElementById(id)}
+function save(){try{localStorage.setItem(STORAGE,JSON.stringify(steps))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+
+function render(){
+  var list=$("workflow");
+  list.innerHTML="";
+  var visible=[];
+  for(var i=0;i<steps.length;i++){
+    if(filter==="all" || (filter==="todo"&&!steps[i].done) || (filter==="done"&&steps[i].done)){
+      visible.push({item:steps[i],index:i});
+    }
+  }
+  if(!visible.length){
+    list.innerHTML='<div class="empty">目前沒有符合條件的工作。</div>';
+  }else{
+    visible.forEach(function(v){
+      var s=v.item,i=v.index;
+      var el=document.createElement("div");
+      el.className="step"+(s.done?" done":"");
+      var num=document.createElement("div");num.className="num";num.textContent=String(i+1).padStart(2,"0");
+      var content=document.createElement("div");
+      var title=document.createElement("div");title.className="title";title.textContent=s.title;
+      var desc=document.createElement("div");desc.className="desc";desc.textContent=s.desc||"";
+      content.appendChild(title);content.appendChild(desc);
+      var cb=document.createElement("input");cb.type="checkbox";cb.className="check";cb.checked=!!s.done;cb.setAttribute("aria-label","完成："+s.title);
+      cb.addEventListener("change",function(){steps[i].done=cb.checked;save();render();});
+      el.appendChild(num);el.appendChild(content);el.appendChild(cb);list.appendChild(el);
+    });
+  }
+  var done=steps.filter(function(s){return s.done}).length,total=steps.length;
+  $("progressText").textContent=done+" / "+total;
+  var pct=total?Math.round(done/total*100):0;
+  $("fill").style.width=pct+"%";
+  if($("heroPct")) $("heroPct").textContent=pct+"%";
+}
+
+document.querySelectorAll("[data-filter]").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    filter=btn.getAttribute("data-filter");
+    document.querySelectorAll("[data-filter]").forEach(function(b){b.classList.remove("active")});
+    btn.classList.add("active");
+    render();
+  });
+});
+
+$("addForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var title=$("stepTitle").value.trim(),desc=$("stepDesc").value.trim();
+  if(!title){$("stepTitle").focus();return;}
+  steps.push({title:title,desc:desc,done:false});
+  save();$("stepTitle").value="";$("stepDesc").value="";
+  filter="all";
+  document.querySelectorAll("[data-filter]").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-filter")==="all")});
+  render();
+});
+
+$("reset").addEventListener("click",function(){
+  steps.forEach(function(s){s.done=false});
+  save();render();
+});
+
+document.querySelectorAll("[data-view]").forEach(function(btn){
+  btn.addEventListener("click",function(){showView(btn.getAttribute("data-view"));});
+});
+$("noteForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var t=$("noteTitle").value.trim(),b=$("noteBody").value.trim();
+  if(!t&&!b)return;
+  notes.unshift({title:t||"未命名筆記",body:b||"—"});
+  $("noteTitle").value="";$("noteBody").value="";saveExtra();renderNotes();
+});
+$("questionForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var q=$("questionInput").value.trim();
+  if(!q)return;
+  questions.unshift(q);$("questionInput").value="";saveExtra();renderQuestions();
+});
+$("taxForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var n=Number($("taxAmount").value);
+  if(!Number.isFinite(n)||n<0){$("taxResult").textContent="請輸入有效金額";return}
+  if($("taxMode").value==="add")$("taxResult").textContent="未稅 "+n.toFixed(2)+" → 含稅 "+(n*1.05).toFixed(2)+"；稅額 "+(n*.05).toFixed(2);
+  else $("taxResult").textContent="含稅 "+n.toFixed(2)+" → 未稅 "+(n/1.05).toFixed(2)+"；稅額 "+(n-n/1.05).toFixed(2);
+});
+$("calcForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var s=$("calcInput").value.replaceAll("×","*").replaceAll("÷","/").replace(/\s/g,"");
+  if(!s||!/^[0-9+\-*/().]+$/.test(s)){$("calcResult").textContent="請輸入有效算式";return}
+  try{
+    var r=Function('"use strict";return ('+s+')')();
+    if(!Number.isFinite(r))throw new Error();
+    $("calcResult").textContent=Number(r).toLocaleString("zh-TW",{maximumFractionDigits:2});
+  }catch(e){$("calcResult").textContent="算式無法計算";}
+});
+$("today").textContent=new Intl.DateTimeFormat("zh-TW",{year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(new Date());
+render();renderNotes();renderQuestions();showView("workflow");
+})();
+</script>
+</body>
+</html>
