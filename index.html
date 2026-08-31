@@ -3,258 +3,294 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f1ec">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="theme-color" content="#f6f2ea">
-<title>會計工作流程</title>
+<title>會計助理工作小幫手</title>
 <style>
 :root{
-  --bg:#eeeae4; --paper:#f8f6f2; --white:#fffdf9;
-  --ink:#4f4b46; --muted:#8b857d; --line:#ddd7cf;
-  --sage:#9eaa9d; --sage-deep:#78877b;
-  --rose:#c5a5a1; --rose-deep:#9f7f7b;
-  --blue:#9eabb2; --blue-deep:#74848c;
-  --beige:#cbbba7; --beige-deep:#9e8d78;
-  --lav:#b3abb9; --lav-deep:#8f8497;
-  --cream:#e3d9ca;
+  --bg:#f6f1ec;--paper:#fffaf6;--white:#fffdfb;--ink:#514c48;--muted:#8d8580;
+  --line:#e7ddd6;--sage:#a8b9ad;--sage-deep:#718d7d;--sage-soft:#e3ebe5;
+  --rose:#d8aaa9;--rose-soft:#f1dedd;--lav:#b9b0c6;--lav-soft:#e7e2ec;
+  --blue:#aebfc6;--blue-soft:#e0e8eb;--beige:#dcc5ae;--beige-soft:#efe5da;
+  --shadow:0 8px 24px rgba(94,77,68,.08);
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{
-  margin:0;background:
-  radial-gradient(circle at 10% 0%,#f6f1eb 0 18%,transparent 40%),
-  radial-gradient(circle at 100% 20%,#e7e2db 0 15%,transparent 38%),
-  var(--bg);
-  color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Segoe UI",sans-serif;
+  margin:0;color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC","Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 5% 0%,#fff7f1 0 17%,transparent 38%),
+    radial-gradient(circle at 100% 15%,#eee8e5 0 14%,transparent 35%),var(--bg);
 }
 button,input,textarea,select{font:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-.app{max-width:780px;margin:auto;padding:18px 14px 38px}
-.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.brand-wrap{display:flex;align-items:center;gap:10px}
-.logo{
-  width:45px;height:45px;border-radius:15px;background:var(--sage);
-  display:flex;align-items:center;justify-content:center;font-size:22px;
-  box-shadow:0 5px 16px rgba(91,84,75,.10)
+.app{max-width:780px;margin:auto;padding:0 13px 90px}
+.header{
+  position:sticky;top:0;z-index:20;margin:0 -13px 15px;padding:14px 16px 12px;
+  background:rgba(250,244,239,.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(231,221,214,.8);
 }
-.brand{font-weight:850;font-size:21px;letter-spacing:.2px}
-.date{font-size:12px;color:var(--muted);margin-top:3px}
-.reset{
-  min-height:42px;border:1px solid var(--line);border-radius:13px;
-  background:rgba(255,253,249,.8);color:var(--muted);padding:8px 11px;font-weight:700
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.menu-btn,.header-action{
+  width:42px;height:42px;border:0;background:transparent;border-radius:13px;color:#706964;font-size:24px;
 }
+.brand{text-align:center;flex:1}
+.brand-title{font-weight:850;font-size:20px;letter-spacing:.08em}
+.brand-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.quote{font-family:cursive;font-size:14px;line-height:1.05;color:#756d68;text-align:right;width:44px}
 .hero{
-  background:linear-gradient(135deg,#dfe5dc,#eee6df 55%,#e5e0e6);
-  border:1px solid rgba(255,255,255,.75);border-radius:23px;
-  padding:18px;margin-bottom:12px;box-shadow:0 10px 28px rgba(92,85,76,.08)
+  display:flex;justify-content:space-between;gap:14px;align-items:center;
+  padding:19px 18px;margin-bottom:12px;border-radius:25px;
+  background:linear-gradient(135deg,#fff8f3,#f2ece7 58%,#e8e4e9);
+  border:1px solid #eee4dd;box-shadow:var(--shadow);
 }
-.hero-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-.hero h1{font-size:23px;margin:0 0 5px;font-weight:850}
-.hero p{font-size:13px;color:#706b64;margin:0;line-height:1.6}
-.hero-badge{background:rgba(255,255,255,.62);border:1px solid rgba(255,255,255,.75);border-radius:14px;padding:8px 10px;text-align:center;min-width:70px}
-.hero-badge strong{display:block;font-size:19px}.hero-badge span{font-size:11px;color:var(--muted)}
-.progress-card{
-  background:rgba(255,253,249,.92);border:1px solid var(--line);
-  border-radius:19px;padding:14px;margin-bottom:12px
+.hero h1{font-size:22px;margin:0 0 7px;font-weight:850}
+.hero p{margin:0;color:#77706a;font-size:13px;line-height:1.65}
+.progress-ring{
+  flex:0 0 108px;width:108px;height:108px;border-radius:50%;
+  display:grid;place-items:center;
+  background:conic-gradient(var(--sage-deep) var(--pct,0%),#e6ddd7 0);
+  position:relative;
 }
-.progress-line{display:flex;justify-content:space-between;font-size:14px;font-weight:750}
-.bar{height:10px;background:#e6e1da;border-radius:99px;overflow:hidden;margin-top:10px}
-.fill{height:100%;width:0;background:linear-gradient(90deg,var(--sage-deep),var(--blue-deep));border-radius:99px;transition:.25s}
-.toolbar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.progress-ring:before{
+  content:"";position:absolute;inset:9px;border-radius:50%;background:#fffaf6;
+}
+.progress-ring-content{position:relative;text-align:center}
+.progress-ring strong{display:block;font-size:21px}.progress-ring span{font-size:10px;color:var(--muted)}
+.dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:13px}
+.tile{
+  border:1px solid rgba(255,255,255,.7);border-radius:19px;padding:13px 7px;
+  min-height:108px;box-shadow:0 5px 15px rgba(91,77,68,.05);color:var(--ink);
+  text-align:center;transition:transform .15s;
+}
+.tile:active{transform:scale(.97)}
+.tile-icon{font-size:27px;margin-bottom:6px}.tile-title{font-weight:800;font-size:14px}.tile-desc{font-size:10px;color:#807873;margin-top:4px}
+.tile:nth-child(1){background:var(--rose-soft)}.tile:nth-child(2){background:var(--sage-soft)}
+.tile:nth-child(3){background:var(--beige-soft)}.tile:nth-child(4){background:var(--lav-soft)}
+.tile:nth-child(5){background:var(--blue-soft)}.tile:nth-child(6){background:#e9e3d8}
+.tile:nth-child(7){background:#f0dede}.tile:nth-child(8){background:#e0eae4}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin:15px 3px 8px}
+.section-head h2{margin:0;font-size:19px}.section-head span{font-size:11px;color:var(--muted)}
+.panel{background:rgba(255,253,251,.92);border:1px solid var(--line);border-radius:22px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+.progress-card{padding:13px 14px}
+.progress-line{display:flex;justify-content:space-between;font-size:13px;font-weight:800}
+.bar{height:9px;background:#ece5df;border-radius:99px;overflow:hidden;margin-top:9px}.fill{height:100%;width:0;background:linear-gradient(90deg,var(--sage-deep),#9db6a8);border-radius:99px;transition:.25s}
+.toolbar{display:flex;gap:7px;overflow:auto;padding-bottom:2px;margin-bottom:10px}.toolbar::-webkit-scrollbar{display:none}
 .toolbar button{
-  min-height:43px;border:1px solid var(--line);border-radius:13px;
-  background:rgba(255,253,249,.88);color:#6b655e;font-weight:750;padding:8px 12px
+  flex:0 0 auto;border:1px solid var(--line);background:#fffaf6;color:#756d68;
+  min-height:39px;border-radius:12px;padding:7px 12px;font-weight:750;
 }
-.toolbar button.active{background:#d8dfd7;border-color:#b9c6ba;color:#4e5b51}
-.workflow{display:grid;gap:10px}
+.toolbar button.active{background:#dce7df;border-color:#b8cabc;color:#506459}
+.view{display:none}.view.active{display:block}
+.workflow{display:grid;gap:8px}
 .step{
-  display:grid;grid-template-columns:44px 1fr 38px;gap:10px;align-items:start;
-  background:rgba(255,253,249,.95);border:1px solid var(--line);
-  border-radius:18px;padding:14px 12px;
-  box-shadow:0 5px 16px rgba(89,82,74,.045)
+  display:grid;grid-template-columns:40px 1fr 30px;gap:10px;align-items:start;
+  background:#fffdfb;border:1px solid var(--line);border-radius:17px;padding:12px 10px;
+  box-shadow:0 4px 12px rgba(89,76,68,.04);
 }
-.step:nth-child(4n+1) .num{background:#dce3db;color:#627063}
-.step:nth-child(4n+2) .num{background:#e8dcda;color:#806865}
-.step:nth-child(4n+3) .num{background:#dce4e8;color:#64747c}
-.step:nth-child(4n) .num{background:#e5dfe8;color:#766c7e}
-.num{
-  width:39px;height:39px;border-radius:13px;background:#e9e4dd;
-  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:850
+.num{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:850}
+.step:nth-child(4n+1) .num{background:#e1e9e2;color:#5d7565}.step:nth-child(4n+2) .num{background:#f0dfde;color:#896d6b}
+.step:nth-child(4n+3) .num{background:#e0e9ec;color:#637880}.step:nth-child(4n) .num{background:#e8e2eb;color:#776d81}
+.title{font-weight:850;font-size:15px;line-height:1.45}.desc{font-size:12px;color:var(--muted);line-height:1.55;margin-top:3px}
+.step.done{opacity:.55}.step.done .title{text-decoration:line-through}
+.check{width:22px;height:22px;margin:5px auto 0;accent-color:var(--sage-deep)}
+.quick-list{display:grid;gap:8px}
+.quick-item{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:14px;background:#f9f4ef;border:1px solid #eee4dd;
 }
-.title{font-weight:850;font-size:16px;line-height:1.45}
-.desc{font-size:13px;color:var(--muted);line-height:1.6;margin-top:3px}
-.step.done{opacity:.58}.step.done .title{text-decoration:line-through}
-.check{width:24px;height:24px;margin:5px auto 0;accent-color:var(--sage-deep);cursor:pointer}
-.empty{text-align:center;padding:30px 15px;color:#9a948c}
-.add,.helper-card{
-  background:rgba(255,253,249,.94);border:1px solid var(--line);
-  border-radius:18px;padding:15px;margin-top:12px;
-  box-shadow:0 5px 16px rgba(89,82,74,.045)
-}
-.add h2,.helper-card h3{font-size:17px;margin:0 0 8px}
-.add form,.helper-form{display:grid;gap:8px}
-.add input,.add textarea,.helper-form input,.helper-form textarea,.helper-form select{
-  width:100%;font:inherit;font-size:16px;border:1px solid #d6d0c8;
-  background:#faf8f4;border-radius:13px;padding:11px 12px;min-height:45px;color:var(--ink);outline:none
-}
-.add textarea,.helper-form textarea{min-height:84px;resize:vertical}
-.add button,.small-btn{
-  min-height:44px;border:0;border-radius:13px;background:var(--sage-deep);
-  color:#fff;padding:9px 13px;font-weight:800
-}
-.hint,.helper-card p,.helper-card li{font-size:12.5px;color:var(--muted);line-height:1.65}
-.helper-view{display:none}.helper-view.active{display:block}
+.quick-item .left{display:flex;align-items:center;gap:8px;font-size:13px}.quick-item small{color:var(--muted)}
+.pill{border:0;border-radius:10px;background:#eadbd7;color:#866f6a;padding:6px 9px;font-size:11px;font-weight:750}
 .helper-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.helper-card{margin-top:0}.helper-card h3{display:flex;align-items:center;gap:7px}
-.helper-card ul{padding-left:19px;margin:8px 0 0}
-.helper-card li{margin:4px 0}
-.helper-item{border-top:1px solid #eee9e2;padding:11px 0}
-.helper-item:first-child{border-top:0}
-.delete{
-  border:0;background:#eee8e1;color:#8c7770;border-radius:9px;
-  min-height:34px;padding:6px 9px;font-weight:700;margin-top:7px
+.card{background:#fffdfb;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 4px 13px rgba(89,76,68,.04);margin-bottom:10px}
+.card h3{margin:0 0 7px;font-size:16px}.card p,.card li{font-size:12px;color:var(--muted);line-height:1.65}.card ul{padding-left:18px;margin:8px 0 0}
+form{display:grid;gap:8px}
+input,textarea,select{
+  width:100%;border:1px solid #ddd3cb;background:#fbf8f4;border-radius:12px;
+  padding:10px 11px;min-height:43px;color:var(--ink);outline:none;font-size:15px;
 }
-.tool-result{
-  margin-top:10px;padding:12px 13px;border-radius:13px;
-  background:#ece8e1;color:#5e5952;font-weight:750
+textarea{min-height:78px;resize:vertical}
+input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3px rgba(145,169,153,.12)}
+.primary{border:0;background:var(--sage-deep);color:#fff;border-radius:12px;min-height:43px;padding:8px 12px;font-weight:800}
+.result{margin-top:8px;background:#eee8e1;border-radius:12px;padding:11px;font-size:13px;font-weight:750;line-height:1.55}
+.list-item{padding:11px 0;border-top:1px solid #eee7e1}.list-item:first-child{border-top:0}
+.list-item strong{font-size:13px}.list-item p{margin:4px 0}.delete{border:0;background:#eee7e1;color:#89756e;border-radius:9px;padding:6px 9px;font-size:11px;font-weight:750}
+.empty{text-align:center;padding:25px 10px;color:#9a928c;font-size:13px}
+.add-panel{margin-top:10px}
+.bottom-nav{
+  position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:30;
+  width:min(780px,100%);padding:7px 9px calc(7px + env(safe-area-inset-bottom));
+  background:rgba(255,250,246,.95);backdrop-filter:blur(16px);border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(6,1fr);gap:3px;
 }
-.section-label{
-  font-size:11px;letter-spacing:.12em;color:#928b82;font-weight:800;margin:14px 3px 7px
+.nav-btn{border:0;background:transparent;color:#8b827c;padding:5px 2px;border-radius:13px;font-size:10px}
+.nav-btn .icon{display:block;font-size:20px;margin-bottom:2px}.nav-btn.active{background:#f0e3df;color:#665c57;font-weight:800}
+.toast{
+  position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(10px);
+  background:#5e6c64;color:#fff;padding:9px 14px;border-radius:12px;font-size:12px;
+  opacity:0;pointer-events:none;transition:.2s;z-index:50;white-space:nowrap;
 }
-@media(max-width:520px){
-  .app{padding:14px 10px 30px}.brand{font-size:19px}
-  .hero h1{font-size:21px}.hero-badge{min-width:64px}
-  .helper-grid{grid-template-columns:1fr}
-  .step{grid-template-columns:39px 1fr 36px;padding:12px 10px}
-  .num{width:36px;height:36px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:600px){
+  .dashboard{grid-template-columns:repeat(4,1fr)}.tile{min-height:100px}.tile-icon{font-size:24px}
+}
+@media(max-width:480px){
+  .hero{padding:16px 14px}.hero h1{font-size:20px}.hero p{font-size:12px}
+  .progress-ring{flex-basis:92px;width:92px;height:92px}.progress-ring:before{inset:8px}
+  .dashboard{gap:7px}.tile{padding:11px 4px;min-height:96px}.tile-title{font-size:12px}.tile-desc{font-size:9px}
+  .helper-grid{grid-template-columns:1fr}.step{grid-template-columns:37px 1fr 29px}
+  .num{width:34px;height:34px}
 }
 </style>
 </head>
 <body>
 <div class="app">
-<div class="top">
-  <div class="brand-wrap">
-    <div class="logo">📒</div>
-    <div><div class="brand">會計助理工作小幫手</div><div class="date" id="today"></div></div>
-  </div>
-  <button type="button" id="reset" class="reset">↺ 重置</button>
-</div>
-
-<div class="hero">
-  <div class="hero-top">
-    <div><h1>今天也一步一步完成 🌿</h1><p>工作流程、主管交代、小抄與會計工具，集中在這裡。</p></div>
-    <div class="hero-badge"><strong id="heroPct">0%</strong><span>完成率</span></div>
-  </div>
-</div>
-
-<div class="progress-card">
-  <div class="progress-line"><span>今日進度</span><span id="progressText">0 / 0</span></div>
-  <div class="bar"><div class="fill" id="fill"></div></div>
-</div>
-
-<div class="toolbar" role="tablist" aria-label="工作篩選">
-  <button type="button" class="active" data-filter="all">全部</button>
-  <button type="button" data-filter="todo">待完成</button>
-  <button type="button" data-filter="done">已完成</button>
-</div>
-<div class="toolbar" style="margin-top:-4px">
-  <button type="button" data-view="workflow" class="active">📋 工作流程</button>
-  <button type="button" data-view="notes">📝 工作小幫手</button>
-  <button type="button" data-view="tools">🔢 會計工具</button>
-</div>
-
-<div id="workflow" class="workflow"></div>
-
-
-<div id="notesView" class="helper-view">
-  <div class="helper-grid">
-    <div class="helper-card">
-      <h3>📝 主管交代</h3>
-      <p>把主管今天交代的事情記下來，避免下班前忘記。</p>
-      <form id="noteForm" class="helper-form">
-        <input id="noteTitle" placeholder="標題，例如：月底對帳流程">
-        <textarea id="noteBody" placeholder="流程、注意事項、主管說明..."></textarea>
-        <button type="submit" class="small-btn">儲存筆記</button>
-      </form>
+  <header class="header">
+    <div class="header-inner">
+      <button class="menu-btn" type="button" id="menuBtn">☰</button>
+      <div class="brand"><div class="brand-title">會計助理工作小幫手</div><div class="brand-sub">讓工作更有條理，也更輕鬆 ♡</div></div>
+      <div class="quote">Good<br>Work<br>Better Me</div>
     </div>
-    <div class="helper-card">
-      <h3>⚠️ 待確認事項</h3>
-      <p>遇到不確定的會計處理，先記錄，確認後再完成。</p>
-      <form id="questionForm" class="helper-form">
-        <input id="questionInput" placeholder="例如：這張發票要歸哪一科目？">
-        <button type="submit" class="small-btn">新增待確認</button>
-      </form>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1 id="greeting">Hi，今天也辛苦了！🌱</h1>
+      <p>一點一滴的累積，<br>都會成為更好的自己。</p>
     </div>
+    <div class="progress-ring" id="progressRing">
+      <div class="progress-ring-content"><strong id="heroPct">0%</strong><span>今日進度</span></div>
+    </div>
+  </section>
+
+  <div class="dashboard">
+    <button class="tile" data-open="workflow"><div class="tile-icon">📋</div><div class="tile-title">工作流程</div><div class="tile-desc">SOP 步驟清楚</div></button>
+    <button class="tile" data-open="daily"><div class="tile-icon">☑️</div><div class="tile-title">每日工作</div><div class="tile-desc">勾選與進度</div></button>
+    <button class="tile" data-open="notes"><div class="tile-icon">📝</div><div class="tile-title">工作筆記</div><div class="tile-desc">主管交代事項</div></button>
+    <button class="tile" data-open="questions"><div class="tile-icon">!</div><div class="tile-title">待確認事項</div><div class="tile-desc">不漏掉任何事</div></button>
+    <button class="tile" data-open="notes"><div class="tile-icon">📖</div><div class="tile-title">我的工作小抄</div><div class="tile-desc">常用資訊整理</div></button>
+    <button class="tile" data-open="farm"><div class="tile-icon">🥬</div><div class="tile-title">農作物／蔬果</div><div class="tile-desc">產業重點提醒</div></button>
+    <button class="tile" data-open="tools"><div class="tile-icon">％</div><div class="tile-title">稅務與計算</div><div class="tile-desc">含稅／未稅／利潤</div></button>
+    <button class="tile" data-open="calculator"><div class="tile-icon">🧮</div><div class="tile-title">金額計算機</div><div class="tile-desc">快速又方便</div></button>
   </div>
-  <div class="helper-card" style="margin-top:10px">
-    <h3>📚 我的工作小抄</h3>
-    <div id="noteList"></div>
+
+  <section class="panel progress-card">
+    <div class="progress-line"><span>今日工作進度</span><span id="progressText">0 / 0</span></div>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+  </section>
+
+  <div class="toolbar" role="tablist">
+    <button class="active" data-filter="all">全部</button>
+    <button data-filter="todo">待完成</button>
+    <button data-filter="done">已完成</button>
   </div>
-  <div class="helper-card" style="margin-top:10px">
-    <h3>❓ 待確認清單</h3>
-    <div id="questionList"></div>
-  </div>
-  <div class="helper-card" style="margin-top:10px">
-    <h3>🌱 農作物／蔬果批發工作提醒</h3>
-    <ul>
-      <li>進貨、銷貨單據：確認日期、廠商、品項、數量、金額。</li>
-      <li>發票與憑證：確認憑證是否完整、是否與單據相符。</li>
-      <li>出貨資料：輸入後再核對數量與金額，避免 KEY IN 錯誤。</li>
-      <li>不確定的流程：先記下來，不要憑印象自行判斷。</li>
-      <li>把公司自己的特殊流程記進小抄，之後就能快速查。</li>
-    </ul>
-  </div>
+
+  <main>
+    <section id="view-workflow" class="view active">
+      <div class="section-head"><h2>📋 工作流程</h2><span id="workflowCount"></span></div>
+      <div id="workflow" class="workflow"></div>
+      <div class="panel add-panel">
+        <div class="section-head" style="margin-top:0"><h2 style="font-size:16px">＋ 新增工作流程</h2></div>
+        <form id="addForm">
+          <input id="stepTitle" autocomplete="off" placeholder="例如：整理今日進貨發票">
+          <textarea id="stepDesc" placeholder="注意事項／操作步驟（可不填）"></textarea>
+          <button class="primary" type="submit">新增工作步驟</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="view-daily" class="view">
+      <div class="section-head"><h2>☑️ 每日工作</h2><span>今天要完成的事情</span></div>
+      <div class="panel">
+        <div class="quick-list" id="dailyList"></div>
+      </div>
+    </section>
+
+    <section id="view-notes" class="view">
+      <div class="section-head"><h2>📝 工作筆記</h2><span>資料會保存在這台裝置</span></div>
+      <div class="helper-grid">
+        <div class="card">
+          <h3>📝 主管交代</h3><p>把主管交代的事情記下來，避免下班前忘記。</p>
+          <form id="noteForm"><input id="noteTitle" placeholder="標題，例如：月底對帳流程"><textarea id="noteBody" placeholder="流程、注意事項、主管說明..."></textarea><button class="primary">儲存筆記</button></form>
+        </div>
+        <div class="card">
+          <h3>❓ 待確認事項</h3><p>遇到不確定的會計處理，先記錄，確認後再問。</p>
+          <form id="questionForm"><input id="questionInput" placeholder="例如：這張發票要歸哪一科目？"><button class="primary">新增待確認</button></form>
+        </div>
+      </div>
+      <div class="card"><h3>📚 我的工作小抄</h3><div id="noteList"></div></div>
+      <div class="card"><h3>❓ 待確認清單</h3><div id="questionList"></div></div>
+    </section>
+
+    <section id="view-questions" class="view">
+      <div class="section-head"><h2>⚠️ 待確認事項</h2><span>確認後即可刪除</span></div>
+      <div class="panel"><div id="questionList2"></div></div>
+    </section>
+
+    <section id="view-farm" class="view">
+      <div class="section-head"><h2>🥬 農作物／蔬果批發</h2><span>工作提醒</span></div>
+      <div class="card"><h3>進貨與銷貨</h3><ul>
+        <li>確認日期、廠商／客戶、品項、數量、單價與金額。</li>
+        <li>生鮮蔬果常有退貨、折讓或短少，相關單據要留存。</li>
+        <li>出貨資料 KEY IN 後，再核對數量與金額。</li>
+      </ul></div>
+      <div class="card"><h3>憑證與發票</h3><ul>
+        <li>確認發票號碼、日期、買受人及金額。</li>
+        <li>單據與發票要能互相對應，避免月底才發現缺件。</li>
+        <li>不確定的特殊處理先記在「待確認事項」。</li>
+      </ul></div>
+    </section>
+
+    <section id="view-tools" class="view">
+      <div class="section-head"><h2>％ 稅務與計算</h2><span>台灣營業稅 5%</span></div>
+      <div class="card">
+        <h3>💰 含稅／未稅</h3>
+        <form id="taxForm"><input id="taxAmount" type="number" min="0" step="0.01" placeholder="輸入金額">
+          <select id="taxMode"><option value="add">未稅 → 含稅</option><option value="remove">含稅 → 未稅</option></select>
+          <button class="primary">計算</button></form>
+        <div id="taxResult" class="result">—</div>
+      </div>
+      <div class="card"><h3>📈 毛利快速計算</h3>
+        <form id="profitForm"><input id="saleAmount" type="number" min="0" step="0.01" placeholder="銷售收入"><input id="costAmount" type="number" min="0" step="0.01" placeholder="成本"><button class="primary">計算毛利</button></form>
+        <div id="profitResult" class="result">—</div>
+      </div>
+    </section>
+
+    <section id="view-calculator" class="view">
+      <div class="section-head"><h2>🧮 金額計算機</h2><span>快速計算</span></div>
+      <div class="card">
+        <form id="calcForm"><input id="calcInput" inputmode="decimal" placeholder="例如：1200+350-80">
+          <button class="primary">計算</button></form>
+        <div id="calcResult" class="result">—</div>
+      </div>
+      <div class="card"><h3>📌 單據檢查清單</h3><ul>
+        <li>日期是否正確？</li><li>廠商／客戶名稱是否正確？</li><li>數量與金額是否一致？</li>
+        <li>發票號碼與日期是否正確？</li><li>憑證是否有缺漏？</li><li>輸入完成後是否再次核對？</li>
+      </ul></div>
+    </section>
+  </main>
 </div>
 
-<div id="toolsView" class="helper-view">
-  <div class="helper-card">
-    <h3>💰 含稅／未稅計算</h3>
-    <form id="taxForm" class="helper-form">
-      <input id="taxAmount" type="number" min="0" step="0.01" placeholder="輸入金額">
-      <select id="taxMode">
-        <option value="add">未稅 → 含稅</option>
-        <option value="remove">含稅 → 未稅</option>
-      </select>
-      <button type="submit" class="small-btn">計算</button>
-    </form>
-    <div id="taxResult" class="tool-result">—</div>
-  </div>
-  <div class="helper-card" style="margin-top:10px">
-    <h3>🧮 金額快速計算</h3>
-    <form id="calcForm" class="helper-form">
-      <input id="calcInput" inputmode="decimal" placeholder="例如：1200+350-80">
-      <button type="submit" class="small-btn">計算</button>
-    </form>
-    <div id="calcResult" class="tool-result">—</div>
-  </div>
-  <div class="helper-card" style="margin-top:10px">
-    <h3>📌 常用檢查清單</h3>
-    <ul>
-      <li>日期是否正確？</li>
-      <li>廠商／客戶名稱是否正確？</li>
-      <li>數量與金額是否一致？</li>
-      <li>發票號碼與日期是否正確？</li>
-      <li>憑證是否有缺漏？</li>
-      <li>輸入完成後是否再次核對？</li>
-    </ul>
-  </div>
-</div>
-
-<div class="add">
-<h2>＋ 新增工作流程</h2>
-<form id="addForm">
-<input id="stepTitle" autocomplete="off" placeholder="例如：整理今日進貨發票">
-<textarea id="stepDesc" placeholder="注意事項／操作步驟（可不填）"></textarea>
-<button type="submit">新增工作步驟</button>
-</form>
-<div class="hint">新增及勾選的內容會保存在此瀏覽器。</div>
-</div>
-</div>
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-nav="workflow"><span class="icon">⌂</span>首頁</button>
+  <button class="nav-btn" data-nav="workflow"><span class="icon">📋</span>工作流程</button>
+  <button class="nav-btn" data-nav="daily"><span class="icon">☑️</span>每日工作</button>
+  <button class="nav-btn" data-nav="notes"><span class="icon">📝</span>筆記</button>
+  <button class="nav-btn" data-nav="notes"><span class="icon">💡</span>小抄</button>
+  <button class="nav-btn" data-nav="questions"><span class="icon">♙</span>我的</button>
+</nav>
+<div id="toast" class="toast"></div>
 
 <script>
 (function(){
 "use strict";
-var STORAGE="accounting_workflow_v3";
-var defaults=[
+
+const KEY_STEPS="accounting_workflow_v4";
+const KEY_NOTES="accounting_notes_v1";
+const KEY_QUESTIONS="accounting_questions_v1";
+
+const defaults=[
 {title:"開管銷表－檢查零用金",desc:"確認零用金餘額及當日需要處理的事項。",done:false},
 {title:"進銷存－進貨紀錄",desc:"確認進貨日期、廠商、品項、數量與金額。",done:false},
 {title:"進銷存－進退貨紀錄分頁",desc:"依實際單據確認進貨與退貨資料。",done:false},
@@ -264,111 +300,154 @@ var defaults=[
 {title:"整理發票與憑證",desc:"依日期或公司規定順序整理，確認憑證完整。",done:false},
 {title:"確認今日待辦是否全部完成",desc:"檢查主管交代事項及尚未處理的單據。",done:false}
 ];
-var steps;
-try{
-  var saved=localStorage.getItem(STORAGE);
-  steps=saved?JSON.parse(saved):defaults.slice();
-  if(!Array.isArray(steps)) throw new Error();
-}catch(e){steps=defaults.slice();}
-var filter="all";
 
-function $(id){return document.getElementById(id)}
-function save(){try{localStorage.setItem(STORAGE,JSON.stringify(steps))}catch(e){}}
-function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-
-function render(){
-  var list=$("workflow");
-  list.innerHTML="";
-  var visible=[];
-  for(var i=0;i<steps.length;i++){
-    if(filter==="all" || (filter==="todo"&&!steps[i].done) || (filter==="done"&&steps[i].done)){
-      visible.push({item:steps[i],index:i});
-    }
-  }
-  if(!visible.length){
-    list.innerHTML='<div class="empty">目前沒有符合條件的工作。</div>';
-  }else{
-    visible.forEach(function(v){
-      var s=v.item,i=v.index;
-      var el=document.createElement("div");
-      el.className="step"+(s.done?" done":"");
-      var num=document.createElement("div");num.className="num";num.textContent=String(i+1).padStart(2,"0");
-      var content=document.createElement("div");
-      var title=document.createElement("div");title.className="title";title.textContent=s.title;
-      var desc=document.createElement("div");desc.className="desc";desc.textContent=s.desc||"";
-      content.appendChild(title);content.appendChild(desc);
-      var cb=document.createElement("input");cb.type="checkbox";cb.className="check";cb.checked=!!s.done;cb.setAttribute("aria-label","完成："+s.title);
-      cb.addEventListener("change",function(){steps[i].done=cb.checked;save();render();});
-      el.appendChild(num);el.appendChild(content);el.appendChild(cb);list.appendChild(el);
-    });
-  }
-  var done=steps.filter(function(s){return s.done}).length,total=steps.length;
-  $("progressText").textContent=done+" / "+total;
-  var pct=total?Math.round(done/total*100):0;
-  $("fill").style.width=pct+"%";
-  if($("heroPct")) $("heroPct").textContent=pct+"%";
+function load(key,fallback){
+  try{const v=JSON.parse(localStorage.getItem(key));return Array.isArray(v)?v:fallback.slice()}catch(e){return fallback.slice()}
 }
+function save(key,value){try{localStorage.setItem(key,JSON.stringify(value))}catch(e){}}
 
-document.querySelectorAll("[data-filter]").forEach(function(btn){
-  btn.addEventListener("click",function(){
-    filter=btn.getAttribute("data-filter");
-    document.querySelectorAll("[data-filter]").forEach(function(b){b.classList.remove("active")});
-    btn.classList.add("active");
-    render();
+let steps=load(KEY_STEPS,defaults);
+let notes=load(KEY_NOTES,[]);
+let questions=load(KEY_QUESTIONS,[]);
+let filter="all";
+let currentView="workflow";
+
+const $=id=>document.getElementById(id);
+function toast(msg){
+  const t=$("toast");t.textContent=msg;t.classList.add("show");
+  clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),1600);
+}
+function updateProgress(){
+  const done=steps.filter(s=>s.done).length,total=steps.length,pct=total?Math.round(done/total*100):0;
+  $("progressText").textContent=`${done} / ${total}`;
+  $("heroPct").textContent=pct+"%";
+  $("fill").style.width=pct+"%";
+  $("progressRing").style.setProperty("--pct",pct+"%");
+  $("workflowCount").textContent=`共 ${total} 項`;
+}
+function renderWorkflow(){
+  const list=$("workflow");list.innerHTML="";
+  const visible=steps.map((item,index)=>({item,index})).filter(v=>filter==="all"||(filter==="todo"&&!v.item.done)||(filter==="done"&&v.item.done));
+  if(!visible.length){list.innerHTML='<div class="empty">目前沒有符合條件的工作。</div>';return}
+  visible.forEach(v=>{
+    const s=v.item,i=v.index,el=document.createElement("div");
+    el.className="step"+(s.done?" done":"");
+    el.innerHTML=`<div class="num">${String(i+1).padStart(2,"0")}</div><div><div class="title"></div><div class="desc"></div></div><input class="check" type="checkbox" ${s.done?"checked":""} aria-label="完成工作">`;
+    el.querySelector(".title").textContent=s.title;
+    el.querySelector(".desc").textContent=s.desc||"";
+    el.querySelector(".check").addEventListener("change",e=>{
+      steps[i].done=e.target.checked;save(KEY_STEPS,steps);renderAll();toast(e.target.checked?"已完成 ✓":"已取消完成");
+    });
+    list.appendChild(el);
   });
+}
+function renderDaily(){
+  const list=$("dailyList");list.innerHTML="";
+  steps.slice(0,5).forEach((s,i)=>{
+    const el=document.createElement("div");el.className="quick-item";
+    el.innerHTML=`<div class="left"><span>${s.done?"✅":"○"}</span><span></span></div><small>${s.done?"已完成":"待完成"}</small>`;
+    el.querySelector(".left span:last-child").textContent=s.title;
+    list.appendChild(el);
+  });
+}
+function renderNotes(){
+  const list=$("noteList");list.innerHTML="";
+  if(!notes.length){list.innerHTML='<div class="empty">還沒有工作筆記，新增第一筆吧。</div>';return}
+  notes.forEach((n,i)=>{
+    const el=document.createElement("div");el.className="list-item";
+    el.innerHTML=`<strong></strong><p></p><button class="delete">刪除</button>`;
+    el.querySelector("strong").textContent=n.title||"未命名筆記";
+    el.querySelector("p").textContent=n.body||"—";
+    el.querySelector(".delete").addEventListener("click",()=>{notes.splice(i,1);save(KEY_NOTES,notes);renderNotes();toast("筆記已刪除")});
+    list.appendChild(el);
+  });
+}
+function renderQuestions(){
+  ["questionList","questionList2"].forEach(id=>{
+    const list=$(id);if(!list)return;list.innerHTML="";
+    if(!questions.length){list.innerHTML='<div class="empty">目前沒有待確認事項 ✓</div>';return}
+    questions.forEach((q,i)=>{
+      const el=document.createElement("div");el.className="list-item";
+      el.innerHTML=`<strong>待確認 ${i+1}</strong><p></p><button class="delete">已確認／刪除</button>`;
+      el.querySelector("p").textContent=q;
+      el.querySelector(".delete").addEventListener("click",()=>{questions.splice(i,1);save(KEY_QUESTIONS,questions);renderQuestions();toast("已從待確認清單移除")});
+      list.appendChild(el);
+    });
+  });
+}
+function showView(view){
+  currentView=view;
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  const target=$("view-"+view)||$("view-workflow");
+  target.classList.add("active");
+  document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===view));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderAll(){updateProgress();renderWorkflow();renderDaily();renderNotes();renderQuestions()}
+
+document.querySelectorAll("[data-filter]").forEach(btn=>btn.addEventListener("click",()=>{
+  filter=btn.dataset.filter;
+  document.querySelectorAll("[data-filter]").forEach(b=>b.classList.toggle("active",b===btn));
+  showView("workflow");renderWorkflow();
+}));
+
+document.querySelectorAll("[data-open]").forEach(btn=>btn.addEventListener("click",()=>showView(btn.dataset.open)));
+document.querySelectorAll("[data-nav]").forEach(btn=>btn.addEventListener("click",()=>showView(btn.dataset.nav)));
+
+$("addForm").addEventListener("submit",e=>{
+  e.preventDefault();const title=$("stepTitle").value.trim(),desc=$("stepDesc").value.trim();
+  if(!title){$("stepTitle").focus();toast("請先輸入工作名稱");return}
+  steps.push({title,desc,done:false});save(KEY_STEPS,steps);
+  $("stepTitle").value="";$("stepDesc").value="";filter="all";
+  document.querySelectorAll("[data-filter]").forEach(b=>b.classList.toggle("active",b.dataset.filter==="all"));
+  renderAll();toast("已新增工作步驟");
 });
 
-$("addForm").addEventListener("submit",function(e){
-  e.preventDefault();
-  var title=$("stepTitle").value.trim(),desc=$("stepDesc").value.trim();
-  if(!title){$("stepTitle").focus();return;}
-  steps.push({title:title,desc:desc,done:false});
-  save();$("stepTitle").value="";$("stepDesc").value="";
-  filter="all";
-  document.querySelectorAll("[data-filter]").forEach(function(b){b.classList.toggle("active",b.getAttribute("data-filter")==="all")});
-  render();
+$("noteForm").addEventListener("submit",e=>{
+  e.preventDefault();const title=$("noteTitle").value.trim(),body=$("noteBody").value.trim();
+  if(!title&&!body){toast("請輸入筆記內容");return}
+  notes.unshift({title:title||"未命名筆記",body:body||"—",created:new Date().toISOString()});
+  save(KEY_NOTES,notes);$("noteTitle").value="";$("noteBody").value="";renderNotes();toast("筆記已儲存");
 });
-
-$("reset").addEventListener("click",function(){
-  steps.forEach(function(s){s.done=false});
-  save();render();
+$("questionForm").addEventListener("submit",e=>{
+  e.preventDefault();const q=$("questionInput").value.trim();if(!q){$("questionInput").focus();return}
+  questions.unshift(q);save(KEY_QUESTIONS,questions);$("questionInput").value="";renderQuestions();toast("已加入待確認");
 });
-
-document.querySelectorAll("[data-view]").forEach(function(btn){
-  btn.addEventListener("click",function(){showView(btn.getAttribute("data-view"));});
-});
-$("noteForm").addEventListener("submit",function(e){
-  e.preventDefault();
-  var t=$("noteTitle").value.trim(),b=$("noteBody").value.trim();
-  if(!t&&!b)return;
-  notes.unshift({title:t||"未命名筆記",body:b||"—"});
-  $("noteTitle").value="";$("noteBody").value="";saveExtra();renderNotes();
-});
-$("questionForm").addEventListener("submit",function(e){
-  e.preventDefault();
-  var q=$("questionInput").value.trim();
-  if(!q)return;
-  questions.unshift(q);$("questionInput").value="";saveExtra();renderQuestions();
-});
-$("taxForm").addEventListener("submit",function(e){
-  e.preventDefault();
-  var n=Number($("taxAmount").value);
+$("taxForm").addEventListener("submit",e=>{
+  e.preventDefault();const n=Number($("taxAmount").value);
   if(!Number.isFinite(n)||n<0){$("taxResult").textContent="請輸入有效金額";return}
-  if($("taxMode").value==="add")$("taxResult").textContent="未稅 "+n.toFixed(2)+" → 含稅 "+(n*1.05).toFixed(2)+"；稅額 "+(n*.05).toFixed(2);
-  else $("taxResult").textContent="含稅 "+n.toFixed(2)+" → 未稅 "+(n/1.05).toFixed(2)+"；稅額 "+(n-n/1.05).toFixed(2);
+  if($("taxMode").value==="add"){
+    const tax=n*.05;$("taxResult").textContent=`未稅 ${n.toLocaleString("zh-TW",{maximumFractionDigits:2})} → 含稅 ${(n+tax).toLocaleString("zh-TW",{maximumFractionDigits:2})}；稅額 ${tax.toLocaleString("zh-TW",{maximumFractionDigits:2})}`;
+  }else{
+    const base=n/1.05,tax=n-base;$("taxResult").textContent=`含稅 ${n.toLocaleString("zh-TW",{maximumFractionDigits:2})} → 未稅 ${base.toLocaleString("zh-TW",{maximumFractionDigits:2})}；稅額 ${tax.toLocaleString("zh-TW",{maximumFractionDigits:2})}`;
+  }
 });
-$("calcForm").addEventListener("submit",function(e){
-  e.preventDefault();
-  var s=$("calcInput").value.replaceAll("×","*").replaceAll("÷","/").replace(/\s/g,"");
-  if(!s||!/^[0-9+\-*/().]+$/.test(s)){$("calcResult").textContent="請輸入有效算式";return}
+$("profitForm").addEventListener("submit",e=>{
+  e.preventDefault();const sale=Number($("saleAmount").value),cost=Number($("costAmount").value);
+  if(!Number.isFinite(sale)||!Number.isFinite(cost)){ $("profitResult").textContent="請輸入有效金額";return}
+  const profit=sale-cost,margin=sale?profit/sale*100:0;
+  $("profitResult").textContent=`毛利 ${profit.toLocaleString("zh-TW",{maximumFractionDigits:2})}；毛利率 ${margin.toFixed(2)}%`;
+});
+$("calcForm").addEventListener("submit",e=>{
+  e.preventDefault();let s=$("calcInput").value.replaceAll("×","*").replaceAll("÷","/").replace(/\s/g,"");
+  if(!s||!/^[0-9+\-*/().]+$/.test(s)){ $("calcResult").textContent="請輸入有效算式";return}
   try{
-    var r=Function('"use strict";return ('+s+')')();
-    if(!Number.isFinite(r))throw new Error();
+    const tokens=s.match(/(\d+(?:\.\d+)?|[()+\-*/])/g);
+    if(!tokens||tokens.join("")!==s)throw 0;
+    let pos=0;
+    function expr(){let x=term();while(tokens[pos]==="+"||tokens[pos]==="-"){const op=tokens[pos++],y=term();x=op==="+"?x+y:x-y}return x}
+    function term(){let x=factor();while(tokens[pos]==="*"||tokens[pos]==="/"){const op=tokens[pos++],y=factor();if(op==="/"&&y===0)throw 0;x=op==="*"?x*y:x/y}return x}
+    function factor(){if(tokens[pos]==="-"){pos++;return-factor()}if(tokens[pos]==="("){pos++;const x=expr();if(tokens[pos++]!==")")throw 0;return x}const x=Number(tokens[pos++]);if(!Number.isFinite(x))throw 0;return x}
+    const r=expr();if(pos!==tokens.length||!Number.isFinite(r))throw 0;
     $("calcResult").textContent=Number(r).toLocaleString("zh-TW",{maximumFractionDigits:2});
-  }catch(e){$("calcResult").textContent="算式無法計算";}
+  }catch(err){$("calcResult").textContent="算式無法計算"}
 });
-$("today").textContent=new Intl.DateTimeFormat("zh-TW",{year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(new Date());
-render();renderNotes();renderQuestions();showView("workflow");
+$("menuBtn").addEventListener("click",()=>showView("workflow"));
+
+const now=new Date(),hour=now.getHours();
+$("greeting").textContent=(hour<11?"早安":hour<18?"Hi，今天也辛苦了！":"辛苦了，今天也完成不少了！")+" 🌱";
+renderAll();
+showView("workflow");
 })();
 </script>
 </body>
