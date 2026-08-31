@@ -636,47 +636,17 @@ function imageMarkup(images){
   if(!Array.isArray(images)||!images.length)return "";
   return '<div class="saved-images">'+images.map((x,i)=>`<img src="${x}" alt="附加圖片 ${i+1}">`).join("")+'</div>';
 }
-let imageScale=1,imageX=0,imageY=0,dragging=false,lastX=0,lastY=0;
-let pinchStart=0,pinchScaleStart=1;
-function applyImageTransform(){
-  const img=$("imageModalImg");
-  img.style.transform=`translate(${imageX}px,${imageY}px) scale(${imageScale})`;
-  $("imageZoomLabel").textContent=Math.round(imageScale*100)+"%";
-}
-function openImageModal(src){
-  const modal=$("imageModal"),img=$("imageModalImg");
-  img.src=src;imageScale=1;imageX=0;imageY=0;modal.classList.add("open");modal.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";applyImageTransform();
-}
-function closeImageModal(){
-  $("imageModal").classList.remove("open");$("imageModal").setAttribute("aria-hidden","true");$("imageModalImg").src="";document.body.style.overflow="";
-}
+
+
 
 $("imageModalImg").addEventListener("dblclick",()=>{
   imageScale=imageScale===1?2:1;imageX=0;imageY=0;applyImageTransform();
 });
-let imageScale=1,imageX=0,imageY=0,draggingImage=false,lastImageX=0,lastImageY=0;
-function applyImageTransform(){
-  const img=$("imageModalImg"); if(!img)return;
-  img.style.transform=`translate(${imageX}px,${imageY}px) scale(${imageScale})`;
-  $("imageZoomLabel").textContent=Math.round(imageScale*100)+"%";
-}
-function openImageModal(src){
-  const modal=$("imageModal"),img=$("imageModalImg");if(!modal||!img)return;
-  img.src=src;imageScale=1;imageX=0;imageY=0;
-  modal.classList.add("open");modal.setAttribute("aria-hidden","false");
-  document.body.style.overflow="hidden";applyImageTransform();
-}
-function closeImageModal(){
-  const modal=$("imageModal"),img=$("imageModalImg");if(!modal)return;
-  modal.classList.remove("open");modal.setAttribute("aria-hidden","true");
-  if(img)img.src="";document.body.style.overflow="";
-}
-function bindImageClicks(){
-  // Event delegation makes images in 「我的工作小抄」 work even after the list is re-rendered.
-  document.querySelectorAll(".saved-images img").forEach(img=>{
-    img.onclick=function(e){e.preventDefault();e.stopPropagation();openImageModal(this.currentSrc||this.src);}
-  });
-}
+
+
+
+
+
 
 
 $("imageZoomIn").addEventListener("click",()=>{imageScale=Math.min(4,imageScale+.25);applyImageTransform()});
@@ -699,6 +669,65 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeImageModal()});
   const input=$(p+"Images");
   if(input)input.addEventListener("change",()=>previewSelectedImages(p+"Images",p+"Preview"));
 });
+
+
+let imageScale=1,imageX=0,imageY=0,draggingImage=false,lastImageX=0,lastImageY=0;
+
+function applyImageTransform(){
+  const img=document.getElementById("imageModalImg");
+  const label=document.getElementById("imageZoomLabel");
+  if(!img)return;
+  img.style.transform=`translate(${imageX}px,${imageY}px) scale(${imageScale})`;
+  if(label)label.textContent=Math.round(imageScale*100)+"%";
+}
+function openImageModal(src){
+  const modal=document.getElementById("imageModal"),img=document.getElementById("imageModalImg");
+  if(!modal||!img)return;
+  img.src=src; imageScale=1; imageX=0; imageY=0;
+  modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden"; applyImageTransform();
+}
+function closeImageModal(){
+  const modal=document.getElementById("imageModal"),img=document.getElementById("imageModalImg");
+  if(!modal)return;
+  modal.classList.remove("open"); modal.setAttribute("aria-hidden","true");
+  if(img)img.removeAttribute("src"); document.body.style.overflow="";
+}
+function bindImageClicks(){
+  document.querySelectorAll(".saved-images img").forEach(img=>{
+    img.onclick=function(e){e.preventDefault();e.stopPropagation();openImageModal(this.currentSrc||this.src);}
+  });
+}
+
+function initImageModal(){
+  const modal=document.getElementById("imageModal");
+  const inner=document.getElementById("imageModalInner");
+  if(!modal||!inner)return;
+  const close=document.getElementById("imageModalClose");
+  const zin=document.getElementById("imageZoomIn");
+  const zout=document.getElementById("imageZoomOut");
+  const reset=document.getElementById("imageZoomReset");
+  const image=document.getElementById("imageModalImg");
+  if(close)close.onclick=closeImageModal;
+  if(zin)zin.onclick=()=>{imageScale=Math.min(5,imageScale+.25);applyImageTransform()};
+  if(zout)zout.onclick=()=>{imageScale=Math.max(.5,imageScale-.25);applyImageTransform()};
+  if(reset)reset.onclick=()=>{imageScale=1;imageX=0;imageY=0;applyImageTransform()};
+  modal.onclick=e=>{if(e.target===modal)closeImageModal()};
+  if(image)image.ondblclick=()=>{imageScale=imageScale===1?2:1;imageX=0;imageY=0;applyImageTransform()};
+  inner.onpointerdown=e=>{
+    if(e.target.closest(".image-modal-bar,.image-modal-close"))return;
+    draggingImage=true;lastImageX=e.clientX;lastImageY=e.clientY;
+    if(inner.setPointerCapture)inner.setPointerCapture(e.pointerId);
+  };
+  inner.onpointermove=e=>{
+    if(!draggingImage)return;
+    imageX+=e.clientX-lastImageX; imageY+=e.clientY-lastImageY;
+    lastImageX=e.clientX; lastImageY=e.clientY; applyImageTransform();
+  };
+  inner.onpointerup=()=>draggingImage=false;
+  inner.onpointercancel=()=>draggingImage=false;
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeImageModal()});
+}
 
 function renderWorkflow(){
   const list=$("workflow");list.innerHTML="";
@@ -725,31 +754,6 @@ document.querySelectorAll("[data-open]").forEach(btn=>{
 });
 
 
-(function initImageModal(){
-  const modal=$("imageModal"),inner=$("imageModalInner");
-  if(!modal||!inner)return;
-  $("imageModalClose").addEventListener("click",closeImageModal);
-  $("imageZoomIn").addEventListener("click",()=>{imageScale=Math.min(5,imageScale+.25);applyImageTransform()});
-  $("imageZoomOut").addEventListener("click",()=>{imageScale=Math.max(.5,imageScale-.25);applyImageTransform()});
-  $("imageZoomReset").addEventListener("click",()=>{imageScale=1;imageX=0;imageY=0;applyImageTransform()});
-  modal.addEventListener("click",e=>{if(e.target===modal)closeImageModal()});
-  $("imageModalImg").addEventListener("dblclick",()=>{
-    imageScale=imageScale===1?2:1;imageX=0;imageY=0;applyImageTransform();
-  });
-  inner.addEventListener("pointerdown",e=>{
-    if(e.target.closest(".image-modal-bar,.image-modal-close"))return;
-    draggingImage=true;lastImageX=e.clientX;lastImageY=e.clientY;
-    inner.setPointerCapture?.(e.pointerId);
-  });
-  inner.addEventListener("pointermove",e=>{
-    if(!draggingImage)return;
-    imageX+=e.clientX-lastImageX;imageY+=e.clientY-lastImageY;
-    lastImageX=e.clientX;lastImageY=e.clientY;applyImageTransform();
-  });
-  inner.addEventListener("pointerup",()=>draggingImage=false);
-  inner.addEventListener("pointercancel",()=>draggingImage=false);
-  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeImageModal()});
-})();
 
 renderAll();toast(e.target.checked?"已完成 ✓":"已取消完成");
     });
@@ -804,7 +808,7 @@ function renderNotes(){
   if(!notes.length){list.innerHTML='<div class="empty">還沒有工作筆記，新增第一筆吧。</div>';return}
   notes.forEach((n,i)=>{
     const el=document.createElement("div");el.className="list-item";
-    el.innerHTML=`<strong></strong><p></p><button class="edit">修改</button><button class="delete">刪除</button>`;
+    el.innerHTML=`<strong></strong><p></p><button type="button" class="edit">修改</button><button type="button" class="delete">刪除</button>`;
     el.querySelector("strong").textContent=n.title||"未命名筆記";
     el.querySelector("p").textContent=n.body||"—"; if(n.images?.length)el.insertAdjacentHTML("beforeend",imageMarkup(n.images)); if(n.images?.length)el.insertAdjacentHTML("beforeend",imageMarkup(n.images));
     el.querySelector(".edit").addEventListener("click",()=>{
@@ -822,7 +826,7 @@ function renderQuestions(){
     if(!questions.length){list.innerHTML='<div class="empty">目前沒有待確認事項 ✓</div>';return}
     questions.forEach((q,i)=>{
       const el=document.createElement("div");el.className="list-item";
-      el.innerHTML=`<strong>待確認 ${i+1}</strong><p></p><button class="delete">已確認／刪除</button>`;
+      el.innerHTML=`<strong>待確認 ${i+1}</strong><p></p><button type="button" class="delete">已確認／刪除</button>`;
       el.querySelector("p").textContent=(typeof q==="string"?q:q.text)||""; if(q&&q.images?.length)el.insertAdjacentHTML("beforeend",imageMarkup(q.images));
       el.querySelector(".delete").addEventListener("click",()=>{questions.splice(i,1);save(KEY_QUESTIONS,questions);renderQuestions();toast("已從待確認清單移除")});
       list.appendChild(el);
@@ -1065,6 +1069,7 @@ const now=new Date(),hour=now.getHours();
 $("greeting").textContent=(hour<11?"早安":hour<18?"Hi，今天也辛苦了！":"辛苦了，今天也完成不少了！")+" 🌱";
 renderAll();
 showView("workflow");
+initImageModal();bindImageClicks();
 })();
 </script>
 </body>
