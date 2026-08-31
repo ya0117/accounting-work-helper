@@ -126,6 +126,20 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
 /* --- v2 refinements --- */
 
 /* --- v3 app refinements --- */
+
+/* tools layout repair */
+#view-tools{width:100%;overflow:visible}
+#view-tools .card{width:100%;overflow:visible}
+#view-tools .numeric-pad{width:100%;display:grid;grid-template-columns:repeat(4,1fr)}
+#view-tools .num-key{width:100%;min-width:0}
+#view-tools form{width:100%}
+#view-tools .result{width:100%;word-break:break-word}
+@media(max-width:480px){
+  #view-tools .card{padding:12px}
+  #view-tools .numeric-pad{gap:6px}
+  #view-tools .num-key{min-height:48px;padding:5px 2px;font-size:15px}
+}
+
 .app{max-width:820px}
 button,input,textarea,select{appearance:none;-webkit-appearance:none}
 button{transition:transform .12s ease,box-shadow .12s ease,background .12s ease}
@@ -192,7 +206,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
   .stat{padding:9px 5px}.stat strong{font-size:15px}
 }
 
-.numeric-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}
+.numeric-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:9px;width:100%;}
 .num-key{min-height:48px;border:1px solid #d8d2ca;border-radius:13px;background:#f7f4ef;color:var(--ink);font-size:18px;font-weight:800}
 .num-key:active{transform:scale(.97);background:#ebe6df}
 .num-key.op{background:#e4ebe4;color:#536258;border-color:#c8d2c8}
