@@ -276,6 +276,16 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
 #view-tools .key-active{border-color:#9eafa4;box-shadow:0 0 0 3px rgba(158,175,164,.14);background:#fffdf9}
 #view-tools .key-target{min-height:15px}
 
+
+.image-modal{position:fixed;inset:0;z-index:9999;background:rgba(35,31,28,.86);display:none;align-items:center;justify-content:center;padding:18px}
+.image-modal.open{display:flex}
+.image-modal-inner{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
+.image-modal img{max-width:none;max-height:none;width:auto;height:auto;object-fit:contain;transform-origin:center center;will-change:transform;user-select:none;-webkit-user-drag:none}
+.image-modal-bar{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:7px;align-items:center;background:rgba(35,31,28,.72);border:1px solid rgba(255,255,255,.18);padding:7px;border-radius:16px;backdrop-filter:blur(10px)}
+.image-modal-bar button{border:0;border-radius:11px;min-width:42px;min-height:40px;background:rgba(255,255,255,.14);color:#fff;font-size:16px;font-weight:800}
+.image-modal-close{position:absolute;right:12px;top:max(12px,env(safe-area-inset-top));width:42px;height:42px;border:0;border-radius:50%;background:rgba(35,31,28,.72);color:#fff;font-size:22px;z-index:2}
+.image-zoom-label{color:#fff;font-size:11px;min-width:48px;text-align:center}
+
 </style>
 </head>
 <body>
@@ -402,32 +412,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
     <section id="view-tools" class="view">
       <div class="section-head"><h2>％ 稅務與計算</h2><span>常用會計小工具</span></div>
 
-      <div class="card">
-        <h3>🧮 金額計算機</h3>
-        <div id="calcHistory" class="calc-history"></div>
-        <div id="calcDisplay" class="calc-display">0</div>
-        <div class="numeric-pad" id="mainCalcPad">
-          <button type="button" class="num-key clear" data-calc="C">AC</button>
-          <button type="button" class="num-key back" data-calc="back">⌫</button>
-          <button type="button" class="num-key op" data-calc="%">%</button>
-          <button type="button" class="num-key op" data-calc="/">÷</button>
-          <button type="button" class="num-key" data-calc="7">7</button>
-          <button type="button" class="num-key" data-calc="8">8</button>
-          <button type="button" class="num-key" data-calc="9">9</button>
-          <button type="button" class="num-key op" data-calc="*">×</button>
-          <button type="button" class="num-key" data-calc="4">4</button>
-          <button type="button" class="num-key" data-calc="5">5</button>
-          <button type="button" class="num-key" data-calc="6">6</button>
-          <button type="button" class="num-key op" data-calc="-">−</button>
-          <button type="button" class="num-key" data-calc="1">1</button>
-          <button type="button" class="num-key" data-calc="2">2</button>
-          <button type="button" class="num-key" data-calc="3">3</button>
-          <button type="button" class="num-key op" data-calc="+">＋</button>
-          <button type="button" class="num-key zero" data-calc="0">0</button>
-          <button type="button" class="num-key" data-calc=".">.</button>
-          <button type="button" class="num-key op" data-calc="=">＝</button>
-        </div>
-      </div>
+      
 
       <div class="card">
         <h3>💰 含稅／未稅</h3>
@@ -531,6 +516,20 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
   <button class="nav-btn" data-nav="questions"><span class="icon">♙</span>我的</button>
 </nav>
 <div id="toast" class="toast"></div>
+
+
+<div id="imageModal" class="image-modal" aria-hidden="true">
+  <div class="image-modal-inner" id="imageModalInner">
+    <button type="button" class="image-modal-close" id="imageModalClose">×</button>
+    <img id="imageModalImg" alt="圖片預覽">
+    <div class="image-modal-bar">
+      <button type="button" id="imageZoomOut">−</button>
+      <span class="image-zoom-label" id="imageZoomLabel">100%</span>
+      <button type="button" id="imageZoomIn">＋</button>
+      <button type="button" id="imageZoomReset">↺</button>
+    </div>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -637,12 +636,44 @@ function imageMarkup(images){
   if(!Array.isArray(images)||!images.length)return "";
   return '<div class="saved-images">'+images.map((x,i)=>`<img src="${x}" alt="附加圖片 ${i+1}">`).join("")+'</div>';
 }
-function bindImageClicks(){
-  document.querySelectorAll(".saved-images img").forEach(img=>img.onclick=()=>{
-    const w=window.open();
-    if(w)w.document.write('<meta name="viewport" content="width=device-width,initial-scale=1"><img src="'+img.src+'" style="max-width:100%;height:auto;display:block;margin:auto">');
-  });
+let imageScale=1,imageX=0,imageY=0,dragging=false,lastX=0,lastY=0;
+let pinchStart=0,pinchScaleStart=1;
+function applyImageTransform(){
+  const img=$("imageModalImg");
+  img.style.transform=`translate(${imageX}px,${imageY}px) scale(${imageScale})`;
+  $("imageZoomLabel").textContent=Math.round(imageScale*100)+"%";
 }
+function openImageModal(src){
+  const modal=$("imageModal"),img=$("imageModalImg");
+  img.src=src;imageScale=1;imageX=0;imageY=0;modal.classList.add("open");modal.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";applyImageTransform();
+}
+function closeImageModal(){
+  $("imageModal").classList.remove("open");$("imageModal").setAttribute("aria-hidden","true");$("imageModalImg").src="";document.body.style.overflow="";
+}
+
+$("imageModalImg").addEventListener("dblclick",()=>{
+  imageScale=imageScale===1?2:1;imageX=0;imageY=0;applyImageTransform();
+});
+function bindImageClicks(){
+  document.querySelectorAll(".saved-images img").forEach(img=>img.onclick=()=>openImageModal(img.src));
+}
+$("imageModalClose").addEventListener("click",closeImageModal);
+$("imageZoomIn").addEventListener("click",()=>{imageScale=Math.min(4,imageScale+.25);applyImageTransform()});
+$("imageZoomOut").addEventListener("click",()=>{imageScale=Math.max(.5,imageScale-.25);applyImageTransform()});
+$("imageZoomReset").addEventListener("click",()=>{imageScale=1;imageX=0;imageY=0;applyImageTransform()});
+$("imageModal").addEventListener("click",e=>{if(e.target===$("imageModal"))closeImageModal()});
+$("imageModalInner").addEventListener("pointerdown",e=>{
+  if(e.target.closest(".image-modal-bar,.image-modal-close"))return;
+  dragging=true;lastX=e.clientX;lastY=e.clientY;e.currentTarget.setPointerCapture?.(e.pointerId);
+});
+$("imageModalInner").addEventListener("pointermove",e=>{
+  if(!dragging)return;
+  imageX+=e.clientX-lastX;imageY+=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;applyImageTransform();
+});
+$("imageModalInner").addEventListener("pointerup",()=>dragging=false);
+$("imageModalInner").addEventListener("pointercancel",()=>dragging=false);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeImageModal()});
+
 ["todo","note","question","farm"].forEach(p=>{
   const input=$(p+"Images");
   if(input)input.addEventListener("change",()=>previewSelectedImages(p+"Images",p+"Preview"));
