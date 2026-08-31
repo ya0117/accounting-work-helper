@@ -96,6 +96,15 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manip
 .step.done{opacity:.55}.step.done .title{text-decoration:line-through}
 .check{width:22px;height:22px;margin:5px auto 0;accent-color:var(--sage-deep)}
 .quick-list{display:grid;gap:8px}
+.editable-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.editable-toolbar button{border:1px solid var(--line);background:#fffaf6;color:#756d68;min-height:38px;border-radius:11px;padding:7px 11px;font-weight:750}
+.editable-row{display:flex;align-items:flex-start;justify-content:space-between;gap:9px;padding:11px 0;border-top:1px solid #eee7e1}
+.editable-row:first-child{border-top:0}.editable-row .row-main{min-width:0;flex:1}
+.editable-row strong{font-size:13px}.editable-row p{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.55;white-space:pre-wrap}
+.row-actions{display:flex;gap:5px;flex:0 0 auto}.row-actions button{border:0;border-radius:9px;padding:6px 8px;font-size:11px;font-weight:750;background:#eee7e1;color:#766b65}.row-actions .danger{background:#f0dfde;color:#806765}
+.edit-form{display:none;margin-top:10px;padding-top:10px;border-top:1px solid #eee7e1}.edit-form.active{display:grid;gap:8px}
+.edit-form input,.edit-form textarea{width:100%;border:1px solid #ddd3cb;background:#fbf8f4;border-radius:12px;padding:10px 11px;min-height:43px;color:var(--ink);outline:none;font-size:15px}.edit-form textarea{min-height:70px;resize:vertical}
+
 .quick-item{
   display:flex;justify-content:space-between;align-items:center;gap:10px;
   padding:10px 12px;border-radius:14px;background:#f9f4ef;border:1px solid #eee4dd;
@@ -184,6 +193,12 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
   .helper-grid{grid-template-columns:1fr}.step{grid-template-columns:37px 1fr 29px}
   .num{width:34px;height:34px}
 }
+.farm-item{border-top:1px solid #eee8e1;padding:12px 0}
+.farm-item:first-child{border-top:0}
+.farm-title{font-weight:850;font-size:14px;line-height:1.45}
+.farm-body{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:4px;white-space:pre-wrap}
+.farm-actions{display:flex;gap:6px;margin-top:7px}
+.edit-btn{border:0;background:#e1e9e2;color:#5d7565;border-radius:9px;padding:6px 9px;font-size:11px;font-weight:750}
 </style>
 </head>
 <body>
@@ -212,7 +227,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
     <button class="tile" data-open="notes"><div class="tile-icon">📝</div><div class="tile-title">工作筆記</div><div class="tile-desc">主管交代事項</div></button>
     <button class="tile" data-open="questions"><div class="tile-icon">!</div><div class="tile-title">待確認事項</div><div class="tile-desc">不漏掉任何事</div></button>
     <button class="tile" data-open="notes"><div class="tile-icon">📖</div><div class="tile-title">我的工作小抄</div><div class="tile-desc">常用資訊整理</div></button>
-    <button class="tile" data-open="farm"><div class="tile-icon">🥬</div><div class="tile-title">農作物／蔬果</div><div class="tile-desc">產業重點提醒</div></button>
+    <button class="tile" data-open="industryEditablePanel"><div class="tile-icon">🥬</div><div class="tile-title">農作物／蔬果</div><div class="tile-desc">產業重點提醒</div></button>
     <button class="tile" data-open="tools"><div class="tile-icon">％</div><div class="tile-title">稅務與計算</div><div class="tile-desc">含稅／未稅／利潤</div></button>
     <button class="tile" data-open="calculator"><div class="tile-icon">🧮</div><div class="tile-title">金額計算機</div><div class="tile-desc">快速又方便</div></button>
   </div>
@@ -243,19 +258,15 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
     </section>
 
     <section id="view-daily" class="view">
-      <div class="section-head"><h2>☑️ 每日工作</h2><span>可新增、修改、刪除與勾選</span></div>
+      <div class="section-head"><h2>☑️ 每日工作</h2><span>可新增、修改、刪除</span></div>
       <div class="panel">
-        <form id="dailyForm">
-          <input id="dailyTitle" autocomplete="off" placeholder="新增每日工作，例如：整理今日發票">
-          <textarea id="dailyDesc" placeholder="工作說明／注意事項（可不填）"></textarea>
-          <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
-            <button class="primary" id="dailySaveBtn" type="submit">＋ 新增工作</button>
-            <button class="delete" id="dailyCancelBtn" type="button" style="display:none;min-height:43px">取消修改</button>
-          </div>
+        <div id="dailyEditableList"></div>
+        <div class="editable-toolbar"><button type="button" id="addDailyBtn">＋ 新增每日工作</button></div>
+        <form id="dailyForm" class="edit-form">
+          <input id="dailyTitle" placeholder="每日工作名稱">
+          <textarea id="dailyDesc" placeholder="工作說明（可不填）"></textarea>
+          <div class="editable-toolbar"><button type="submit" class="primary">儲存</button><button type="button" id="cancelDailyBtn">取消</button></div>
         </form>
-      </div>
-      <div class="panel">
-        <div class="quick-list" id="dailyList"></div>
       </div>
     </section>
 
@@ -280,18 +291,37 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
       <div class="panel"><div id="questionList2"></div></div>
     </section>
 
-    <section id="view-farm" class="view">
-      <div class="section-head"><h2>🥬 農作物／蔬果批發</h2><span>工作提醒</span></div>
-      <div class="card"><h3>進貨與銷貨</h3><ul>
-        <li>確認日期、廠商／客戶、品項、數量、單價與金額。</li>
-        <li>生鮮蔬果常有退貨、折讓或短少，相關單據要留存。</li>
-        <li>出貨資料 KEY IN 後，再核對數量與金額。</li>
-      </ul></div>
-      <div class="card"><h3>憑證與發票</h3><ul>
-        <li>確認發票號碼、日期、買受人及金額。</li>
-        <li>單據與發票要能互相對應，避免月底才發現缺件。</li>
-        <li>不確定的特殊處理先記在「待確認事項」。</li>
-      </ul></div>
+    <section id="farmPanel" class="panel">
+    <div class="section-title">🥬 農作物／蔬果</div>
+    <div class="card">
+      <h3>產業重點提醒</h3>
+      <p>可以依公司實際流程自行新增、修改或刪除。</p>
+      <form id="farmForm" class="form">
+        <input id="farmTitle" autocomplete="off" placeholder="提醒標題，例如：進貨單據核對">
+        <textarea id="farmBody" placeholder="提醒內容，例如：確認日期、供應商、品項、數量、單價與金額。"></textarea>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
+          <button class="primary" id="farmSaveBtn" type="submit">＋ 新增提醒</button>
+          <button class="delete" id="farmCancelBtn" type="button" style="display:none;min-height:43px">取消修改</button>
+        </div>
+      </form>
+    </div>
+    <div class="card"><div id="farmList"></div></div>
+  </section>
+
+    <section id="industryEditablePanel" class="view">
+      <div class="section-head"><h2>🥬 產業重點提醒</h2><span>可新增、修改、刪除</span></div>
+      <div class="panel">
+        <div id="industryList"></div>
+        <div class="editable-toolbar"><button type="button" id="addIndustryBtn">＋ 新增產業提醒</button></div>
+        <form id="industryForm" class="edit-form">
+          <input id="industryTitle" placeholder="提醒標題，例如：進貨與銷貨">
+          <textarea id="industryBody" placeholder="提醒內容"></textarea>
+          <div class="editable-toolbar">
+            <button type="submit" class="primary">儲存</button>
+            <button type="button" id="cancelIndustryBtn">取消</button>
+          </div>
+        </form>
+      </div>
     </section>
 
     <section id="view-tools" class="view">
@@ -368,6 +398,17 @@ input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3p
 const KEY_STEPS="accounting_workflow_v4";
 const KEY_NOTES="accounting_notes_v1";
 const KEY_QUESTIONS="accounting_questions_v1";
+const KEY_DAILY="accounting_daily_v1";
+const KEY_INDUSTRY="accounting_industry_v1";
+const defaultDaily=[
+ {title:"整理今日進貨資料",desc:"確認進貨日期、廠商、品項、數量與金額。"},
+ {title:"確認今日銷貨／出貨",desc:"核對出貨資料與單據。"},
+ {title:"整理發票與憑證",desc:"確認發票與相關憑證是否完整。"}
+];
+const defaultIndustry=[
+ {title:"進貨與銷貨",body:"確認日期、廠商／客戶、品項、數量、單價與金額。\n生鮮蔬果常有退貨、折讓或短少，相關單據要留存。\n出貨資料 KEY IN 後，再核對數量與金額。"},
+ {title:"憑證與發票",body:"確認發票號碼、日期、買受人及金額。\n單據與發票要能互相對應。\n不確定的特殊處理先記在「待確認事項」。"}
+];
 
 const defaults=[
 {title:"開管銷表－檢查零用金",desc:"確認零用金餘額及當日需要處理的事項。",done:false},
@@ -388,7 +429,17 @@ function save(key,value){try{localStorage.setItem(key,JSON.stringify(value))}cat
 let steps=load(KEY_STEPS,defaults);
 let notes=load(KEY_NOTES,[]);
 let questions=load(KEY_QUESTIONS,[]);
-let daily=load("accounting_daily_v1",[]);
+let daily=load(KEY_DAILY,defaultDaily);
+let industry=load(KEY_INDUSTRY,defaultIndustry);
+let editingDaily=-1,editingIndustry=-1;
+let daily=load("accounting_daily_v1",[]);\
+let farm=load("accounting_farm_v1",[
+  {title:"進貨單據核對",body:"確認日期、供應商、品項、數量、單價與金額。"},
+  {title:"銷貨／出貨",body:"確認客戶、品項、數量與金額。"},
+  {title:"退貨／折讓",body:"確認原因、數量、金額與相關憑證。"},
+  {title:"生鮮蔬果提醒",body:"可能有損耗、退貨或折讓，遇到不確定情況先確認公司規則。"}
+]);
+ daily=Array.isArray(daily)?daily:[];
 let filter="all";
 let currentView="workflow";
 let editingDailyIndex=-1;
@@ -423,45 +474,19 @@ function renderWorkflow(){
   });
 }
 function renderDaily(){
-  const list=$("dailyList");list.innerHTML="";
-  if(!daily.length){
-    list.innerHTML='<div class="empty">目前還沒有每日工作，請新增第一項。</div>';
-    return;
-  }
-  daily.forEach((item,i)=>{
-    const el=document.createElement("div");
-    el.className="quick-item";
-    el.innerHTML='<div class="left" style="min-width:0;align-items:flex-start">'+
-      '<input type="checkbox" style="width:21px;height:21px;flex:0 0 auto;accent-color:var(--sage-deep)" '+(item.done?"checked":"")+' aria-label="完成每日工作">'+
-      '<div style="min-width:0"><div class="daily-title" style="font-weight:800;line-height:1.45"></div><small class="daily-desc" style="display:block;margin-top:3px;line-height:1.45"></small></div></div>'+
-      '<div class="daily-actions"><button type="button" class="edit-btn">修改</button><button type="button" class="delete">刪除</button></div>';
-    el.querySelector(".daily-title").textContent=item.title;
-    el.querySelector(".daily-desc").textContent=item.desc||"";
-    el.querySelector("input").addEventListener("change",e=>{
-      daily[i].done=e.target.checked;
-      save("accounting_daily_v1",daily);
-      renderDaily();
-      toast(e.target.checked?"已完成 ✓":"已取消完成");
-    });
-    el.querySelector(".edit-btn").addEventListener("click",()=>{
-      editingDailyIndex=i;
-      $("dailyTitle").value=item.title;
-      $("dailyDesc").value=item.desc||"";
-      $("dailySaveBtn").textContent="儲存修改";
-      $("dailyCancelBtn").style.display="block";
-      $("dailyTitle").focus();
-      window.scrollTo({top:0,behavior:"smooth"});
-    });
-    el.querySelector(".delete").addEventListener("click",()=>{
-      daily.splice(i,1);
-      save("accounting_daily_v1",daily);
-      if(editingDailyIndex===i) cancelDailyEdit();
-      renderDaily();
-      toast("每日工作已刪除");
-    });
-    list.appendChild(el);
-  });
+ const list=$("dailyEditableList");if(!list)return;list.innerHTML="";
+ if(!daily.length){list.innerHTML='<div class="empty">目前還沒有每日工作。</div>';return}
+ daily.forEach((item,i)=>{
+  const el=document.createElement("div");el.className="editable-row";
+  el.innerHTML='<div class="row-main"><strong></strong><p></p></div><div class="row-actions"><button type="button">修改</button><button type="button" class="danger">刪除</button></div>';
+  el.querySelector("strong").textContent=item.title;el.querySelector("p").textContent=item.desc||"";
+  el.querySelector(".row-actions button").onclick=()=>openDailyForm(i);
+  el.querySelector(".danger").onclick=()=>{if(confirm("確定刪除？")){daily.splice(i,1);save(KEY_DAILY,daily);renderDaily();toast("已刪除")}};
+  list.appendChild(el);
+ });
 }
+function openDailyForm(i=-1){editingDaily=i;$("dailyTitle").value=i>=0?daily[i].title:"";$("dailyDesc").value=i>=0?daily[i].desc:"";$("dailyForm").classList.add("active");$("dailyTitle").focus()}
+function closeDailyForm(){editingDaily=-1;$("dailyForm").reset();$("dailyForm").classList.remove("active")}
 
 function renderNotes(){
   const list=$("noteList");list.innerHTML="";
@@ -488,6 +513,21 @@ function renderQuestions(){
     });
   });
 }
+function renderIndustry(){
+ const list=$("industryList");if(!list)return;list.innerHTML="";
+ if(!industry.length){list.innerHTML='<div class="empty">目前還沒有產業提醒。</div>';return}
+ industry.forEach((item,i)=>{
+  const el=document.createElement("div");el.className="editable-row";
+  el.innerHTML='<div class="row-main"><strong></strong><p></p></div><div class="row-actions"><button type="button">修改</button><button type="button" class="danger">刪除</button></div>';
+  el.querySelector("strong").textContent=item.title;el.querySelector("p").textContent=item.body||"";
+  el.querySelector(".row-actions button").onclick=()=>openIndustryForm(i);
+  el.querySelector(".danger").onclick=()=>{if(confirm("確定刪除？")){industry.splice(i,1);save(KEY_INDUSTRY,industry);renderIndustry();toast("已刪除")}};
+  list.appendChild(el);
+ });
+}
+function openIndustryForm(i=-1){editingIndustry=i;$("industryTitle").value=i>=0?industry[i].title:"";$("industryBody").value=i>=0?industry[i].body:"";$("industryForm").classList.add("active");$("industryTitle").focus()}
+function closeIndustryForm(){editingIndustry=-1;$("industryForm").reset();$("industryForm").classList.remove("active")}
+
 function showView(view){
   currentView=view;
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
@@ -496,7 +536,7 @@ function showView(view){
   document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===view));
   window.scrollTo({top:0,behavior:"smooth"});
 }
-function renderAll(){updateProgress();renderWorkflow();renderDaily();renderNotes();renderQuestions()}
+function renderAll(){updateProgress();renderWorkflow();renderDaily();renderFarm();renderNotes();renderQuestions()}
 
 document.querySelectorAll("[data-filter]").forEach(btn=>btn.addEventListener("click",()=>{
   filter=btn.dataset.filter;
@@ -659,6 +699,17 @@ const now=new Date(),hour=now.getHours();
 $("greeting").textContent=(hour<11?"早安":hour<18?"Hi，今天也辛苦了！":"辛苦了，今天也完成不少了！")+" 🌱";
 renderAll();
 showView("workflow");
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+  // Home Screen / GitHub Pages compatibility
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("./sw.js").catch(function(){});
+    });
+  }
 })();
 </script>
 </body>
