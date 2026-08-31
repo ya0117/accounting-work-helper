@@ -265,10 +265,10 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
 .image-input{font-size:12px!important;padding:8px!important;min-height:42px!important;background:#f8f4ef!important}
 .image-preview,.saved-images{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}
 .image-thumb{position:relative;width:68px;height:68px;border-radius:11px;overflow:hidden;border:1px solid #ddd3cb;background:#f1ece6}
-.image-thumb img,.saved-images img{width:76px;height:76px;object-fit:cover;border-radius:11px;border:1px solid #ddd3cb;cursor:zoom-in;pointer-events:auto!important;display:block;position:relative;z-index:20}
+.image-thumb img,.saved-images img{width:62px;height:62px;object-fit:cover;border-radius:11px;border:1px solid #ddd3cb;cursor:zoom-in;pointer-events:auto!important;display:block;position:relative;z-index:20}
 .image-remove{position:absolute;right:3px;top:3px;width:20px;height:20px;border:0;border-radius:50%;background:rgba(70,62,57,.78);color:#fff;padding:0;line-height:20px;font-size:12px}
 .saved-images{margin:7px 0 4px}
-.saved-images img{width:70px;height:70px;border-radius:11px;border:1px solid #ddd3cb;cursor:pointer}
+.saved-images img{width:62px;height:62px;border-radius:11px;border:1px solid #ddd3cb;cursor:pointer}
 
 
 /* custom keypad: never trigger iPhone system keyboard */
@@ -577,7 +577,7 @@ function toast(msg){const t=$('toast');if(!t)return;t.textContent=msg;t.classLis
 function updateStats(){ $('todoStat').textContent=todos.length;$('doneStat').textContent=todos.filter(x=>x.done).length;$('pendingStat').textContent=questions.length; }
 function updateProgress(){const d=steps.filter(x=>x.done).length,t=steps.length,p=t?Math.round(d/t*100):0;$('progressText').textContent=`${d} / ${t}`;$('heroPct').textContent=p+'%';$('fill').style.width=p+'%';$('progressRing').style.setProperty('--pct',p+'%');$('workflowCount').textContent=`共 ${t} 項`;updateStats();}
 function showView(v){currentView=v==='calculator'?'calculator':v;document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const el=$('view-'+currentView)||$('view-workflow');el.classList.add('active');document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===currentView));window.scrollTo({top:0,behavior:'smooth'});}
-function compressImage(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const max=1400,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));c.getContext('2d').drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.82));};img.onerror=reject;img.src=r.result;};r.onerror=reject;r.readAsDataURL(file);});}
+function compressImage(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const max=1800,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.9));};img.onerror=reject;img.src=r.result;};r.onerror=reject;r.readAsDataURL(file);});}
 async function getImages(id){const el=$(id);return uniqueImages(await Promise.all(Array.from(el.files||[]).map(compressImage)));}
 function uniqueImages(images){if(!Array.isArray(images))return [];const seen=new Set();return images.filter(x=>{if(!x||seen.has(x))return false;seen.add(x);return true;});}
 function imageMarkup(images){const arr=uniqueImages(images);if(!arr.length)return '';return '<div class="saved-images">'+arr.map((x,i)=>`<img src="${x}" alt="附加圖片 ${i+1}" loading="lazy">`).join('')+'</div>';}
