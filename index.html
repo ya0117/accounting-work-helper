@@ -114,7 +114,7 @@ textarea{min-height:78px;resize:vertical}
 input:focus,textarea:focus,select:focus{border-color:#aebfb4;box-shadow:0 0 0 3px rgba(145,169,153,.12)}
 .primary{border:0;background:var(--sage-deep);color:#fff;border-radius:12px;min-height:43px;padding:8px 12px;font-weight:800}
 .calculator{display:grid;gap:10px}
-#calcInput{width:100%;font-size:20px;font-weight:750;text-align:right;min-height:50px}
+#calcInput[readonly]{cursor:pointer;caret-color:transparent}#calcInput{width:100%;font-size:20px;font-weight:750;text-align:right;min-height:50px}
 .calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .calc-btn{min-height:48px;border:1px solid #d8d2ca;border-radius:13px;background:#f7f4ef;color:var(--ink);font-size:18px;font-weight:800}
 .calc-btn:active{transform:scale(.97);background:#ebe6df}
@@ -268,7 +268,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
 .image-thumb img,.saved-images img{width:76px;height:76px;object-fit:cover;border-radius:11px;border:1px solid #ddd3cb;cursor:zoom-in;pointer-events:auto!important;display:block;position:relative;z-index:20}
 .image-remove{position:absolute;right:3px;top:3px;width:20px;height:20px;border:0;border-radius:50%;background:rgba(70,62,57,.78);color:#fff;padding:0;line-height:20px;font-size:12px}
 .saved-images{margin:7px 0 4px}
-.saved-images img{width:70px;height:70px;border-radius:11px;border:1px solid #ddd3cb;cursor:pointer}
+.saved-images img{width:70px;height:70px;border-radius:11px;border:1px solid #ddd3cb;cursor:pointer;pointer-events:auto!important}
 
 
 /* custom keypad: never trigger iPhone system keyboard */
@@ -320,14 +320,14 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
   </section>
 
   <div class="dashboard">
-    <button class="tile" data-open="workflow"><div class="tile-icon">📋</div><div class="tile-title">工作流程</div><div class="tile-desc">SOP 步驟清楚</div></button>
-    <button class="tile" data-open="daily"><div class="tile-icon">☑️</div><div class="tile-title">今日待辦</div><div class="tile-desc">勾選與進度</div></button>
-    <button class="tile" data-open="notes"><div class="tile-icon">📝</div><div class="tile-title">工作筆記</div><div class="tile-desc">主管交代事項</div></button>
-    <button class="tile" data-open="questions"><div class="tile-icon">!</div><div class="tile-title">待確認事項</div><div class="tile-desc">不漏掉任何事</div></button>
-    <button class="tile" data-open="notes"><div class="tile-icon">📖</div><div class="tile-title">我的工作小抄</div><div class="tile-desc">常用資訊整理</div></button>
-    <button class="tile" data-open="farm"><div class="tile-icon">🥬</div><div class="tile-title">農作物／蔬果</div><div class="tile-desc">產業重點提醒</div></button>
-    <button class="tile" data-open="tools"><div class="tile-icon">％</div><div class="tile-title">稅務與計算</div><div class="tile-desc">含稅／未稅／利潤</div></button>
-    <button class="tile" data-open="calculator"><div class="tile-icon">🧮</div><div class="tile-title">金額計算機</div><div class="tile-desc">快速又方便</div></button>
+    <button type="button" class="tile" data-open="workflow"><div class="tile-icon">📋</div><div class="tile-title">工作流程</div><div class="tile-desc">SOP 步驟清楚</div></button>
+    <button type="button" class="tile" data-open="daily"><div class="tile-icon">☑️</div><div class="tile-title">今日待辦</div><div class="tile-desc">勾選與進度</div></button>
+    <button type="button" class="tile" data-open="notes"><div class="tile-icon">📝</div><div class="tile-title">工作筆記</div><div class="tile-desc">主管交代事項</div></button>
+    <button type="button" class="tile" data-open="questions"><div class="tile-icon">!</div><div class="tile-title">待確認事項</div><div class="tile-desc">不漏掉任何事</div></button>
+    <button type="button" class="tile" data-open="notes"><div class="tile-icon">📖</div><div class="tile-title">我的工作小抄</div><div class="tile-desc">常用資訊整理</div></button>
+    <button type="button" class="tile" data-open="farm"><div class="tile-icon">🥬</div><div class="tile-title">農作物／蔬果</div><div class="tile-desc">產業重點提醒</div></button>
+    <button type="button" class="tile" data-open="tools"><div class="tile-icon">％</div><div class="tile-title">稅務與計算</div><div class="tile-desc">含稅／未稅／利潤</div></button>
+    <button type="button" class="tile" data-open="calculator"><div class="tile-icon">🧮</div><div class="tile-title">金額計算機</div><div class="tile-desc">快速又方便</div></button>
   </div>
 
   <div class="stat-row">
@@ -475,7 +475,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
       <div class="section-head"><h2>🧮 金額計算機</h2><span>快速計算</span></div>
       <div class="card">
         <div class="calculator">
-          <input id="calcInput" inputmode="decimal" autocomplete="off" placeholder="例如：1200+350-80" aria-label="計算式">
+          <input id="calcInput" inputmode="none" autocomplete="off" readonly placeholder="例如：1200+350-80" aria-label="計算式">
           <div class="calc-grid" aria-label="計算機按鍵">
             <button type="button" class="calc-btn calc-clear" data-calc="C">C</button>
             <button type="button" class="calc-btn" data-calc="(">(</button>
@@ -645,9 +645,6 @@ function imageMarkup(images){
 
 
 
-$("imageModalImg").addEventListener("dblclick",()=>{
-  imageScale=imageScale===1?2:1;imageX=0;imageY=0;applyImageTransform();
-});
 
 
 
@@ -679,10 +676,17 @@ function closeImageModal(){
   modal.style.display="none";modal.classList.remove("open");modal.setAttribute("aria-hidden","true");
   if(img)img.src="";document.body.style.overflow="";
 }
+
 function bindImageClicks(){
-  document.querySelectorAll(".saved-images img").forEach(img=>{
-    img.onclick=function(e){e.preventDefault();e.stopPropagation();openImageModal(this.currentSrc||this.src);};
-  });
+  if(window.__accountingImageDelegation)return;
+  window.__accountingImageDelegation=true;
+  document.addEventListener("click",function(e){
+    const img=e.target.closest(".saved-images img");
+    if(!img)return;
+    e.preventDefault();
+    e.stopPropagation();
+    openImageModal(img.currentSrc||img.getAttribute("src")||img.src);
+  },true);
 }
 function initImageModal(){
   const modal=document.getElementById("imageModal"),inner=document.getElementById("imageModalInner");
@@ -842,7 +846,7 @@ function renderFarm(){
     list.appendChild(card);
   });
 }
-function renderAll(){updateProgress();renderWorkflow();renderDaily();renderNotes();renderQuestions();renderFarm();setTimeout(bindImageClicks,0)}
+function renderAll(){updateProgress();renderWorkflow();renderDaily();renderNotes();renderQuestions();renderFarm()}
 
 document.querySelectorAll("[data-filter]").forEach(btn=>btn.addEventListener("click",()=>{
   filter=btn.dataset.filter;
@@ -1031,19 +1035,18 @@ function runCalculator(){
   }catch(err){$("calcResult").textContent="算式無法計算"}
 }
 document.querySelectorAll("[data-calc]").forEach(function(btn){
-  btn.addEventListener("click",function(){
+  btn.addEventListener("click",function(e){
+    e.preventDefault();
     const key=btn.getAttribute("data-calc");
     const input=$("calcInput");
-    if(key==="C"){input.value="";$("calcResult").textContent="—";input.focus();return}
-    if(key==="back"){input.value=input.value.slice(0,-1);runCalculator();input.focus();return}
-    if(key==="="){runCalculator();input.focus();return}
+    if(key==="C"){input.value="";$("calcResult").textContent="—";return}
+    if(key==="back"){input.value=input.value.slice(0,-1);runCalculator();return}
+    if(key==="="){runCalculator();return}
     input.value+=key;
     runCalculator();
-    input.focus();
   });
 });
 $("calcInput").addEventListener("input",runCalculator);
-$("calcInput").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();runCalculator()}});
 $("menuBtn").addEventListener("click",()=>showView("workflow"));
 
 const now=new Date(),hour=now.getHours();
@@ -1061,6 +1064,7 @@ function lockCustomNumberInput(id){
   el.addEventListener("focus",function(){el.setAttribute("readonly","readonly");});
 }
 ["taxAmount","saleAmount","costAmount"].forEach(lockCustomNumberInput);
+
 
 initImageModal();bindImageClicks();
 })();
