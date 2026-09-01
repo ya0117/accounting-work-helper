@@ -606,11 +606,11 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-open],[dat
 document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));showView('workflow');renderWorkflow();});
 $('addForm').onsubmit=e=>{e.preventDefault();const title=$('stepTitle').value.trim(),desc=$('stepDesc').value.trim();if(!title){$('stepTitle').focus();toast('請先輸入工作名稱');return;}const idx=$('addForm').dataset.editIndex;if(idx!==undefined){steps[+idx]={...steps[+idx],title,desc};delete $('addForm').dataset.editIndex;$('addForm').querySelector('.primary').textContent='新增工作步驟';toast('工作流程已修改');}else{steps.push({title,desc,done:false});toast('已新增工作步驟');}save(KEY_STEPS,steps);$('stepTitle').value='';$('stepDesc').value='';renderAll();};
 $('todoCancel').onclick=()=>{delete $('todoForm').dataset.editIndex;$('todoTitle').value='';$('todoTime').value='';$('todoImages').value='';$('todoPreview').innerHTML='';$('todoSubmit').textContent='＋ 新增待辦';$('todoCancel').style.display='none';};
-$('todoForm').onsubmit=async e=>{e.preventDefault();const title=$('todoTitle').value.trim(),time=$('todoTime').value;if(!title){$('todoTitle').focus();toast('請先輸入待辦內容');return;}let imgs=[];try{imgs=await getImages('todoImages')}catch(_){toast('圖片讀取失敗');return;}const idx=$('todoForm').dataset.editIndex;if(idx!==undefined){todos[+idx]={...todos[+idx],title,time,images:imgs.length?imgs:(todos[+idx].images||[])};delete $('todoForm').dataset.editIndex;toast('待辦已修改');}else{todos.push({title,time,done:false,images:imgs});toast('已新增待辦');}$('todoTitle').value='';$('todoTime').value='';$('todoImages').value='';$('todoPreview').innerHTML='';$('todoSubmit').textContent='＋ 新增待辦';$('todoCancel').style.display='none';save(KEY_TODOS,todos);renderAll();};
+$('todoForm').onsubmit=async e=>{e.preventDefault();const title=$('todoTitle').value.trim(),time=$('todoTime').value;if(!title){$('todoTitle').focus();toast('請先輸入待辦內容');return;}let imgs=[];try{imgs=await getImages('todoImages')}catch(_){toast('圖片讀取失敗');return;}const idx=$('todoForm').dataset.editIndex;if(idx!==undefined){todos[+idx]={...todos[+idx],title,time,imageIds:imageIds.length?imgs:(todos[+idx].images||[])};delete $('todoForm').dataset.editIndex;toast('待辦已修改');}else{todos.push({title,time,done:false,imageIds:imageIds});toast('已新增待辦');}$('todoTitle').value='';$('todoTime').value='';$('todoImages').value='';$('todoPreview').innerHTML='';$('todoSubmit').textContent='＋ 新增待辦';$('todoCancel').style.display='none';save(KEY_TODOS,todos);renderAll();};
 $('farmCancel').onclick=()=>{delete $('farmForm').dataset.editIndex;$('farmTitle').value='';$('farmBody').value='';$('farmImages').value='';$('farmPreview').innerHTML='';$('farmSubmit').textContent='新增提醒';$('farmCancel').style.display='none';};
-$('farmForm').onsubmit=async e=>{e.preventDefault();const title=$('farmTitle').value.trim(),body=$('farmBody').value.trim();if(!title){$('farmTitle').focus();toast('請先輸入提醒標題');return;}let imgs=[];try{imgs=await getImages('farmImages')}catch(_){toast('圖片讀取失敗');return;}const idx=$('farmForm').dataset.editIndex;if(idx!==undefined){farmReminders[+idx]={...farmReminders[+idx],title,body,images:imgs.length?imgs:(farmReminders[+idx].images||[])};delete $('farmForm').dataset.editIndex;toast('產業提醒已修改');}else{farmReminders.push({title,body,images:imgs});toast('已新增產業提醒');}$('farmTitle').value='';$('farmBody').value='';$('farmImages').value='';$('farmPreview').innerHTML='';$('farmSubmit').textContent='新增提醒';$('farmCancel').style.display='none';save(KEY_FARM,farmReminders);renderFarm();};
-$('noteForm').onsubmit=async e=>{e.preventDefault();const title=$('noteTitle').value.trim(),body=$('noteBody').value.trim();if(!title&&!body){toast('請輸入筆記內容');return;}let imgs=[];try{imgs=await getImages('noteImages')}catch(_){toast('圖片讀取失敗');return;}const idx=$('noteForm').dataset.editIndex;if(idx!==undefined){notes[+idx]={...notes[+idx],title:title||'未命名筆記',body:body||'—',images:imgs.length?imgs:(notes[+idx].images||[])};delete $('noteForm').dataset.editIndex;toast('筆記已修改');}else{notes.unshift({title:title||'未命名筆記',body:body||'—',images:imgs});toast('筆記已儲存');}$('noteTitle').value='';$('noteBody').value='';$('noteImages').value='';$('notePreview').innerHTML='';$('noteForm').querySelector('.primary').textContent='儲存筆記';save(KEY_NOTES,notes);renderNotes();};
-$('questionForm').onsubmit=async e=>{e.preventDefault();const text=$('questionInput').value.trim();if(!text){$('questionInput').focus();return;}let imgs=[];try{imgs=await getImages('questionImages')}catch(_){toast('圖片讀取失敗');return;}questions.unshift({text,images:imgs});save(KEY_QUESTIONS,questions);$('questionInput').value='';$('questionImages').value='';$('questionPreview').innerHTML='';renderQuestions();updateStats();toast('已加入待確認');};
+$('farmForm').onsubmit=async e=>{e.preventDefault();const title=$('farmTitle').value.trim(),body=$('farmBody').value.trim();if(!title){$('farmTitle').focus();toast('請先輸入提醒標題');return;}let imgs=[];try{imgs=await getImages('farmImages')}catch(_){toast('圖片讀取失敗');return;}const idx=$('farmForm').dataset.editIndex;if(idx!==undefined){farmReminders[+idx]={...farmReminders[+idx],title,body,imageIds:imageIds.length?imgs:(farmReminders[+idx].images||[])};delete $('farmForm').dataset.editIndex;toast('產業提醒已修改');}else{farmReminders.push({title,body,imageIds:imageIds});toast('已新增產業提醒');}$('farmTitle').value='';$('farmBody').value='';$('farmImages').value='';$('farmPreview').innerHTML='';$('farmSubmit').textContent='新增提醒';$('farmCancel').style.display='none';save(KEY_FARM,farmReminders);renderFarm();};
+$('noteForm').onsubmit=async e=>{e.preventDefault();const title=$('noteTitle').value.trim(),body=$('noteBody').value.trim();if(!title&&!body){toast('請輸入筆記內容');return;}let imgs=[];try{imgs=await getImages('noteImages')}catch(_){toast('圖片讀取失敗');return;}const idx=$('noteForm').dataset.editIndex;if(idx!==undefined){notes[+idx]={...notes[+idx],title:title||'未命名筆記',body:body||'—',imageIds:imageIds.length?imgs:(notes[+idx].images||[])};delete $('noteForm').dataset.editIndex;toast('筆記已修改');}else{notes.unshift({title:title||'未命名筆記',body:body||'—',imageIds:imageIds});toast('筆記已儲存');}$('noteTitle').value='';$('noteBody').value='';$('noteImages').value='';$('notePreview').innerHTML='';$('noteForm').querySelector('.primary').textContent='儲存筆記';save(KEY_NOTES,notes);renderNotes();};
+$('questionForm').onsubmit=async e=>{e.preventDefault();const text=$('questionInput').value.trim();if(!text){$('questionInput').focus();return;}let imgs=[];try{imgs=await getImages('questionImages')}catch(_){toast('圖片讀取失敗');return;}questions.unshift({text,imageIds:imageIds});save(KEY_QUESTIONS,questions);$('questionInput').value='';$('questionImages').value='';$('questionPreview').innerHTML='';renderQuestions();updateStats();toast('已加入待確認');};
 // Tax/profit custom numeric keypad: never focus inputs, so iOS keyboard cannot appear.
 function numericValue(id){return $(id).value;}
 function numericPress(id,key){const input=$(id);if(!input)return;if(key==='C'){input.value='';}else if(key==='back'){input.value=input.value.slice(0,-1);}else if(key==='00'){input.value+='00';}else if(key==='.'){if(!input.value.includes('.'))input.value+=input.value?'.':'0.';}else if(!['calc','next','calcprofit'].includes(key)){input.value+=key;}}
@@ -638,7 +638,38 @@ $('menuBtn').onclick=()=>showView('workflow');
 const hour=new Date().getHours();$('greeting').textContent=(hour<11?'早安':hour<18?'Hi，今天也辛苦了！':'辛苦了，今天也完成不少了！')+' 🌱';
 $('today')?.textContent;
 renderAll();showView('workflow');renderCalc();
+function bindFilePreviews(){
+  [["todoImages","todoPreview"],["noteImages","notePreview"],["questionImages","questionPreview"],["farmImages","farmPreview"]].forEach(([a,b])=>{
+    const input=$(a),box=$(b);if(!input||!box)return;
+    input.onchange=()=>{
+      box.innerHTML="";
+      Array.from(input.files||[]).forEach(file=>{
+        const img=document.createElement("img");img.src=URL.createObjectURL(file);img.alt="圖片預覽";
+        img.style.cssText="width:76px;height:76px;object-fit:cover;border-radius:11px;border:1px solid #ddd3cb";
+        box.appendChild(img);
+      });
+    };
+  });
+}
+
+bindFilePreviews();
 })();
 </script>
 </body>
-</html>
+</html
+async function selectedFilesToImageIds(inputId,existingIds=[]){
+  const el=$(inputId), ids=uniqueImages(existingIds||[]);
+  if(!el||!el.files||!el.files.length)return ids;
+  for(const file of Array.from(el.files)){
+    const data=await new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+      reader.onload=()=>resolve(reader.result);
+      reader.onerror=()=>reject(reader.error||new Error("read failed"));
+      reader.readAsDataURL(file);
+    });
+    ids.push(await putImage(data));
+  }
+  return uniqueImages(ids);
+}
+
+>
