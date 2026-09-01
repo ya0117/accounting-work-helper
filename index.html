@@ -292,6 +292,14 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
 #imageModal .image-modal-inner{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
 #imageModal img{pointer-events:auto!important;max-width:82vw;max-height:72vh;object-fit:contain;user-select:none;-webkit-user-drag:none}
 
+
+.image-modal-v13{position:fixed;inset:0;z-index:999999;background:rgba(35,31,28,.9);display:none;align-items:center;justify-content:center;padding:16px;touch-action:none}
+.image-modal-v13.open{display:flex}
+.image-modal-v13 .inner{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
+.image-modal-v13 img{max-width:82vw;max-height:74vh;width:auto;height:auto;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.image-modal-v13 .bar{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:6px;background:rgba(35,31,28,.76);padding:7px;border-radius:15px}
+.image-modal-v13 button{border:0;border-radius:10px;min-width:42px;min-height:40px;background:rgba(255,255,255,.15);color:#fff;font-weight:800}
+.image-modal-v13 .close{position:absolute;right:10px;top:max(10px,env(safe-area-inset-top));border-radius:50%;font-size:21px}
 </style>
 </head>
 <body>
@@ -537,7 +545,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
   </div>
 </div>
 
-<script>
+<div id="imageModalV13" class="image-modal-v13" aria-hidden="true"><div class="inner" id="imageModalV13Inner"><button type="button" class="close" id="imageModalV13Close">×</button><img id="imageModalV13Img" alt="圖片預覽"><div class="bar"><button type="button" id="imageModalV13Out">−</button><span id="imageModalV13Label" style="color:#fff;min-width:46px;text-align:center;padding-top:10px;font-size:11px">100%</span><button type="button" id="imageModalV13In">＋</button><button type="button" id="imageModalV13Reset">↺</button></div></div></div><script>
 (function(){
 'use strict';
 const KEY_STEPS='accounting_workflow_v4',KEY_NOTES='accounting_notes_v1',KEY_QUESTIONS='accounting_questions_v1',KEY_TODOS='accounting_todos_v1',KEY_FARM='accounting_farm_reminders_v1';
@@ -573,16 +581,103 @@ todos.forEach(x=>{if(x.images)x.images=uniqueImages(x.images)});notes.forEach(x=
 save(KEY_TODOS,todos);save(KEY_NOTES,notes);save(KEY_QUESTIONS,questions);save(KEY_FARM,farmReminders);
 let filter='all', currentView='workflow', activeNumericTarget=null;
 
-const IMAGE_DB_NAME="accounting_work_helper_images_v13",IMAGE_DB_VERSION=1,IMAGE_STORE="images";
-let imageDBPromise=null;
-function openImageDB(){if(imageDBPromise)return imageDBPromise;imageDBPromise=new Promise((resolve,reject)=>{if(!indexedDB){reject(new Error("no indexedDB"));return}const r=indexedDB.open(IMAGE_DB_NAME,IMAGE_DB_VERSION);r.onupgradeneeded=()=>{if(!r.result.objectStoreNames.contains(IMAGE_STORE))r.result.createObjectStore(IMAGE_STORE)};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)});return imageDBPromise}
-function putImage(data){return openImageDB().then(db=>new Promise((res,rej)=>{const id="i_"+Date.now()+"_"+Math.random().toString(36).slice(2),tx=db.transaction(IMAGE_STORE,"readwrite");tx.objectStore(IMAGE_STORE).put(data,id);tx.oncomplete=()=>res(id);tx.onerror=()=>rej(tx.error)}))}
-function getImage(id){return openImageDB().then(db=>new Promise((res,rej)=>{const r=db.transaction(IMAGE_STORE).objectStore(IMAGE_STORE).get(id);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))}
-function uniqueImages(a){return [...new Set(Array.isArray(a)?a:[])]}
-async function migrateImages(){for(const [key,list] of [[KEY_TODOS,todos],[KEY_NOTES,notes],[KEY_QUESTIONS,questions],[KEY_FARM,farmReminders]]){for(const x of list){const old=uniqueImages(x.images).filter(v=>typeof v==="string"&&v.startsWith("data:"));if(old.length){const ids=[];for(const d of old)ids.push(await putImage(d));x.imageIds=uniqueImages([...(x.imageIds||[]),...ids]);x.images=[]} }save(key,list)}}
-function imageMarkup(ids){ids=uniqueImages(ids);return ids.length?'<div class="saved-images">'+ids.map((id,i)=>`<img data-image-id="${id}" alt="附加圖片 ${i+1}" loading="lazy">`).join("")+"</div>":""}
-async function hydrateImages(){for(const img of document.querySelectorAll(".saved-images img[data-image-id]")){const d=await getImage(img.dataset.imageId).catch(()=>null);if(d)img.src=d}}
-async function storeSelectedImages(inputId,old=[]){const el=$(inputId),files=[...(el?.files||[])];const ids=uniqueImages(old);for(const f of files){const data=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});ids.push(await putImage(data))}return uniqueImages(ids)}
+async 
+
+async 
+async 
+
+
+const IMG_DB="accounting_helper_image_store",IMG_STORE="photos";
+let imgDB=null;
+function dbOpen(){
+  if(imgDB)return Promise.resolve(imgDB);
+  return new Promise((resolve,reject)=>{
+    if(!window.indexedDB){reject(new Error("此瀏覽器不支援圖片儲存"));return;}
+    const req=indexedDB.open(IMG_DB,1);
+    req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(IMG_STORE))db.createObjectStore(IMG_STORE);};
+    req.onsuccess=()=>{imgDB=req.result;resolve(imgDB)};
+    req.onerror=()=>reject(req.error||new Error("圖片儲存空間無法開啟"));
+  });
+}
+function imgPut(data){
+  return dbOpen().then(db=>new Promise((resolve,reject)=>{
+    const id="p_"+Date.now()+"_"+Math.random().toString(36).slice(2);
+    const tx=db.transaction(IMG_STORE,"readwrite");
+    tx.objectStore(IMG_STORE).put(data,id);
+    tx.oncomplete=()=>resolve(id);tx.onerror=()=>reject(tx.error||new Error("圖片儲存失敗"));
+  }));
+}
+function imgGet(id){
+  return dbOpen().then(db=>new Promise((resolve,reject)=>{
+    const req=db.transaction(IMG_STORE).objectStore(IMG_STORE).get(id);
+    req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);
+  }));
+}
+function imgCompress(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const im=new Image();
+      im.onload=()=>{
+        const max=1600,scale=Math.min(1,max/Math.max(im.width,im.height));
+        const c=document.createElement("canvas");
+        c.width=Math.max(1,Math.round(im.width*scale));c.height=Math.max(1,Math.round(im.height*scale));
+        c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+        resolve(c.toDataURL("image/jpeg",.82));
+      };
+      im.onerror=()=>reject(new Error("圖片格式無法讀取"));im.src=reader.result;
+    };
+    reader.onerror=()=>reject(new Error("圖片讀取失敗"));reader.readAsDataURL(file);
+  });
+}
+async function saveSelectedImages(inputId){
+  const input=$(inputId),ids=[];
+  if(!input||!input.files||!input.files.length)return ids;
+  for(const file of Array.from(input.files)){
+    const data=await imgCompress(file);
+    ids.push(await imgPut(data));
+  }
+  return ids;
+}
+function imageMarkup(ids){
+  ids=Array.isArray(ids)?ids:[];
+  return ids.length?'<div class="saved-images">'+ids.map((id,i)=>`<img data-image-id="${id}" alt="附加圖片 ${i+1}" loading="lazy">`).join("")+'</div>':"";
+}
+async function hydrateImages(root=document){
+  for(const img of root.querySelectorAll(".saved-images img[data-image-id]")){
+    const data=await imgGet(img.dataset.imageId).catch(()=>null);
+    if(data)img.src=data;
+  }
+}
+function openImageViewer(src){
+  const modal=$("imageModalV13"),img=$("imageModalV13Img");
+  if(!modal||!img)return;
+  img.src=src;modal.style.display="flex";modal.classList.add("open");modal.setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";window.__imgScale=1;window.__imgX=0;window.__imgY=0;updateViewer();
+}
+function closeImageViewer(){
+  const modal=$("imageModalV13");if(!modal)return;
+  modal.style.display="none";modal.classList.remove("open");modal.setAttribute("aria-hidden","true");$("imageModalV13Img").src="";document.body.style.overflow="";
+}
+function updateViewer(){
+  const img=$("imageModalV13Img");if(!img)return;
+  img.style.transform=`translate(${window.__imgX||0}px,${window.__imgY||0}px) scale(${window.__imgScale||1})`;
+  $("imageModalV13Label").textContent=Math.round((window.__imgScale||1)*100)+"%";
+}
+function initImageViewer(){
+  $("imageModalV13Close").onclick=closeImageViewer;
+  $("imageModalV13In").onclick=()=>{window.__imgScale=Math.min(4,(window.__imgScale||1)+.25);updateViewer()};
+  $("imageModalV13Out").onclick=()=>{window.__imgScale=Math.max(.5,(window.__imgScale||1)-.25);updateViewer()};
+  $("imageModalV13Reset").onclick=()=>{window.__imgScale=1;window.__imgX=0;window.__imgY=0;updateViewer()};
+  $("imageModalV13").onclick=e=>{if(e.target.id==="imageModalV13")closeImageViewer()};
+  document.addEventListener("click",async e=>{
+    const img=e.target.closest(".saved-images img[data-image-id]");
+    if(!img)return;
+    e.preventDefault();e.stopPropagation();
+    const data=await imgGet(img.dataset.imageId).catch(()=>null);
+    if(data)openImageViewer(data);
+  },true);
+}
 
 const $=id=>document.getElementById(id);
 function toast(msg){const t=$('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600);}
@@ -591,8 +686,8 @@ function updateProgress(){const d=steps.filter(x=>x.done).length,t=steps.length,
 function showView(v){currentView=v==='calculator'?'calculator':v;document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const el=$('view-'+currentView)||$('view-workflow');el.classList.add('active');document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===currentView));window.scrollTo({top:0,behavior:'smooth'});}
 function compressImage(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const max=2200,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.92));};img.onerror=reject;img.src=r.result;};r.onerror=reject;r.readAsDataURL(file);});}
 async function getImages(id){const el=$(id);return uniqueImages(await Promise.all(Array.from(el.files||[]).map(compressImage)));}
-function uniqueImages(images){if(!Array.isArray(images))return [];const seen=new Set();return images.filter(x=>{if(!x||seen.has(x))return false;seen.add(x);return true;});}
-function imageMarkup(images){const arr=uniqueImages(images);if(!arr.length)return '';return '<div class="saved-images">'+arr.map((x,i)=>`<img src="${x}" alt="附加圖片 ${i+1}" loading="lazy">`).join('')+'</div>';}
+
+
 function preview(inputId,previewId){const input=$(inputId),box=$(previewId);if(!input||!box)return;box.innerHTML='';Array.from(input.files||[]).forEach(f=>{const w=document.createElement('div');w.className='image-thumb';const im=document.createElement('img');im.src=URL.createObjectURL(f);w.appendChild(im);box.appendChild(w);});}
 ['todoImages','noteImages','questionImages','farmImages'].forEach(id=>{const el=$(id);if(el)el.addEventListener('change',()=>preview(id,id.replace('Images','Preview')));});
 function renderWorkflow(){const list=$('workflow');list.innerHTML='';const vis=steps.map((item,index)=>({item,index})).filter(v=>filter==='all'||(filter==='todo'&&!v.item.done)||(filter==='done'&&v.item.done));if(!vis.length){list.innerHTML='<div class="empty">目前沒有符合條件的工作。</div>';return;}vis.forEach(v=>{const s=v.item,i=v.index,el=document.createElement('div');el.className='step'+(s.done?' done':'');el.innerHTML=`<div class="num">${String(i+1).padStart(2,'0')}</div><div><div class="title"></div><div class="desc"></div><div class="workflow-actions"><button type="button" class="workflow-edit">修改</button><button type="button" class="workflow-delete">刪除</button></div></div><input class="check" type="checkbox" ${s.done?'checked':''}>`;el.querySelector('.title').textContent=s.title;el.querySelector('.desc').textContent=s.desc||'';el.querySelector('.check').onchange=e=>{steps[i].done=e.target.checked;save(KEY_STEPS,steps);migrateImages().catch(()=>{}).finally(()=>{renderAll();hydrateImages();});toast(e.target.checked?'已完成 ✓':'已取消完成');};el.querySelector('.workflow-edit').onclick=()=>{$('stepTitle').value=s.title;$('stepDesc').value=s.desc||'';$('addForm').dataset.editIndex=i;$('addForm').querySelector('.primary').textContent='儲存流程修改';showView('workflow');$('addForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.workflow-delete').onclick=()=>{if(confirm('確定要刪除這個工作流程嗎？')){steps.splice(i,1);save(KEY_STEPS,steps);renderAll();toast('工作流程已刪除');}};list.appendChild(el);});}
@@ -626,6 +721,19 @@ document.addEventListener("DOMContentLoaded",function(){
     toast("筆記已儲存");
   },true);
 });
+$("noteForm").addEventListener("submit",async e=>{
+  e.preventDefault();e.stopPropagation();
+  const title=$("noteTitle").value.trim(),body=$("noteBody").value.trim();
+  if(!title&&!body){toast("請輸入筆記內容");return;}
+  const btn=$("noteForm").querySelector('button[type="submit"]');if(btn)btn.disabled=true;
+  try{
+    const imageIds=await saveSelectedImages("noteImages");
+    notes.unshift({title:title||"未命名筆記",body:body||"—",imageIds});
+    save(KEY_NOTES,notes);$("noteTitle").value="";$("noteBody").value="";$("noteImages").value="";$("notePreview").innerHTML="";
+    renderNotes();await hydrateImages();toast("筆記已儲存");
+  }catch(err){console.error(err);toast("圖片儲存失敗，請確認瀏覽器儲存空間");}
+  finally{if(btn)btn.disabled=false;}
+});
 function renderNotes(){const list=$('noteList');list.innerHTML='';if(!notes.length){list.innerHTML='<div class="empty">還沒有工作筆記，新增第一筆吧。</div>';return;}notes.forEach((n,i)=>{const el=document.createElement('div');el.className='list-item';el.innerHTML=`<strong></strong><p></p>${imageMarkup(n.imageIds)}<button type="button" class="edit">修改</button><button type="button" class="delete">刪除</button>`;el.querySelector('strong').textContent=n.title||'未命名筆記';el.querySelector('p').textContent=n.body||'—';el.querySelector('.edit').onclick=()=>{$('noteTitle').value=n.title||'';$('noteBody').value=n.body||'';$('noteForm').dataset.editIndex=i;$('noteForm').querySelector('.primary').textContent='儲存修改';showView('notes');$('noteForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.delete').onclick=()=>{if(confirm('確定要刪除這筆筆記嗎？')){notes.splice(i,1);save(KEY_NOTES,notes);renderNotes();toast('筆記已刪除');}};list.appendChild(el);});}
 function renderQuestions(){['questionList','questionList2'].forEach(id=>{const list=$(id);if(!list)return;list.innerHTML='';if(!questions.length){list.innerHTML='<div class="empty">目前沒有待確認事項 ✓</div>';return;}questions.forEach((q,i)=>{const text=typeof q==='string'?q:q.text||'',el=document.createElement('div');el.className='list-item';el.innerHTML=`<strong>待確認 ${i+1}</strong><p></p>${imageMarkup(q&&q.imageIds)}<button type="button" class="delete">已確認／刪除</button>`;el.querySelector('p').textContent=text;el.querySelector('.delete').onclick=()=>{questions.splice(i,1);save(KEY_QUESTIONS,questions);renderQuestions();updateStats();toast('已移除');};list.appendChild(el);});});}
 function renderFarm(){const list=$('farmList');list.innerHTML='';if(!farmReminders.length){list.innerHTML='<div class="card empty">目前沒有產業提醒，請新增第一筆。</div>';return;}farmReminders.forEach((r,i)=>{const el=document.createElement('div');el.className='card reminder-item';el.innerHTML=`<div class="reminder-row"><div><h3></h3><div class="reminder-text"></div></div><div class="reminder-actions"><button type="button" class="edit">修改</button><button type="button" class="delete">刪除</button></div></div>${imageMarkup(r.imageIds)}`;el.querySelector('h3').textContent=r.title;el.querySelector('.reminder-text').textContent=r.body||'';el.querySelector('.edit').onclick=()=>{$('farmTitle').value=r.title;$('farmBody').value=r.body||'';$('farmForm').dataset.editIndex=i;$('farmSubmit').textContent='儲存修改';$('farmCancel').style.display='inline-block';showView('farm');$('farmForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.delete').onclick=()=>{if(confirm('確定要刪除這項產業提醒嗎？')){farmReminders.splice(i,1);save(KEY_FARM,farmReminders);renderFarm();toast('提醒已刪除');}};list.appendChild(el);});}
@@ -654,7 +762,6 @@ function safeCalc(s){s=s.replaceAll('×','*').replaceAll('÷','/').replaceAll('�
 function pressCalc(k){if(k==='C'){calcExpr='';renderCalc();$('calcResult').textContent='—';return;}if(k==='back'){calcExpr=calcExpr.slice(0,-1);renderCalc();return;}if(k==='='){try{$('calcResult').textContent=safeCalc(calcExpr).toLocaleString('zh-TW',{maximumFractionDigits:2});}catch(_){$('calcResult').textContent='算式無法計算';}return;}calcExpr+=k;renderCalc();try{$('calcResult').textContent=safeCalc(calcExpr).toLocaleString('zh-TW',{maximumFractionDigits:2});}catch(_){} }
 document.querySelectorAll('[data-calc]').forEach(b=>b.onclick=()=>pressCalc(b.dataset.calc));
 // Image modal: delegated click works even after lists are re-rendered.
-let imageScale=1,imageX=0,imageY=0,drag=false,lastX=0,lastY=0;
 function transformImage(){const im=$('imageModalImg');im.style.transform=`translate(${imageX}px,${imageY}px) scale(${imageScale})`;$('imageZoomLabel').textContent=Math.round(imageScale*100)+'%';}
 function openImage(src){$('imageModalImg').src=src;imageScale=1;imageX=0;imageY=0;$('imageModal').classList.add('open');$('imageModal').style.display='flex';document.body.style.overflow='hidden';transformImage();}
 function closeImage(){$('imageModal').classList.remove('open');$('imageModal').style.display='none';$('imageModalImg').src='';document.body.style.overflow='';}
@@ -682,23 +789,11 @@ function bindFilePreviews(){
 }
 
 bindFilePreviews();
+initImageViewer();
 })();
 </script>
 </body>
 </html
-async function selectedFilesToImageIds(inputId,existingIds=[]){
-  const el=$(inputId), ids=uniqueImages(existingIds||[]);
-  if(!el||!el.files||!el.files.length)return ids;
-  for(const file of Array.from(el.files)){
-    const data=await new Promise((resolve,reject)=>{
-      const reader=new FileReader();
-      reader.onload=()=>resolve(reader.result);
-      reader.onerror=()=>reject(reader.error||new Error("read failed"));
-      reader.readAsDataURL(file);
-    });
-    ids.push(await putImage(data));
-  }
-  return uniqueImages(ids);
-}
+async 
 
 >
