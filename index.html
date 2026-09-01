@@ -1,12 +1,4 @@
-<!doctype html>
-<html lang="zh-Hant">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f7f1ec">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>會計助理工作小幫手</title>
-<style>
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="theme-color" content="#f6f2ea"><title>會計助理工作小幫手</title><style>
 :root{
   --bg:#f6f1ec;--paper:#fffaf6;--white:#fffdfb;--ink:#514c48;--muted:#8d8580;
   --line:#e7ddd6;--sage:#a8b9ad;--sage-deep:#718d7d;--sage-soft:#e3ebe5;
@@ -293,16 +285,14 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
 #imageModal img{pointer-events:auto!important;max-width:82vw;max-height:72vh;object-fit:contain;user-select:none;-webkit-user-drag:none}
 
 
-.image-modal-v13{position:fixed;inset:0;z-index:999999;background:rgba(35,31,28,.9);display:none;align-items:center;justify-content:center;padding:16px;touch-action:none}
-.image-modal-v13.open{display:flex}
-.image-modal-v13 .inner{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
-.image-modal-v13 img{max-width:82vw;max-height:74vh;width:auto;height:auto;object-fit:contain;user-select:none;-webkit-user-drag:none}
-.image-modal-v13 .bar{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;gap:6px;background:rgba(35,31,28,.76);padding:7px;border-radius:15px}
-.image-modal-v13 button{border:0;border-radius:10px;min-width:42px;min-height:40px;background:rgba(255,255,255,.15);color:#fff;font-weight:800}
-.image-modal-v13 .close{position:absolute;right:10px;top:max(10px,env(safe-area-inset-top));border-radius:50%;font-size:21px}
-</style>
-</head>
-<body>
+.image-modal{position:fixed;inset:0;z-index:99999;background:rgba(30,28,25,.88);display:none;align-items:center;justify-content:center;padding:20px}
+.image-modal.open{display:flex}
+.image-viewer{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.image-viewer img{max-width:82vw;max-height:74vh;object-fit:contain;transition:transform .18s ease;user-select:none}
+.viewer-close{position:absolute;right:10px;top:10px;border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:50%;width:42px;height:42px;font-size:24px;z-index:2}
+.viewer-tools{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:7px;background:rgba(30,28,25,.72);padding:7px;border-radius:14px}
+.viewer-tools button{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:10px;width:42px;height:40px;font-weight:800}
+</style></head><body>
 <div class="app">
   <header class="header">
     <div class="header-inner">
@@ -394,7 +384,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
       <div class="helper-grid">
         <div class="card">
           <h3>📝 主管交代</h3><p>把主管交代的事情記下來，避免下班前忘記。</p>
-          <form id="noteForm"><input id="noteTitle" placeholder="標題，例如：月底對帳流程"><textarea id="noteBody" placeholder="流程、注意事項、主管說明..."></textarea><div class="image-field"><div class="image-label">📷 附加圖片（可多選）</div><input id="noteImages" class="image-input" type="file" accept="image/*" multiple><div id="notePreview" class="image-preview"></div></div><button type="submit" class="primary">儲存筆記</button></form>
+          <form id="noteForm"><input id="noteTitle" placeholder="標題，例如：月底對帳流程"><textarea id="noteBody" placeholder="流程、注意事項、主管說明..."></textarea><div class="image-field"><div class="image-label">📷 附加圖片（可多選）</div><input id="noteImages" class="image-input" type="file" accept="image/*" multiple><div id="notePreview" class="image-preview"></div></div><button class="primary">儲存筆記</button></form>
         </div>
         <div class="card">
           <h3>❓ 待確認事項</h3><p>遇到不確定的會計處理，先記錄，確認後再問。</p>
@@ -545,7 +535,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
   </div>
 </div>
 
-<div id="imageModalV13" class="image-modal-v13" aria-hidden="true"><div class="inner" id="imageModalV13Inner"><button type="button" class="close" id="imageModalV13Close">×</button><img id="imageModalV13Img" alt="圖片預覽"><div class="bar"><button type="button" id="imageModalV13Out">−</button><span id="imageModalV13Label" style="color:#fff;min-width:46px;text-align:center;padding-top:10px;font-size:11px">100%</span><button type="button" id="imageModalV13In">＋</button><button type="button" id="imageModalV13Reset">↺</button></div></div></div><script>
+<script>
 (function(){
 'use strict';
 const KEY_STEPS='accounting_workflow_v4',KEY_NOTES='accounting_notes_v1',KEY_QUESTIONS='accounting_questions_v1',KEY_TODOS='accounting_todos_v1',KEY_FARM='accounting_farm_reminders_v1';
@@ -580,105 +570,6 @@ let steps=load(KEY_STEPS,defaults),todos=load(KEY_TODOS,defaultTodos),notes=load
 todos.forEach(x=>{if(x.images)x.images=uniqueImages(x.images)});notes.forEach(x=>{if(x.images)x.images=uniqueImages(x.images)});questions.forEach(x=>{if(x&&x.images)x.images=uniqueImages(x.images)});farmReminders.forEach(x=>{if(x.images)x.images=uniqueImages(x.images)});
 save(KEY_TODOS,todos);save(KEY_NOTES,notes);save(KEY_QUESTIONS,questions);save(KEY_FARM,farmReminders);
 let filter='all', currentView='workflow', activeNumericTarget=null;
-
-async 
-
-async 
-async 
-
-
-const IMG_DB="accounting_helper_image_store",IMG_STORE="photos";
-let imgDB=null;
-function dbOpen(){
-  if(imgDB)return Promise.resolve(imgDB);
-  return new Promise((resolve,reject)=>{
-    if(!window.indexedDB){reject(new Error("此瀏覽器不支援圖片儲存"));return;}
-    const req=indexedDB.open(IMG_DB,1);
-    req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(IMG_STORE))db.createObjectStore(IMG_STORE);};
-    req.onsuccess=()=>{imgDB=req.result;resolve(imgDB)};
-    req.onerror=()=>reject(req.error||new Error("圖片儲存空間無法開啟"));
-  });
-}
-function imgPut(data){
-  return dbOpen().then(db=>new Promise((resolve,reject)=>{
-    const id="p_"+Date.now()+"_"+Math.random().toString(36).slice(2);
-    const tx=db.transaction(IMG_STORE,"readwrite");
-    tx.objectStore(IMG_STORE).put(data,id);
-    tx.oncomplete=()=>resolve(id);tx.onerror=()=>reject(tx.error||new Error("圖片儲存失敗"));
-  }));
-}
-function imgGet(id){
-  return dbOpen().then(db=>new Promise((resolve,reject)=>{
-    const req=db.transaction(IMG_STORE).objectStore(IMG_STORE).get(id);
-    req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);
-  }));
-}
-function imgCompress(file){
-  return new Promise((resolve,reject)=>{
-    const reader=new FileReader();
-    reader.onload=()=>{
-      const im=new Image();
-      im.onload=()=>{
-        const max=1600,scale=Math.min(1,max/Math.max(im.width,im.height));
-        const c=document.createElement("canvas");
-        c.width=Math.max(1,Math.round(im.width*scale));c.height=Math.max(1,Math.round(im.height*scale));
-        c.getContext("2d").drawImage(im,0,0,c.width,c.height);
-        resolve(c.toDataURL("image/jpeg",.82));
-      };
-      im.onerror=()=>reject(new Error("圖片格式無法讀取"));im.src=reader.result;
-    };
-    reader.onerror=()=>reject(new Error("圖片讀取失敗"));reader.readAsDataURL(file);
-  });
-}
-async function saveSelectedImages(inputId){
-  const input=$(inputId),ids=[];
-  if(!input||!input.files||!input.files.length)return ids;
-  for(const file of Array.from(input.files)){
-    const data=await imgCompress(file);
-    ids.push(await imgPut(data));
-  }
-  return ids;
-}
-function imageMarkup(ids){
-  ids=Array.isArray(ids)?ids:[];
-  return ids.length?'<div class="saved-images">'+ids.map((id,i)=>`<img data-image-id="${id}" alt="附加圖片 ${i+1}" loading="lazy">`).join("")+'</div>':"";
-}
-async function hydrateImages(root=document){
-  for(const img of root.querySelectorAll(".saved-images img[data-image-id]")){
-    const data=await imgGet(img.dataset.imageId).catch(()=>null);
-    if(data)img.src=data;
-  }
-}
-function openImageViewer(src){
-  const modal=$("imageModalV13"),img=$("imageModalV13Img");
-  if(!modal||!img)return;
-  img.src=src;modal.style.display="flex";modal.classList.add("open");modal.setAttribute("aria-hidden","false");
-  document.body.style.overflow="hidden";window.__imgScale=1;window.__imgX=0;window.__imgY=0;updateViewer();
-}
-function closeImageViewer(){
-  const modal=$("imageModalV13");if(!modal)return;
-  modal.style.display="none";modal.classList.remove("open");modal.setAttribute("aria-hidden","true");$("imageModalV13Img").src="";document.body.style.overflow="";
-}
-function updateViewer(){
-  const img=$("imageModalV13Img");if(!img)return;
-  img.style.transform=`translate(${window.__imgX||0}px,${window.__imgY||0}px) scale(${window.__imgScale||1})`;
-  $("imageModalV13Label").textContent=Math.round((window.__imgScale||1)*100)+"%";
-}
-function initImageViewer(){
-  $("imageModalV13Close").onclick=closeImageViewer;
-  $("imageModalV13In").onclick=()=>{window.__imgScale=Math.min(4,(window.__imgScale||1)+.25);updateViewer()};
-  $("imageModalV13Out").onclick=()=>{window.__imgScale=Math.max(.5,(window.__imgScale||1)-.25);updateViewer()};
-  $("imageModalV13Reset").onclick=()=>{window.__imgScale=1;window.__imgX=0;window.__imgY=0;updateViewer()};
-  $("imageModalV13").onclick=e=>{if(e.target.id==="imageModalV13")closeImageViewer()};
-  document.addEventListener("click",async e=>{
-    const img=e.target.closest(".saved-images img[data-image-id]");
-    if(!img)return;
-    e.preventDefault();e.stopPropagation();
-    const data=await imgGet(img.dataset.imageId).catch(()=>null);
-    if(data)openImageViewer(data);
-  },true);
-}
-
 const $=id=>document.getElementById(id);
 function toast(msg){const t=$('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),1600);}
 function updateStats(){ $('todoStat').textContent=todos.length;$('doneStat').textContent=todos.filter(x=>x.done).length;$('pendingStat').textContent=questions.length; }
@@ -686,68 +577,26 @@ function updateProgress(){const d=steps.filter(x=>x.done).length,t=steps.length,
 function showView(v){currentView=v==='calculator'?'calculator':v;document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const el=$('view-'+currentView)||$('view-workflow');el.classList.add('active');document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===currentView));window.scrollTo({top:0,behavior:'smooth'});}
 function compressImage(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const max=2200,scale=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.92));};img.onerror=reject;img.src=r.result;};r.onerror=reject;r.readAsDataURL(file);});}
 async function getImages(id){const el=$(id);return uniqueImages(await Promise.all(Array.from(el.files||[]).map(compressImage)));}
-
-
+function uniqueImages(images){if(!Array.isArray(images))return [];const seen=new Set();return images.filter(x=>{if(!x||seen.has(x))return false;seen.add(x);return true;});}
+function imageMarkup(images){const arr=uniqueImages(images);if(!arr.length)return '';return '<div class="saved-images">'+arr.map((x,i)=>`<img src="${x}" alt="附加圖片 ${i+1}" loading="lazy">`).join('')+'</div>';}
 function preview(inputId,previewId){const input=$(inputId),box=$(previewId);if(!input||!box)return;box.innerHTML='';Array.from(input.files||[]).forEach(f=>{const w=document.createElement('div');w.className='image-thumb';const im=document.createElement('img');im.src=URL.createObjectURL(f);w.appendChild(im);box.appendChild(w);});}
 ['todoImages','noteImages','questionImages','farmImages'].forEach(id=>{const el=$(id);if(el)el.addEventListener('change',()=>preview(id,id.replace('Images','Preview')));});
-function renderWorkflow(){const list=$('workflow');list.innerHTML='';const vis=steps.map((item,index)=>({item,index})).filter(v=>filter==='all'||(filter==='todo'&&!v.item.done)||(filter==='done'&&v.item.done));if(!vis.length){list.innerHTML='<div class="empty">目前沒有符合條件的工作。</div>';return;}vis.forEach(v=>{const s=v.item,i=v.index,el=document.createElement('div');el.className='step'+(s.done?' done':'');el.innerHTML=`<div class="num">${String(i+1).padStart(2,'0')}</div><div><div class="title"></div><div class="desc"></div><div class="workflow-actions"><button type="button" class="workflow-edit">修改</button><button type="button" class="workflow-delete">刪除</button></div></div><input class="check" type="checkbox" ${s.done?'checked':''}>`;el.querySelector('.title').textContent=s.title;el.querySelector('.desc').textContent=s.desc||'';el.querySelector('.check').onchange=e=>{steps[i].done=e.target.checked;save(KEY_STEPS,steps);migrateImages().catch(()=>{}).finally(()=>{renderAll();hydrateImages();});toast(e.target.checked?'已完成 ✓':'已取消完成');};el.querySelector('.workflow-edit').onclick=()=>{$('stepTitle').value=s.title;$('stepDesc').value=s.desc||'';$('addForm').dataset.editIndex=i;$('addForm').querySelector('.primary').textContent='儲存流程修改';showView('workflow');$('addForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.workflow-delete').onclick=()=>{if(confirm('確定要刪除這個工作流程嗎？')){steps.splice(i,1);save(KEY_STEPS,steps);renderAll();toast('工作流程已刪除');}};list.appendChild(el);});}
-function renderDaily(){const list=$('dailyList');list.innerHTML='';const done=todos.filter(x=>x.done).length;list.innerHTML=`<div class="todo-summary"><span>今天共 <strong>${todos.length}</strong> 項</span><span>完成 <strong>${done}</strong> 項</span></div>`;if(!todos.length){list.insertAdjacentHTML('beforeend','<div class="empty">今天還沒有待辦事項，新增一項吧。</div>');return;}todos.map((item,index)=>({item,index})).sort((a,b)=>a.item.done-b.item.done||(a.item.time||'99:99').localeCompare(b.item.time||'99:99')).forEach(v=>{const t=v.item,i=v.index,el=document.createElement('div');el.className='todo-item'+(t.done?' done':'');el.innerHTML=`<input class="todo-check" type="checkbox" ${t.done?'checked':''}><div class="todo-main"><strong></strong><small></small>${imageMarkup(t.imageIds)}</div><div class="todo-actions"><button type="button" class="edit">修改</button><button type="button" class="delete">刪除</button></div>`;el.querySelector('strong').textContent=t.title;el.querySelector('small').textContent=t.time?`時間：${t.time}`:'未設定時間';el.querySelector('.todo-check').onchange=e=>{todos[i].done=e.target.checked;save(KEY_TODOS,todos);renderAll();toast(e.target.checked?'待辦已完成 ✓':'已取消完成');};el.querySelector('.edit').onclick=()=>{$('todoTitle').value=t.title;$('todoTime').value=t.time||'';$('todoForm').dataset.editIndex=i;$('todoSubmit').textContent='儲存修改';$('todoCancel').style.display='inline-block';showView('daily');$('todoForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.delete').onclick=()=>{if(confirm('確定要刪除這項待辦嗎？')){todos.splice(i,1);save(KEY_TODOS,todos);renderAll();toast('待辦已刪除');}};list.appendChild(el);});}
-
-document.addEventListener("DOMContentLoaded",function(){
-  const form=document.getElementById("noteForm");
-  if(!form)return;
-  form.addEventListener("submit",async function(e){
-    e.preventDefault();
-    e.stopPropagation();
-    const title=document.getElementById("noteTitle").value.trim();
-    const body=document.getElementById("noteBody").value.trim();
-    if(!title&&!body){toast("請先輸入筆記內容");return;}
-    let imageIds=[];
-    try{
-      imageIds=await selectedFilesToImageIds("noteImages",[]);
-    }catch(err){
-      console.error(err);
-      toast("圖片無法儲存，請重新選擇圖片");
-      return;
-    }
-    notes.unshift({title:title||"未命名筆記",body:body||"—",imageIds});
-    save(KEY_NOTES,notes);
-    document.getElementById("noteTitle").value="";
-    document.getElementById("noteBody").value="";
-    document.getElementById("noteImages").value="";
-    document.getElementById("notePreview").innerHTML="";
-    renderNotes();
-    hydrateImages();
-    toast("筆記已儲存");
-  },true);
-});
-$("noteForm").addEventListener("submit",async e=>{
-  e.preventDefault();e.stopPropagation();
-  const title=$("noteTitle").value.trim(),body=$("noteBody").value.trim();
-  if(!title&&!body){toast("請輸入筆記內容");return;}
-  const btn=$("noteForm").querySelector('button[type="submit"]');if(btn)btn.disabled=true;
-  try{
-    const imageIds=await saveSelectedImages("noteImages");
-    notes.unshift({title:title||"未命名筆記",body:body||"—",imageIds});
-    save(KEY_NOTES,notes);$("noteTitle").value="";$("noteBody").value="";$("noteImages").value="";$("notePreview").innerHTML="";
-    renderNotes();await hydrateImages();toast("筆記已儲存");
-  }catch(err){console.error(err);toast("圖片儲存失敗，請確認瀏覽器儲存空間");}
-  finally{if(btn)btn.disabled=false;}
-});
-function renderNotes(){const list=$('noteList');list.innerHTML='';if(!notes.length){list.innerHTML='<div class="empty">還沒有工作筆記，新增第一筆吧。</div>';return;}notes.forEach((n,i)=>{const el=document.createElement('div');el.className='list-item';el.innerHTML=`<strong></strong><p></p>${imageMarkup(n.imageIds)}<button type="button" class="edit">修改</button><button type="button" class="delete">刪除</button>`;el.querySelector('strong').textContent=n.title||'未命名筆記';el.querySelector('p').textContent=n.body||'—';el.querySelector('.edit').onclick=()=>{$('noteTitle').value=n.title||'';$('noteBody').value=n.body||'';$('noteForm').dataset.editIndex=i;$('noteForm').querySelector('.primary').textContent='儲存修改';showView('notes');$('noteForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.delete').onclick=()=>{if(confirm('確定要刪除這筆筆記嗎？')){notes.splice(i,1);save(KEY_NOTES,notes);renderNotes();toast('筆記已刪除');}};list.appendChild(el);});}
-function renderQuestions(){['questionList','questionList2'].forEach(id=>{const list=$(id);if(!list)return;list.innerHTML='';if(!questions.length){list.innerHTML='<div class="empty">目前沒有待確認事項 ✓</div>';return;}questions.forEach((q,i)=>{const text=typeof q==='string'?q:q.text||'',el=document.createElement('div');el.className='list-item';el.innerHTML=`<strong>待確認 ${i+1}</strong><p></p>${imageMarkup(q&&q.imageIds)}<button type="button" class="delete">已確認／刪除</button>`;el.querySelector('p').textContent=text;el.querySelector('.delete').onclick=()=>{questions.splice(i,1);save(KEY_QUESTIONS,questions);renderQuestions();updateStats();toast('已移除');};list.appendChild(el);});});}
-function renderFarm(){const list=$('farmList');list.innerHTML='';if(!farmReminders.length){list.innerHTML='<div class="card empty">目前沒有產業提醒，請新增第一筆。</div>';return;}farmReminders.forEach((r,i)=>{const el=document.createElement('div');el.className='card reminder-item';el.innerHTML=`<div class="reminder-row"><div><h3></h3><div class="reminder-text"></div></div><div class="reminder-actions"><button type="button" class="edit">修改</button><button type="button" class="delete">刪除</button></div></div>${imageMarkup(r.imageIds)}`;el.querySelector('h3').textContent=r.title;el.querySelector('.reminder-text').textContent=r.body||'';el.querySelector('.edit').onclick=()=>{$('farmTitle').value=r.title;$('farmBody').value=r.body||'';$('farmForm').dataset.editIndex=i;$('farmSubmit').textContent='儲存修改';$('farmCancel').style.display='inline-block';showView('farm');$('farmForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.delete').onclick=()=>{if(confirm('確定要刪除這項產業提醒嗎？')){farmReminders.splice(i,1);save(KEY_FARM,farmReminders);renderFarm();toast('提醒已刪除');}};list.appendChild(el);});}
-function renderAll(){updateProgress();renderWorkflow();renderDaily();renderNotes();renderQuestions();renderFarm();hydrateImages();}
+function renderWorkflow(){const list=$('workflow');list.innerHTML='';const vis=steps.map((item,index)=>({item,index})).filter(v=>filter==='all'||(filter==='todo'&&!v.item.done)||(filter==='done'&&v.item.done));if(!vis.length){list.innerHTML='<div class="empty">目前沒有符合條件的工作。</div>';return;}vis.forEach(v=>{const s=v.item,i=v.index,el=document.createElement('div');el.className='step'+(s.done?' done':'');el.innerHTML=`<div class="num">${String(i+1).padStart(2,'0')}</div><div><div class="title"></div><div class="desc"></div><div class="workflow-actions"><button type="button" class="workflow-edit">修改</button><button type="button" class="workflow-delete">刪除</button></div></div><input class="check" type="checkbox" ${s.done?'checked':''}>`;el.querySelector('.title').textContent=s.title;el.querySelector('.desc').textContent=s.desc||'';el.querySelector('.check').onchange=e=>{steps[i].done=e.target.checked;save(KEY_STEPS,steps);renderAll();toast(e.target.checked?'已完成 ✓':'已取消完成');};el.querySelector('.workflow-edit').onclick=()=>{$('stepTitle').value=s.title;$('stepDesc').value=s.desc||'';$('addForm').dataset.editIndex=i;$('addForm').querySelector('.primary').textContent='儲存流程修改';showView('workflow');$('addForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.workflow-delete').onclick=()=>{if(confirm('確定要刪除這個工作流程嗎？')){steps.splice(i,1);save(KEY_STEPS,steps);renderAll();toast('工作流程已刪除');}};list.appendChild(el);});}
+function renderDaily(){const list=$('dailyList');list.innerHTML='';const done=todos.filter(x=>x.done).length;list.innerHTML=`<div class="todo-summary"><span>今天共 <strong>${todos.length}</strong> 項</span><span>完成 <strong>${done}</strong> 項</span></div>`;if(!todos.length){list.insertAdjacentHTML('beforeend','<div class="empty">今天還沒有待辦事項，新增一項吧。</div>');return;}todos.map((item,index)=>({item,index})).sort((a,b)=>a.item.done-b.item.done||(a.item.time||'99:99').localeCompare(b.item.time||'99:99')).forEach(v=>{const t=v.item,i=v.index,el=document.createElement('div');el.className='todo-item'+(t.done?' done':'');el.innerHTML=`<input class="todo-check" type="checkbox" ${t.done?'checked':''}><div class="todo-main"><strong></strong><small></small>${imageMarkup(t.images)}</div><div class="todo-actions"><button type="button" class="edit">修改</button><button type="button" class="delete">刪除</button></div>`;el.querySelector('strong').textContent=t.title;el.querySelector('small').textContent=t.time?`時間：${t.time}`:'未設定時間';el.querySelector('.todo-check').onchange=e=>{todos[i].done=e.target.checked;save(KEY_TODOS,todos);renderAll();toast(e.target.checked?'待辦已完成 ✓':'已取消完成');};el.querySelector('.edit').onclick=()=>{$('todoTitle').value=t.title;$('todoTime').value=t.time||'';$('todoForm').dataset.editIndex=i;$('todoSubmit').textContent='儲存修改';$('todoCancel').style.display='inline-block';showView('daily');$('todoForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.delete').onclick=()=>{if(confirm('確定要刪除這項待辦嗎？')){todos.splice(i,1);save(KEY_TODOS,todos);renderAll();toast('待辦已刪除');}};list.appendChild(el);});}
+function renderNotes(){const list=$('noteList');list.innerHTML='';if(!notes.length){list.innerHTML='<div class="empty">還沒有工作筆記，新增第一筆吧。</div>';return;}notes.forEach((n,i)=>{const el=document.createElement('div');el.className='list-item';el.innerHTML=`<strong></strong><p></p>${imageMarkup(n.images)}<button type="button" class="edit">修改</button><button type="button" class="delete">刪除</button>`;el.querySelector('strong').textContent=n.title||'未命名筆記';el.querySelector('p').textContent=n.body||'—';el.querySelector('.edit').onclick=()=>{$('noteTitle').value=n.title||'';$('noteBody').value=n.body||'';$('noteForm').dataset.editIndex=i;$('noteForm').querySelector('.primary').textContent='儲存修改';showView('notes');$('noteForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.delete').onclick=()=>{if(confirm('確定要刪除這筆筆記嗎？')){notes.splice(i,1);save(KEY_NOTES,notes);renderNotes();toast('筆記已刪除');}};list.appendChild(el);});}
+function renderQuestions(){['questionList','questionList2'].forEach(id=>{const list=$(id);if(!list)return;list.innerHTML='';if(!questions.length){list.innerHTML='<div class="empty">目前沒有待確認事項 ✓</div>';return;}questions.forEach((q,i)=>{const text=typeof q==='string'?q:q.text||'',el=document.createElement('div');el.className='list-item';el.innerHTML=`<strong>待確認 ${i+1}</strong><p></p>${imageMarkup(q&&q.images)}<button type="button" class="delete">已確認／刪除</button>`;el.querySelector('p').textContent=text;el.querySelector('.delete').onclick=()=>{questions.splice(i,1);save(KEY_QUESTIONS,questions);renderQuestions();updateStats();toast('已移除');};list.appendChild(el);});});}
+function renderFarm(){const list=$('farmList');list.innerHTML='';if(!farmReminders.length){list.innerHTML='<div class="card empty">目前沒有產業提醒，請新增第一筆。</div>';return;}farmReminders.forEach((r,i)=>{const el=document.createElement('div');el.className='card reminder-item';el.innerHTML=`<div class="reminder-row"><div><h3></h3><div class="reminder-text"></div></div><div class="reminder-actions"><button type="button" class="edit">修改</button><button type="button" class="delete">刪除</button></div></div>${imageMarkup(r.images)}`;el.querySelector('h3').textContent=r.title;el.querySelector('.reminder-text').textContent=r.body||'';el.querySelector('.edit').onclick=()=>{$('farmTitle').value=r.title;$('farmBody').value=r.body||'';$('farmForm').dataset.editIndex=i;$('farmSubmit').textContent='儲存修改';$('farmCancel').style.display='inline-block';showView('farm');$('farmForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.delete').onclick=()=>{if(confirm('確定要刪除這項產業提醒嗎？')){farmReminders.splice(i,1);save(KEY_FARM,farmReminders);renderFarm();toast('提醒已刪除');}};list.appendChild(el);});}
+function renderAll(){updateProgress();renderWorkflow();renderDaily();renderNotes();renderQuestions();renderFarm();}
 // Navigation: single delegated handler prevents duplicate/conflicting listeners.
 document.addEventListener('click',e=>{const b=e.target.closest('[data-open],[data-nav]');if(b){e.preventDefault();showView(b.dataset.open||b.dataset.nav);}});
 document.querySelectorAll('[data-filter]').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('[data-filter]').forEach(x=>x.classList.toggle('active',x===b));showView('workflow');renderWorkflow();});
 $('addForm').onsubmit=e=>{e.preventDefault();const title=$('stepTitle').value.trim(),desc=$('stepDesc').value.trim();if(!title){$('stepTitle').focus();toast('請先輸入工作名稱');return;}const idx=$('addForm').dataset.editIndex;if(idx!==undefined){steps[+idx]={...steps[+idx],title,desc};delete $('addForm').dataset.editIndex;$('addForm').querySelector('.primary').textContent='新增工作步驟';toast('工作流程已修改');}else{steps.push({title,desc,done:false});toast('已新增工作步驟');}save(KEY_STEPS,steps);$('stepTitle').value='';$('stepDesc').value='';renderAll();};
 $('todoCancel').onclick=()=>{delete $('todoForm').dataset.editIndex;$('todoTitle').value='';$('todoTime').value='';$('todoImages').value='';$('todoPreview').innerHTML='';$('todoSubmit').textContent='＋ 新增待辦';$('todoCancel').style.display='none';};
-$('todoForm').onsubmit=async e=>{e.preventDefault();const title=$('todoTitle').value.trim(),time=$('todoTime').value;if(!title){$('todoTitle').focus();toast('請先輸入待辦內容');return;}let imgs=[];try{imgs=await getImages('todoImages')}catch(_){toast('圖片讀取失敗');return;}const idx=$('todoForm').dataset.editIndex;if(idx!==undefined){todos[+idx]={...todos[+idx],title,time,imageIds:imageIds.length?imgs:(todos[+idx].images||[])};delete $('todoForm').dataset.editIndex;toast('待辦已修改');}else{todos.push({title,time,done:false,imageIds:imageIds});toast('已新增待辦');}$('todoTitle').value='';$('todoTime').value='';$('todoImages').value='';$('todoPreview').innerHTML='';$('todoSubmit').textContent='＋ 新增待辦';$('todoCancel').style.display='none';save(KEY_TODOS,todos);renderAll();};
+$('todoForm').onsubmit=async e=>{e.preventDefault();const title=$('todoTitle').value.trim(),time=$('todoTime').value;if(!title){$('todoTitle').focus();toast('請先輸入待辦內容');return;}let imgs=[];try{imgs=await getImages('todoImages')}catch(_){toast('圖片讀取失敗');return;}const idx=$('todoForm').dataset.editIndex;if(idx!==undefined){todos[+idx]={...todos[+idx],title,time,images:imgs.length?imgs:(todos[+idx].images||[])};delete $('todoForm').dataset.editIndex;toast('待辦已修改');}else{todos.push({title,time,done:false,images:imgs});toast('已新增待辦');}$('todoTitle').value='';$('todoTime').value='';$('todoImages').value='';$('todoPreview').innerHTML='';$('todoSubmit').textContent='＋ 新增待辦';$('todoCancel').style.display='none';save(KEY_TODOS,todos);renderAll();};
 $('farmCancel').onclick=()=>{delete $('farmForm').dataset.editIndex;$('farmTitle').value='';$('farmBody').value='';$('farmImages').value='';$('farmPreview').innerHTML='';$('farmSubmit').textContent='新增提醒';$('farmCancel').style.display='none';};
-$('farmForm').onsubmit=async e=>{e.preventDefault();const title=$('farmTitle').value.trim(),body=$('farmBody').value.trim();if(!title){$('farmTitle').focus();toast('請先輸入提醒標題');return;}let imgs=[];try{imgs=await getImages('farmImages')}catch(_){toast('圖片讀取失敗');return;}const idx=$('farmForm').dataset.editIndex;if(idx!==undefined){farmReminders[+idx]={...farmReminders[+idx],title,body,imageIds:imageIds.length?imgs:(farmReminders[+idx].images||[])};delete $('farmForm').dataset.editIndex;toast('產業提醒已修改');}else{farmReminders.push({title,body,imageIds:imageIds});toast('已新增產業提醒');}$('farmTitle').value='';$('farmBody').value='';$('farmImages').value='';$('farmPreview').innerHTML='';$('farmSubmit').textContent='新增提醒';$('farmCancel').style.display='none';save(KEY_FARM,farmReminders);renderFarm();};
-$('noteForm').onsubmit=async e=>{e.preventDefault();const title=$('noteTitle').value.trim(),body=$('noteBody').value.trim();if(!title&&!body){toast('請輸入筆記內容');return;}let imgs=[];try{imgs=await getImages('noteImages')}catch(_){toast('圖片讀取失敗');return;}const idx=$('noteForm').dataset.editIndex;if(idx!==undefined){notes[+idx]={...notes[+idx],title:title||'未命名筆記',body:body||'—',imageIds:imageIds.length?imgs:(notes[+idx].images||[])};delete $('noteForm').dataset.editIndex;toast('筆記已修改');}else{notes.unshift({title:title||'未命名筆記',body:body||'—',imageIds:imageIds});toast('筆記已儲存');}$('noteTitle').value='';$('noteBody').value='';$('noteImages').value='';$('notePreview').innerHTML='';$('noteForm').querySelector('.primary').textContent='儲存筆記';save(KEY_NOTES,notes);renderNotes();};
-$('questionForm').onsubmit=async e=>{e.preventDefault();const text=$('questionInput').value.trim();if(!text){$('questionInput').focus();return;}let imgs=[];try{imgs=await getImages('questionImages')}catch(_){toast('圖片讀取失敗');return;}questions.unshift({text,imageIds:imageIds});save(KEY_QUESTIONS,questions);$('questionInput').value='';$('questionImages').value='';$('questionPreview').innerHTML='';renderQuestions();updateStats();toast('已加入待確認');};
+$('farmForm').onsubmit=async e=>{e.preventDefault();const title=$('farmTitle').value.trim(),body=$('farmBody').value.trim();if(!title){$('farmTitle').focus();toast('請先輸入提醒標題');return;}let imgs=[];try{imgs=await getImages('farmImages')}catch(_){toast('圖片讀取失敗');return;}const idx=$('farmForm').dataset.editIndex;if(idx!==undefined){farmReminders[+idx]={...farmReminders[+idx],title,body,images:imgs.length?imgs:(farmReminders[+idx].images||[])};delete $('farmForm').dataset.editIndex;toast('產業提醒已修改');}else{farmReminders.push({title,body,images:imgs});toast('已新增產業提醒');}$('farmTitle').value='';$('farmBody').value='';$('farmImages').value='';$('farmPreview').innerHTML='';$('farmSubmit').textContent='新增提醒';$('farmCancel').style.display='none';save(KEY_FARM,farmReminders);renderFarm();};
+$('noteForm').onsubmit=async e=>{e.preventDefault();const title=$('noteTitle').value.trim(),body=$('noteBody').value.trim();if(!title&&!body){toast('請輸入筆記內容');return;}let imgs=[];try{imgs=await getImages('noteImages')}catch(_){toast('圖片讀取失敗');return;}const idx=$('noteForm').dataset.editIndex;if(idx!==undefined){notes[+idx]={...notes[+idx],title:title||'未命名筆記',body:body||'—',images:imgs.length?imgs:(notes[+idx].images||[])};delete $('noteForm').dataset.editIndex;toast('筆記已修改');}else{notes.unshift({title:title||'未命名筆記',body:body||'—',images:imgs});toast('筆記已儲存');}$('noteTitle').value='';$('noteBody').value='';$('noteImages').value='';$('notePreview').innerHTML='';$('noteForm').querySelector('.primary').textContent='儲存筆記';save(KEY_NOTES,notes);renderNotes();};
+$('questionForm').onsubmit=async e=>{e.preventDefault();const text=$('questionInput').value.trim();if(!text){$('questionInput').focus();return;}let imgs=[];try{imgs=await getImages('questionImages')}catch(_){toast('圖片讀取失敗');return;}questions.unshift({text,images:imgs});save(KEY_QUESTIONS,questions);$('questionInput').value='';$('questionImages').value='';$('questionPreview').innerHTML='';renderQuestions();updateStats();toast('已加入待確認');};
 // Tax/profit custom numeric keypad: never focus inputs, so iOS keyboard cannot appear.
 function numericValue(id){return $(id).value;}
 function numericPress(id,key){const input=$(id);if(!input)return;if(key==='C'){input.value='';}else if(key==='back'){input.value=input.value.slice(0,-1);}else if(key==='00'){input.value+='00';}else if(key==='.'){if(!input.value.includes('.'))input.value+=input.value?'.':'0.';}else if(!['calc','next','calcprofit'].includes(key)){input.value+=key;}}
@@ -762,6 +611,7 @@ function safeCalc(s){s=s.replaceAll('×','*').replaceAll('÷','/').replaceAll('�
 function pressCalc(k){if(k==='C'){calcExpr='';renderCalc();$('calcResult').textContent='—';return;}if(k==='back'){calcExpr=calcExpr.slice(0,-1);renderCalc();return;}if(k==='='){try{$('calcResult').textContent=safeCalc(calcExpr).toLocaleString('zh-TW',{maximumFractionDigits:2});}catch(_){$('calcResult').textContent='算式無法計算';}return;}calcExpr+=k;renderCalc();try{$('calcResult').textContent=safeCalc(calcExpr).toLocaleString('zh-TW',{maximumFractionDigits:2});}catch(_){} }
 document.querySelectorAll('[data-calc]').forEach(b=>b.onclick=()=>pressCalc(b.dataset.calc));
 // Image modal: delegated click works even after lists are re-rendered.
+let imageScale=1,imageX=0,imageY=0,drag=false,lastX=0,lastY=0;
 function transformImage(){const im=$('imageModalImg');im.style.transform=`translate(${imageX}px,${imageY}px) scale(${imageScale})`;$('imageZoomLabel').textContent=Math.round(imageScale*100)+'%';}
 function openImage(src){$('imageModalImg').src=src;imageScale=1;imageX=0;imageY=0;$('imageModal').classList.add('open');$('imageModal').style.display='flex';document.body.style.overflow='hidden';transformImage();}
 function closeImage(){$('imageModal').classList.remove('open');$('imageModal').style.display='none';$('imageModalImg').src='';document.body.style.overflow='';}
@@ -774,26 +624,346 @@ $('menuBtn').onclick=()=>showView('workflow');
 const hour=new Date().getHours();$('greeting').textContent=(hour<11?'早安':hour<18?'Hi，今天也辛苦了！':'辛苦了，今天也完成不少了！')+' 🌱';
 $('today')?.textContent;
 renderAll();showView('workflow');renderCalc();
-function bindFilePreviews(){
-  [["todoImages","todoPreview"],["noteImages","notePreview"],["questionImages","questionPreview"],["farmImages","farmPreview"]].forEach(([a,b])=>{
-    const input=$(a),box=$(b);if(!input||!box)return;
-    input.onchange=()=>{
-      box.innerHTML="";
-      Array.from(input.files||[]).forEach(file=>{
-        const img=document.createElement("img");img.src=URL.createObjectURL(file);img.alt="圖片預覽";
-        img.style.cssText="width:76px;height:76px;object-fit:cover;border-radius:11px;border:1px solid #ddd3cb";
-        box.appendChild(img);
-      });
-    };
-  });
-}
-
-bindFilePreviews();
-initImageViewer();
 })();
 </script>
-</body>
-</html
-async 
+<script>
+(function(){
+"use strict";
+const KEY_STEPS="accounting_steps_v8";
+const KEY_TODOS="accounting_todos_v8";
+const KEY_NOTES="accounting_notes_v8";
+const KEY_QUESTIONS="accounting_questions_v8";
+const KEY_FARM="accounting_farm_v8";
 
->
+const defaults=[
+{title:"開管銷表－檢查零用金",desc:"確認零用金餘額及當日需要處理的事項。",done:false},
+{title:"進銷存－進貨紀錄",desc:"確認進貨日期、廠商、品項、數量與金額。",done:false},
+{title:"進銷存－進退貨紀錄分頁",desc:"依實際單據確認進貨與退貨資料。",done:false},
+{title:"複製今日工作資料夾至桌面",desc:"依公司既定資料夾結構建立今日工作檔案。",done:false},
+{title:"開啟總體銷貨資料",desc:"確認當日銷貨資料是否完整。",done:false},
+{title:"KEY IN 各車今日出貨",desc:"依出貨單逐筆輸入，輸入後核對數量與金額。",done:false},
+{title:"整理發票與憑證",desc:"依日期或公司規定順序整理，確認憑證完整。",done:false},
+{title:"確認今日待辦是否全部完成",desc:"檢查主管交代事項及尚未處理的單據。",done:false}
+];
+const defaultTodos=[
+{title:"收發發票／整理單據",time:"09:00",done:false,images:[]},
+{title:"登打傳票",time:"10:00",done:false,images:[]},
+{title:"核對銀行交易明細",time:"11:00",done:false,images:[]},
+{title:"整理應收／應付帳款",time:"14:00",done:false,images:[]},
+{title:"協助月報表資料",time:"16:00",done:false,images:[]}
+];
+const defaultFarm=[
+{title:"進貨與銷貨",body:"確認日期、廠商／客戶、品項、數量、單價與金額。",images:[]},
+{title:"生鮮蔬果退貨／折讓",body:"生鮮蔬果常有退貨、折讓或短少，相關單據要留存。",images:[]},
+{title:"出貨資料",body:"出貨資料 KEY IN 後，再核對數量與金額。",images:[]},
+{title:"憑證與發票",body:"確認發票號碼、日期、買受人及金額。",images:[]},
+{title:"單據對應",body:"單據與發票要能互相對應，避免月底才發現缺件。",images:[]},
+{title:"特殊處理",body:"不確定的特殊處理先記在「待確認事項」。",images:[]}
+];
+
+const $=id=>document.getElementById(id);
+function clone(v){return JSON.parse(JSON.stringify(v));}
+function load(key,fallback){
+  try{
+    const v=JSON.parse(localStorage.getItem(key));
+    return Array.isArray(v)?v:clone(fallback);
+  }catch(e){return clone(fallback);}
+}
+function save(key,value){
+  try{localStorage.setItem(key,JSON.stringify(value));return true;}
+  catch(e){toast("儲存空間不足，請刪除部分舊圖片或資料");return false;}
+}
+function toast(msg){
+  const t=$("toast");if(!t)return;
+  t.textContent=msg;t.classList.add("show");
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer=setTimeout(()=>t.classList.remove("show"),1800);
+}
+function unique(a){return [...new Set(Array.isArray(a)?a:[])];}
+
+/* Images remain in the same data model, but every NEW image is aggressively compressed. */
+function compressImage(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        const max=1200;
+        const w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+        const scale=Math.min(1,max/Math.max(w,h));
+        const c=document.createElement("canvas");
+        c.width=Math.max(1,Math.round(w*scale));
+        c.height=Math.max(1,Math.round(h*scale));
+        const ctx=c.getContext("2d",{alpha:false});
+        ctx.fillStyle="#fff";ctx.fillRect(0,0,c.width,c.height);
+        ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality="medium";
+        ctx.drawImage(img,0,0,c.width,c.height);
+        resolve(c.toDataURL("image/jpeg",0.68));
+      };
+      img.onerror=()=>reject(new Error("圖片讀取失敗"));
+      img.src=reader.result;
+    };
+    reader.onerror=()=>reject(new Error("圖片讀取失敗"));
+    reader.readAsDataURL(file);
+  });
+}
+async function getImages(inputId){
+  const input=$(inputId);
+  if(!input||!input.files||!input.files.length)return [];
+  const out=[];
+  for(const file of Array.from(input.files)){
+    out.push(await compressImage(file));
+  }
+  return unique(out);
+}
+function imageMarkup(images){
+  const arr=unique(images);
+  if(!arr.length)return "";
+  return `<div class="saved-images">${arr.map((src,i)=>`<img src="${src}" alt="附加圖片 ${i+1}" loading="lazy" data-full="${src}">`).join("")}</div>`;
+}
+function preview(inputId,previewId){
+  const input=$(inputId),box=$(previewId);
+  if(!input||!box)return;
+  box.innerHTML="";
+  Array.from(input.files||[]).forEach(file=>{
+    const img=document.createElement("img");
+    img.src=URL.createObjectURL(file);
+    img.className="image-thumb";
+    box.appendChild(img);
+  });
+}
+["todoImages","noteImages","questionImages","farmImages"].forEach(id=>{
+  const input=$(id);
+  if(input)input.addEventListener("change",()=>preview(id,id.replace("Images","Preview")));
+});
+
+/* Image viewer */
+let viewerScale=1;
+function openViewer(src){
+  const modal=$("imageModal");
+  if(!modal)return;
+  $("viewerImg").src=src;
+  viewerScale=1;
+  $("viewerImg").style.transform="scale(1)";
+  modal.classList.add("open");
+}
+function closeViewer(){$("imageModal")?.classList.remove("open");}
+document.addEventListener("click",e=>{
+  const img=e.target.closest(".saved-images img");
+  if(img){e.preventDefault();openViewer(img.dataset.full||img.src);}
+});
+$("viewerClose")?.addEventListener("click",closeViewer);
+$("viewerMinus")?.addEventListener("click",()=>{viewerScale=Math.max(.5,viewerScale-.2);$("viewerImg").style.transform=`scale(${viewerScale})`;});
+$("viewerPlus")?.addEventListener("click",()=>{viewerScale=Math.min(3,viewerScale+.2);$("viewerImg").style.transform=`scale(${viewerScale})`;});
+$("viewerReset")?.addEventListener("click",()=>{viewerScale=1;$("viewerImg").style.transform="scale(1)";});
+$("imageModal")?.addEventListener("click",e=>{if(e.target.id==="imageModal")closeViewer();});
+
+/* Data */
+let steps=load(KEY_STEPS,defaults);
+let todos=load(KEY_TODOS,defaultTodos);
+let notes=load(KEY_NOTES,[]);
+let questions=load(KEY_QUESTIONS,[]);
+let farmReminders=load(KEY_FARM,defaultFarm);
+let filter="all",currentView="workflow";
+
+function updateStats(){
+  if($("todoStat"))$("todoStat").textContent=todos.length;
+  if($("doneStat"))$("doneStat").textContent=todos.filter(x=>x.done).length;
+  if($("pendingStat"))$("pendingStat").textContent=questions.length;
+}
+function updateProgress(){
+  const done=steps.filter(x=>x.done).length,total=steps.length,p=total?Math.round(done/total*100):0;
+  if($("progressText"))$("progressText").textContent=`${done} / ${total}`;
+  if($("heroPct"))$("heroPct").textContent=p+"%";
+  if($("fill"))$("fill").style.width=p+"%";
+  if($("progressRing"))$("progressRing").style.setProperty("--pct",p+"%");
+  if($("workflowCount"))$("workflowCount").textContent=`共 ${total} 項`;
+  updateStats();
+}
+function showView(v){
+  currentView=v;
+  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+  const el=$("view-"+v)||$("view-workflow");el.classList.add("active");
+  document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===v));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderWorkflow(){
+  const list=$("workflow");if(!list)return;list.innerHTML="";
+  const vis=steps.map((item,index)=>({item,index})).filter(v=>filter==="all"||(filter==="todo"&&!v.item.done)||(filter==="done"&&v.item.done));
+  if(!vis.length){list.innerHTML='<div class="empty">目前沒有符合條件的工作。</div>';return;}
+  vis.forEach(({item:s,index:i})=>{
+    const el=document.createElement("div");el.className="step"+(s.done?" done":"");
+    el.innerHTML=`<div class="num">${String(i+1).padStart(2,"0")}</div><div><div class="title"></div><div class="desc"></div><div class="workflow-actions"><button type="button" class="workflow-edit">修改</button><button type="button" class="workflow-delete">刪除</button></div></div><input class="check" type="checkbox" ${s.done?"checked":""}>`;
+    el.querySelector(".title").textContent=s.title;el.querySelector(".desc").textContent=s.desc||"";
+    el.querySelector(".check").onchange=e=>{steps[i].done=e.target.checked;save(KEY_STEPS,steps);renderAll();toast(e.target.checked?"已完成 ✓":"已取消完成");};
+    el.querySelector(".workflow-edit").onclick=()=>{$("stepTitle").value=s.title;$("stepDesc").value=s.desc||"";$("addForm").dataset.editIndex=i;$("addForm").querySelector(".primary").textContent="儲存流程修改";showView("workflow");$("addForm").scrollIntoView({behavior:"smooth",block:"center"});};
+    el.querySelector(".workflow-delete").onclick=()=>{if(confirm("確定要刪除這個工作流程嗎？")){steps.splice(i,1);save(KEY_STEPS,steps);renderAll();}};
+    list.appendChild(el);
+  });
+}
+function renderTodos(){
+  const list=$("todoList");if(!list)return;list.innerHTML="";
+  todos.forEach((t,i)=>{
+    const el=document.createElement("div");el.className="todo-item"+(t.done?" done":"");
+    el.innerHTML=`<input type="checkbox" ${t.done?"checked":""}><div class="todo-main"><div class="todo-time">${t.time||""}</div><div class="todo-title"></div>${imageMarkup(t.images)}<div class="item-actions"><button type="button" class="edit">修改</button><button type="button" class="del">刪除</button></div></div>`;
+    el.querySelector(".todo-title").textContent=t.title;
+    el.querySelector("input").onchange=e=>{todos[i].done=e.target.checked;save(KEY_TODOS,todos);renderTodos();updateStats();};
+    el.querySelector(".edit").onclick=()=>editTodo(i);
+    el.querySelector(".del").onclick=()=>{if(confirm("刪除此待辦？")){todos.splice(i,1);save(KEY_TODOS,todos);renderTodos();updateStats();}};
+    list.appendChild(el);
+  });
+}
+function renderNotes(){
+  const list=$("noteList");if(!list)return;list.innerHTML="";
+  if(!notes.length){list.innerHTML='<div class="empty">目前沒有工作筆記。</div>';return;}
+  notes.forEach((n,i)=>{
+    const el=document.createElement("div");el.className="note-item";
+    el.innerHTML=`<div class="note-title"></div><div class="note-body"></div>${imageMarkup(n.images)}<div class="item-actions"><button type="button" class="edit">修改</button><button type="button" class="del">刪除</button></div>`;
+    el.querySelector(".note-title").textContent=n.title||"未命名筆記";el.querySelector(".note-body").textContent=n.body||"—";
+    el.querySelector(".edit").onclick=()=>editNote(i);
+    el.querySelector(".del").onclick=()=>{if(confirm("刪除此筆記？")){notes.splice(i,1);save(KEY_NOTES,notes);renderNotes();}};
+    list.appendChild(el);
+  });
+}
+function renderQuestions(){
+  const list=$("questionList");if(!list)return;list.innerHTML="";
+  if(!questions.length){list.innerHTML='<div class="empty">目前沒有待確認事項。</div>';return;}
+  questions.forEach((q,i)=>{
+    const el=document.createElement("div");el.className="question-item";
+    el.innerHTML=`<div class="question-text"></div>${imageMarkup(q.images)}<div class="item-actions"><button type="button" class="del">刪除</button></div>`;
+    el.querySelector(".question-text").textContent=q.text;
+    el.querySelector(".del").onclick=()=>{questions.splice(i,1);save(KEY_QUESTIONS,questions);renderQuestions();updateStats();};
+    list.appendChild(el);
+  });
+}
+function renderFarm(){
+  const list=$("farmList");if(!list)return;list.innerHTML="";
+  farmReminders.forEach((r,i)=>{
+    const el=document.createElement("div");el.className="farm-item";
+    el.innerHTML=`<div class="farm-title"></div><div class="farm-body"></div>${imageMarkup(r.images)}<div class="item-actions"><button type="button" class="edit">修改</button><button type="button" class="del">刪除</button></div>`;
+    el.querySelector(".farm-title").textContent=r.title;el.querySelector(".farm-body").textContent=r.body||"";
+    el.querySelector(".edit").onclick=()=>editFarm(i);
+    el.querySelector(".del").onclick=()=>{if(confirm("刪除此提醒？")){farmReminders.splice(i,1);save(KEY_FARM,farmReminders);renderFarm();}};
+    list.appendChild(el);
+  });
+}
+function renderAll(){renderWorkflow();renderTodos();renderNotes();renderQuestions();renderFarm();updateProgress();}
+
+function editTodo(i){
+  const t=todos[i];$("todoTitle").value=t.title;$("todoTime").value=t.time||"";$("todoForm").dataset.editIndex=i;
+  $("todoSubmit").textContent="儲存修改";$("todoCancel").style.display="inline-flex";showView("todos");
+}
+function editNote(i){
+  const n=notes[i];$("noteTitle").value=n.title||"";$("noteBody").value=n.body||"";$("noteForm").dataset.editIndex=i;
+  $("noteForm").querySelector(".primary").textContent="儲存修改";showView("notes");
+}
+function editFarm(i){
+  const r=farmReminders[i];$("farmTitle").value=r.title||"";$("farmBody").value=r.body||"";$("farmForm").dataset.editIndex=i;
+  $("farmSubmit").textContent="儲存修改";$("farmCancel").style.display="inline-flex";showView("farm");
+}
+
+document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>showView(b.dataset.nav));
+document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.classList.toggle("active",x===b));renderWorkflow();});
+
+$("addForm")?.addEventListener("submit",e=>{
+  e.preventDefault();
+  const title=$("stepTitle").value.trim(),desc=$("stepDesc").value.trim(),form=$("addForm");
+  if(!title){toast("請輸入工作流程名稱");return;}
+  const idx=form.dataset.editIndex;
+  if(idx!==undefined){steps[+idx]={...steps[+idx],title,desc};delete form.dataset.editIndex;form.querySelector(".primary").textContent="新增工作步驟";toast("流程已修改");}
+  else{steps.push({title,desc,done:false});toast("已新增工作步驟");}
+  $("stepTitle").value="";$("stepDesc").value="";save(KEY_STEPS,steps);renderAll();
+});
+
+$("todoForm")?.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const title=$("todoTitle").value.trim(),time=$("todoTime").value,form=$("todoForm");
+  if(!title){toast("請輸入待辦事項");return;}
+  let imgs=[];try{imgs=await getImages("todoImages");}catch(err){toast(err.message);return;}
+  const idx=form.dataset.editIndex;
+  if(idx!==undefined){todos[+idx]={...todos[+idx],title,time,images:imgs.length?imgs:(todos[+idx].images||[])};delete form.dataset.editIndex;toast("待辦已修改");}
+  else{todos.unshift({title,time,done:false,images:imgs});toast("已新增待辦");}
+  save(KEY_TODOS,todos);$("todoTitle").value="";$("todoTime").value="";$("todoImages").value="";$("todoPreview").innerHTML="";$("todoSubmit").textContent="＋ 新增待辦";$("todoCancel").style.display="none";renderTodos();updateStats();
+});
+$("todoCancel")?.addEventListener("click",()=>{delete $("todoForm").dataset.editIndex;$("todoTitle").value="";$("todoTime").value="";$("todoImages").value="";$("todoPreview").innerHTML="";$("todoSubmit").textContent="＋ 新增待辦";$("todoCancel").style.display="none";});
+
+$("noteForm")?.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const title=$("noteTitle").value.trim(),body=$("noteBody").value.trim(),form=$("noteForm");
+  if(!title&&!body){toast("請輸入筆記內容");return;}
+  let imgs=[];try{imgs=await getImages("noteImages");}catch(err){toast(err.message);return;}
+  const idx=form.dataset.editIndex;
+  if(idx!==undefined){notes[+idx]={...notes[+idx],title:title||"未命名筆記",body:body||"—",images:imgs.length?imgs:(notes[+idx].images||[])};delete form.dataset.editIndex;toast("筆記已修改");}
+  else{notes.unshift({title:title||"未命名筆記",body:body||"—",images:imgs});toast("筆記已儲存");}
+  if(!save(KEY_NOTES,notes))return;
+  $("noteTitle").value="";$("noteBody").value="";$("noteImages").value="";$("notePreview").innerHTML="";form.querySelector(".primary").textContent="儲存筆記";renderNotes();
+});
+
+$("questionForm")?.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const text=$("questionInput").value.trim();if(!text){toast("請輸入待確認事項");return;}
+  let imgs=[];try{imgs=await getImages("questionImages");}catch(err){toast(err.message);return;}
+  questions.unshift({text,images:imgs});save(KEY_QUESTIONS,questions);
+  $("questionInput").value="";$("questionImages").value="";$("questionPreview").innerHTML="";renderQuestions();updateStats();toast("已加入待確認");
+});
+
+$("farmForm")?.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const title=$("farmTitle").value.trim(),body=$("farmBody").value.trim(),form=$("farmForm");
+  if(!title){toast("請先輸入提醒標題");return;}
+  let imgs=[];try{imgs=await getImages("farmImages");}catch(err){toast(err.message);return;}
+  const idx=form.dataset.editIndex;
+  if(idx!==undefined){farmReminders[+idx]={...farmReminders[+idx],title,body,images:imgs.length?imgs:(farmReminders[+idx].images||[])};delete form.dataset.editIndex;toast("產業提醒已修改");}
+  else{farmReminders.push({title,body,images:imgs});toast("已新增產業提醒");}
+  save(KEY_FARM,farmReminders);$("farmTitle").value="";$("farmBody").value="";$("farmImages").value="";$("farmPreview").innerHTML="";$("farmSubmit").textContent="新增提醒";$("farmCancel").style.display="none";renderFarm();
+});
+$("farmCancel")?.addEventListener("click",()=>{delete $("farmForm").dataset.editIndex;$("farmTitle").value="";$("farmBody").value="";$("farmImages").value="";$("farmPreview").innerHTML="";$("farmSubmit").textContent="新增提醒";$("farmCancel").style.display="none";});
+
+$("taxForm")?.addEventListener("submit",e=>{
+  e.preventDefault();const n=Number($("taxAmount").value);
+  if(!Number.isFinite(n)||n<0){$("taxResult").textContent="請輸入有效金額";return;}
+  if($("taxMode").value==="add")$("taxResult").textContent=`未稅 ${n.toLocaleString("zh-TW",{maximumFractionDigits:2})} → 含稅 ${(n*1.05).toLocaleString("zh-TW",{maximumFractionDigits:2})}；稅額 ${(n*.05).toLocaleString("zh-TW",{maximumFractionDigits:2})}`;
+  else{const net=n/1.05;$("taxResult").textContent=`含稅 ${n.toLocaleString("zh-TW",{maximumFractionDigits:2})} → 未稅 ${net.toLocaleString("zh-TW",{maximumFractionDigits:2})}；稅額 ${(n-net).toLocaleString("zh-TW",{maximumFractionDigits:2})}`;}
+});
+$("profitForm")?.addEventListener("submit",e=>{
+  e.preventDefault();const sale=Number($("saleAmount").value),cost=Number($("costAmount").value);
+  if(!Number.isFinite(sale)||!Number.isFinite(cost)||sale<=0||cost<0){$("profitResult").textContent="請輸入有效金額";return;}
+  const profit=sale-cost;$("profitResult").textContent=`毛利 ${profit.toLocaleString("zh-TW",{maximumFractionDigits:2})}；毛利率 ${(profit/sale*100).toFixed(2)}%`;
+});
+
+/* Custom calculator: never focuses a text input, so iPhone keyboard won't appear. */
+let calcExpr="";
+function calcDisplay(){if($("calcInput"))$("calcInput").value=calcExpr;}
+document.querySelectorAll(".calc-btn").forEach(btn=>btn.addEventListener("click",()=>{
+  const k=btn.dataset.calc;
+  if(k==="C")calcExpr="";
+  else if(k==="back")calcExpr=calcExpr.slice(0,-1);
+  else if(k==="="){
+    const exp=calcExpr.replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-");
+    if(!/^[0-9+\-*/().\s]+$/.test(exp)||!exp.trim()){$("calcResult").textContent="請輸入有效算式";return;}
+    try{$("calcResult").textContent=Number(Function('"use strict";return ('+exp+')')()).toLocaleString("zh-TW",{maximumFractionDigits:2});}
+    catch(err){$("calcResult").textContent="算式無法計算";}
+  }else calcExpr+=k;
+  calcDisplay();
+}));
+
+document.querySelectorAll(".numeric-pad").forEach(pad=>pad.addEventListener("click",e=>{
+  const btn=e.target.closest(".num-key");if(!btn)return;
+  const target=$(pad.dataset.padTarget),k=btn.dataset.num;if(!target)return;
+  if(k==="C")target.value="";
+  else if(k==="back")target.value=target.value.slice(0,-1);
+  else if(k==="calc"||k==="calcprofit"){const form=target.closest("form");if(form)form.requestSubmit();}
+  else if(k==="next"){$("costAmount")?.focus();}
+  else target.value+=k;
+  e.preventDefault();
+}));
+
+$("reset")?.addEventListener("click",()=>{
+  if(confirm("只將工作流程全部標記為未完成，其他資料不會刪除。")){steps.forEach(x=>x.done=false);save(KEY_STEPS,steps);renderAll();}
+});
+$("today")&&( $("today").textContent=new Intl.DateTimeFormat("zh-TW",{year:"numeric",month:"long",day:"numeric",weekday:"short"}).format(new Date()) );
+
+renderAll();
+showView("workflow");
+})();
+</script></body></html>
