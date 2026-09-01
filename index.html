@@ -386,7 +386,7 @@ input:focus,textarea:focus,select:focus{border-color:#aebaae;box-shadow:0 0 0 3p
       <div class="helper-grid">
         <div class="card">
           <h3>📝 主管交代</h3><p>把主管交代的事情記下來，避免下班前忘記。</p>
-          <form id="noteForm"><input id="noteTitle" placeholder="標題，例如：月底對帳流程"><textarea id="noteBody" placeholder="流程、注意事項、主管說明..."></textarea><div class="image-field"><div class="image-label">📷 附加圖片（可多選）</div><input id="noteImages" class="image-input" type="file" accept="image/*" multiple><div id="notePreview" class="image-preview"></div></div><button class="primary">儲存筆記</button></form>
+          <form id="noteForm"><input id="noteTitle" placeholder="標題，例如：月底對帳流程"><textarea id="noteBody" placeholder="流程、注意事項、主管說明..."></textarea><div class="image-field"><div class="image-label">📷 附加圖片（可多選）</div><input id="noteImages" class="image-input" type="file" accept="image/*" multiple><div id="notePreview" class="image-preview"></div></div><button type="submit" class="primary">儲存筆記</button></form>
         </div>
         <div class="card">
           <h3>❓ 待確認事項</h3><p>遇到不確定的會計處理，先記錄，確認後再問。</p>
@@ -597,6 +597,35 @@ function preview(inputId,previewId){const input=$(inputId),box=$(previewId);if(!
 ['todoImages','noteImages','questionImages','farmImages'].forEach(id=>{const el=$(id);if(el)el.addEventListener('change',()=>preview(id,id.replace('Images','Preview')));});
 function renderWorkflow(){const list=$('workflow');list.innerHTML='';const vis=steps.map((item,index)=>({item,index})).filter(v=>filter==='all'||(filter==='todo'&&!v.item.done)||(filter==='done'&&v.item.done));if(!vis.length){list.innerHTML='<div class="empty">目前沒有符合條件的工作。</div>';return;}vis.forEach(v=>{const s=v.item,i=v.index,el=document.createElement('div');el.className='step'+(s.done?' done':'');el.innerHTML=`<div class="num">${String(i+1).padStart(2,'0')}</div><div><div class="title"></div><div class="desc"></div><div class="workflow-actions"><button type="button" class="workflow-edit">修改</button><button type="button" class="workflow-delete">刪除</button></div></div><input class="check" type="checkbox" ${s.done?'checked':''}>`;el.querySelector('.title').textContent=s.title;el.querySelector('.desc').textContent=s.desc||'';el.querySelector('.check').onchange=e=>{steps[i].done=e.target.checked;save(KEY_STEPS,steps);migrateImages().catch(()=>{}).finally(()=>{renderAll();hydrateImages();});toast(e.target.checked?'已完成 ✓':'已取消完成');};el.querySelector('.workflow-edit').onclick=()=>{$('stepTitle').value=s.title;$('stepDesc').value=s.desc||'';$('addForm').dataset.editIndex=i;$('addForm').querySelector('.primary').textContent='儲存流程修改';showView('workflow');$('addForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.workflow-delete').onclick=()=>{if(confirm('確定要刪除這個工作流程嗎？')){steps.splice(i,1);save(KEY_STEPS,steps);renderAll();toast('工作流程已刪除');}};list.appendChild(el);});}
 function renderDaily(){const list=$('dailyList');list.innerHTML='';const done=todos.filter(x=>x.done).length;list.innerHTML=`<div class="todo-summary"><span>今天共 <strong>${todos.length}</strong> 項</span><span>完成 <strong>${done}</strong> 項</span></div>`;if(!todos.length){list.insertAdjacentHTML('beforeend','<div class="empty">今天還沒有待辦事項，新增一項吧。</div>');return;}todos.map((item,index)=>({item,index})).sort((a,b)=>a.item.done-b.item.done||(a.item.time||'99:99').localeCompare(b.item.time||'99:99')).forEach(v=>{const t=v.item,i=v.index,el=document.createElement('div');el.className='todo-item'+(t.done?' done':'');el.innerHTML=`<input class="todo-check" type="checkbox" ${t.done?'checked':''}><div class="todo-main"><strong></strong><small></small>${imageMarkup(t.imageIds)}</div><div class="todo-actions"><button type="button" class="edit">修改</button><button type="button" class="delete">刪除</button></div>`;el.querySelector('strong').textContent=t.title;el.querySelector('small').textContent=t.time?`時間：${t.time}`:'未設定時間';el.querySelector('.todo-check').onchange=e=>{todos[i].done=e.target.checked;save(KEY_TODOS,todos);renderAll();toast(e.target.checked?'待辦已完成 ✓':'已取消完成');};el.querySelector('.edit').onclick=()=>{$('todoTitle').value=t.title;$('todoTime').value=t.time||'';$('todoForm').dataset.editIndex=i;$('todoSubmit').textContent='儲存修改';$('todoCancel').style.display='inline-block';showView('daily');$('todoForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.delete').onclick=()=>{if(confirm('確定要刪除這項待辦嗎？')){todos.splice(i,1);save(KEY_TODOS,todos);renderAll();toast('待辦已刪除');}};list.appendChild(el);});}
+
+document.addEventListener("DOMContentLoaded",function(){
+  const form=document.getElementById("noteForm");
+  if(!form)return;
+  form.addEventListener("submit",async function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    const title=document.getElementById("noteTitle").value.trim();
+    const body=document.getElementById("noteBody").value.trim();
+    if(!title&&!body){toast("請先輸入筆記內容");return;}
+    let imageIds=[];
+    try{
+      imageIds=await selectedFilesToImageIds("noteImages",[]);
+    }catch(err){
+      console.error(err);
+      toast("圖片無法儲存，請重新選擇圖片");
+      return;
+    }
+    notes.unshift({title:title||"未命名筆記",body:body||"—",imageIds});
+    save(KEY_NOTES,notes);
+    document.getElementById("noteTitle").value="";
+    document.getElementById("noteBody").value="";
+    document.getElementById("noteImages").value="";
+    document.getElementById("notePreview").innerHTML="";
+    renderNotes();
+    hydrateImages();
+    toast("筆記已儲存");
+  },true);
+});
 function renderNotes(){const list=$('noteList');list.innerHTML='';if(!notes.length){list.innerHTML='<div class="empty">還沒有工作筆記，新增第一筆吧。</div>';return;}notes.forEach((n,i)=>{const el=document.createElement('div');el.className='list-item';el.innerHTML=`<strong></strong><p></p>${imageMarkup(n.imageIds)}<button type="button" class="edit">修改</button><button type="button" class="delete">刪除</button>`;el.querySelector('strong').textContent=n.title||'未命名筆記';el.querySelector('p').textContent=n.body||'—';el.querySelector('.edit').onclick=()=>{$('noteTitle').value=n.title||'';$('noteBody').value=n.body||'';$('noteForm').dataset.editIndex=i;$('noteForm').querySelector('.primary').textContent='儲存修改';showView('notes');$('noteForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.delete').onclick=()=>{if(confirm('確定要刪除這筆筆記嗎？')){notes.splice(i,1);save(KEY_NOTES,notes);renderNotes();toast('筆記已刪除');}};list.appendChild(el);});}
 function renderQuestions(){['questionList','questionList2'].forEach(id=>{const list=$(id);if(!list)return;list.innerHTML='';if(!questions.length){list.innerHTML='<div class="empty">目前沒有待確認事項 ✓</div>';return;}questions.forEach((q,i)=>{const text=typeof q==='string'?q:q.text||'',el=document.createElement('div');el.className='list-item';el.innerHTML=`<strong>待確認 ${i+1}</strong><p></p>${imageMarkup(q&&q.imageIds)}<button type="button" class="delete">已確認／刪除</button>`;el.querySelector('p').textContent=text;el.querySelector('.delete').onclick=()=>{questions.splice(i,1);save(KEY_QUESTIONS,questions);renderQuestions();updateStats();toast('已移除');};list.appendChild(el);});});}
 function renderFarm(){const list=$('farmList');list.innerHTML='';if(!farmReminders.length){list.innerHTML='<div class="card empty">目前沒有產業提醒，請新增第一筆。</div>';return;}farmReminders.forEach((r,i)=>{const el=document.createElement('div');el.className='card reminder-item';el.innerHTML=`<div class="reminder-row"><div><h3></h3><div class="reminder-text"></div></div><div class="reminder-actions"><button type="button" class="edit">修改</button><button type="button" class="delete">刪除</button></div></div>${imageMarkup(r.imageIds)}`;el.querySelector('h3').textContent=r.title;el.querySelector('.reminder-text').textContent=r.body||'';el.querySelector('.edit').onclick=()=>{$('farmTitle').value=r.title;$('farmBody').value=r.body||'';$('farmForm').dataset.editIndex=i;$('farmSubmit').textContent='儲存修改';$('farmCancel').style.display='inline-block';showView('farm');$('farmForm').scrollIntoView({behavior:'smooth',block:'center'});};el.querySelector('.delete').onclick=()=>{if(confirm('確定要刪除這項產業提醒嗎？')){farmReminders.splice(i,1);save(KEY_FARM,farmReminders);renderFarm();toast('提醒已刪除');}};list.appendChild(el);});}
